@@ -22,8 +22,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.apache.servicemix.grid</groupId>
-  <artifactId>grid-parent</artifactId>
+  <groupId>org.fusesource.cloudmix</groupId>
+  <artifactId>cloudmix-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ServiceMix Grid</name>
@@ -76,8 +76,8 @@
   <url>http://servicemix.apache.org/grid/</url>
 
   <organization>
-    <name>Apache Software Foundation</name>
-    <url>http://www.apache.org/</url>
+    <name>Fuse Source</name>
+    <url>http://fusesource.com/</url>
   </organization>
 
   <licenses>
@@ -87,6 +87,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <repositories>
     <!-- debug repo -->
     <!--repository>
@@ -257,22 +258,22 @@
 
       <!-- local modules -->
       <dependency>
-        <groupId>org.apache.servicemix.grid</groupId>
+        <groupId>org.fusesource.cloudmix</groupId>
         <artifactId>org.apache.servicemix.grid.common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicemix.grid</groupId>
+        <groupId>org.fusesource.cloudmix</groupId>
         <artifactId>org.apache.servicemix.grid.agent</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicemix.grid</groupId>
+        <groupId>org.fusesource.cloudmix</groupId>
         <artifactId>org.apache.servicemix.grid.agent.dir</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicemix.grid</groupId>
+        <groupId>org.fusesource.cloudmix</groupId>
         <artifactId>org.apache.servicemix.grid.controller</artifactId>
         <version>${project.version}</version>
       </dependency>

@@ -2,7 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
+    <groupId>org.fusesource.cloudmix</groupId>
     <artifactId>org.apache.servicemix.grid.jersey.osgi</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -21,8 +21,8 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.apache.servicemix.grid.controller.simpledataprovider</artifactId>
 
-  <name>Grid :: Controller - Simple Data Provider OSGi Service</name>
-  <description>Grid :: Controller - Simple Data Provider OSGi Service</description>
+  <name>CloudMix :: Controller - Simple Data Provider OSGi Service</name>
+  <description>CloudMix :: Controller - Simple Data Provider OSGi Service</description>
 
   <packaging>bundle</packaging>
 
@@ -38,7 +38,7 @@
     -->
 
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.controller</artifactId>
       <version>${project.version}</version>
     </dependency>

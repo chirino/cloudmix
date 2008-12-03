@@ -23,15 +23,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
-    <artifactId>grid-parent</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.apache.servicemix.grid.agent.standalone</artifactId>
   <packaging>jar</packaging>
-  <name>Grid :: Agent - Standalone Installer</name>
-  <description>Grid Agent</description>
+  <name>CloudMix :: Agent - Standalone Installer</name>
+  <description>CloudMix Agent</description>
 
   <properties>
     <agent.properties.file>agent.properties</agent.properties.file>
@@ -41,11 +41,11 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.agent</artifactId>
     </dependency>
 <!--

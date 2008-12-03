@@ -23,15 +23,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
-    <artifactId>grid-parent</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.apache.servicemix.grid.agent</artifactId>
   <packaging>bundle</packaging>
-  <name>Grid :: Agent</name>
-  <description>Grid Agent</description>
+  <name>CloudMix :: Agent</name>
+  <description>CloudMix Agent</description>
 
   <properties>
     <grid.osgi.import.pkg>
@@ -43,7 +43,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.common</artifactId>
     </dependency>
     

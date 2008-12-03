@@ -23,15 +23,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
-    <artifactId>grid-parent</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>osgitests</artifactId>
   <packaging>pom</packaging>
-  <name>Grid :: OSGi System Tests</name>
-  <description>Grid OSGi System Tests</description>
+  <name>CloudMix :: OSGi System Tests</name>
+  <description>CloudMix OSGi System Tests</description>
 
   <modules>
     <module>org.apache.servicemix.grid.agent-bundle</module>

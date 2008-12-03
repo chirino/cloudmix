@@ -23,15 +23,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
-    <artifactId>grid-parent</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>assemblies</artifactId>
   <packaging>pom</packaging>
-  <name>Grid :: Images</name>
-  <description>Grid Images</description>
+  <name>CloudMix :: Images</name>
+  <description>CloudMix Images</description>
 
   <modules>
     <module>tomcat6</module>

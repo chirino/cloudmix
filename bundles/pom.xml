@@ -23,15 +23,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
-    <artifactId>grid-parent</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>bundles</artifactId>
   <packaging>pom</packaging>
-  <name>Grid :: Bundles</name>
-  <description>Grid Bundles</description>
+  <name>CloudMix :: Bundles</name>
+  <description>CloudMix Bundles</description>
 
   <modules>
     <module>org.apache.activemq.broker.multicast</module>

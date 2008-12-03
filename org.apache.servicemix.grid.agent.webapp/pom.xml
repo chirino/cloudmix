@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix.grid</groupId>
-    <artifactId>grid-parent</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.apache.servicemix.grid.agent.webapp</artifactId>
   <packaging>war</packaging>
-  <name>Grid :: Agent - WebApp</name>
+  <name>CloudMix :: Agent - WebApp</name>
   
   <properties>
     <jetty.port>8080</jetty.port>
@@ -18,15 +18,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.agent</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.agent.dir</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicemix.grid</groupId>
+      <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.apache.servicemix.grid.common</artifactId>
     </dependency>
     <dependency>
