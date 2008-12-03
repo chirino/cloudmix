@@ -3,12 +3,12 @@
 
   <parent>
     <groupId>org.fusesource.cloudmix</groupId>
-    <artifactId>org.apache.servicemix.grid.jersey.osgi</artifactId>
+    <artifactId>org.fusesource.cloudmix.jersey.osgi</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.apache.servicemix.grid.jersey.provision</artifactId>
+  <artifactId>org.fusesource.cloudmix.jersey.provision</artifactId>
 
   <name>CloudMix :: Jersey - Imported bundles for pax:provision</name>
 
@@ -87,12 +87,12 @@
     <!-- Dependencies from the grid -->
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>
-      <artifactId>org.apache.servicemix.grid.agent</artifactId>
+      <artifactId>org.fusesource.cloudmix.agent</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>
-      <artifactId>org.apache.servicemix.grid.common</artifactId>
+      <artifactId>org.fusesource.cloudmix.common</artifactId>
       <version>${project.version}</version>
     </dependency>
 

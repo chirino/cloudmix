@@ -19,8 +19,8 @@ package org.apache.servicemix.grid.usecase;
 
 import java.util.List;
 
-import org.apache.servicemix.grid.agent.InstallerAgent;
-import org.apache.servicemix.grid.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.agent.InstallerAgent;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.apache.servicemix.grid.controller.provisioning.ProvisioningTestSupport;
 
 /**

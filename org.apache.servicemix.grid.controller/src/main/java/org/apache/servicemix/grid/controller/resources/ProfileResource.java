@@ -21,8 +21,8 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 
-import org.apache.servicemix.grid.common.GridController;
-import org.apache.servicemix.grid.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
 
 public class ProfileResource extends ResourceSupport {
     final GridController controller;

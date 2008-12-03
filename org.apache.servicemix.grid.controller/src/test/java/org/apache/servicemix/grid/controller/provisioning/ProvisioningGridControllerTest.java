@@ -7,16 +7,16 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.servicemix.grid.common.controller.AgentController;
-import org.apache.servicemix.grid.common.controller.FeatureController;
-import org.apache.servicemix.grid.common.controller.ProfileController;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.ConfigurationUpdate;
-import org.apache.servicemix.grid.common.dto.Dependency;
-import org.apache.servicemix.grid.common.dto.FeatureDetails;
-import org.apache.servicemix.grid.common.dto.ProfileDetails;
-import org.apache.servicemix.grid.common.dto.ProvisioningAction;
-import org.apache.servicemix.grid.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.controller.AgentController;
+import org.fusesource.cloudmix.common.controller.FeatureController;
+import org.fusesource.cloudmix.common.controller.ProfileController;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
+import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 public class ProvisioningGridControllerTest extends TestCase {
     public void testStartupDelay() {

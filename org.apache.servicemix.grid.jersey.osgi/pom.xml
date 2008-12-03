@@ -8,7 +8,7 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.apache.servicemix.grid.jersey.osgi</artifactId>
+  <artifactId>org.fusesource.cloudmix.jersey.osgi</artifactId>
 
   <name>CloudMix :: Jersey - OSGi integration</name>
   <description>Builds OSGi bundles to run Jersey from an OSGi container with the OSGi HTTP Service</description>

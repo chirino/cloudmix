@@ -238,13 +238,13 @@
   </distributionManagement>
 
   <modules>
-    <module>org.apache.servicemix.grid.common</module>
-    <module>org.apache.servicemix.grid.agent</module>
-    <module>org.apache.servicemix.grid.agent.dir</module>
-    <module>org.apache.servicemix.grid.agent.smx4</module>
-    <module>org.apache.servicemix.grid.agent.standalone</module>
-    <module>org.apache.servicemix.grid.agent.webapp</module>
-    <module>org.apache.servicemix.grid.agent.jbi</module>
+    <module>org.fusesource.cloudmix.common</module>
+    <module>org.fusesource.cloudmix.agent</module>
+    <module>org.fusesource.cloudmix.agent.dir</module>
+    <module>org.fusesource.cloudmix.agent.smx4</module>
+    <module>org.fusesource.cloudmix.agent.standalone</module>
+    <module>org.fusesource.cloudmix.agent.webapp</module>
+    <module>org.fusesource.cloudmix.agent.jbi</module>
     <module>org.apache.servicemix.grid.controller</module>
     <module>org.apache.servicemix.grid.jersey.osgi</module> 
     <module>org.apache.servicemix.grid.jersey.webapp</module> 
@@ -259,22 +259,22 @@
       <!-- local modules -->
       <dependency>
         <groupId>org.fusesource.cloudmix</groupId>
-        <artifactId>org.apache.servicemix.grid.common</artifactId>
+        <artifactId>org.fusesource.cloudmix.common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.fusesource.cloudmix</groupId>
-        <artifactId>org.apache.servicemix.grid.agent</artifactId>
+        <artifactId>org.fusesource.cloudmix.agent</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.fusesource.cloudmix</groupId>
-        <artifactId>org.apache.servicemix.grid.agent.dir</artifactId>
+        <artifactId>org.fusesource.cloudmix.agent.dir</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.fusesource.cloudmix</groupId>
-        <artifactId>org.apache.servicemix.grid.controller</artifactId>
+        <artifactId>org.fusesource.cloudmix.controller</artifactId>
         <version>${project.version}</version>
       </dependency>
 

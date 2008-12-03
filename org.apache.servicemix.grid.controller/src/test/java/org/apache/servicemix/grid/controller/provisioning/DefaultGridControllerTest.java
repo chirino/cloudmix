@@ -24,11 +24,11 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.apache.servicemix.grid.common.ControllerDataProvider;
-import org.apache.servicemix.grid.common.controller.AgentController;
-import org.apache.servicemix.grid.common.controller.ProfileController;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.common.ControllerDataProvider;
+import org.fusesource.cloudmix.common.controller.AgentController;
+import org.fusesource.cloudmix.common.controller.ProfileController;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 

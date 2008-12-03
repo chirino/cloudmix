@@ -28,7 +28,7 @@
     </parent>
 
     <name>CloudMix :: Images - ServiceMix Assembly</name>
-    <artifactId>org.apache.servicemix.grid.agent.assembly</artifactId>
+    <artifactId>org.fusesource.cloudmix.agent.assembly</artifactId>
     <packaging>pom</packaging>
     <description>CloudMix Agent Assembly</description>
 	
@@ -95,7 +95,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.fusesource.cloudmix</groupId>
-                                    <artifactId>org.apache.servicemix.grid.agent.smx4</artifactId>
+                                    <artifactId>org.fusesource.cloudmix.agent.smx4</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>	                            

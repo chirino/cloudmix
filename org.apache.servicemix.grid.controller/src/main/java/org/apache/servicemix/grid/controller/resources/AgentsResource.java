@@ -32,9 +32,9 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.grid.common.GridController;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.AgentDetailsList;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 
 /**
  * @version $Revision: 1.1 $

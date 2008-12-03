@@ -17,14 +17,14 @@
             <directory>target</directory>
             <outputDirectory>/deploy</outputDirectory>
             <includes>
-                <include>org.apache.servicemix.grid.agent-bundle-${project.version}.jar</include>
+                <include>org.fusesource.cloudmix.agent-bundle-${project.version}.jar</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
             <outputDirectory>/etc</outputDirectory>
             <includes>
-                <include>org.apache.servicemix.grid.agent.cfg</include>
+                <include>org.fusesource.cloudmix.agent.cfg</include>
             </includes>
         </fileSet>
     </fileSets>

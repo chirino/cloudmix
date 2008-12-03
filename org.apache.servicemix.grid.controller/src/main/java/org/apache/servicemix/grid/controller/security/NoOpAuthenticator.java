@@ -2,7 +2,7 @@ package org.apache.servicemix.grid.controller.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.servicemix.grid.common.HttpAuthenticator;
+import org.fusesource.cloudmix.common.HttpAuthenticator;
 
 public class NoOpAuthenticator implements HttpAuthenticator {
 

@@ -27,15 +27,15 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.grid.agent.AgentPoller;
-import org.apache.servicemix.grid.common.controller.AgentController;
-import org.apache.servicemix.grid.common.controller.FeatureController;
-import org.apache.servicemix.grid.common.controller.ProfileController;
-import org.apache.servicemix.grid.common.dto.AgentCfgUpdate;
-import org.apache.servicemix.grid.common.dto.ConfigurationUpdate;
-import org.apache.servicemix.grid.common.dto.Dependency;
-import org.apache.servicemix.grid.common.dto.ProvisioningAction;
-import org.apache.servicemix.grid.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.agent.AgentPoller;
+import org.fusesource.cloudmix.common.controller.AgentController;
+import org.fusesource.cloudmix.common.controller.FeatureController;
+import org.fusesource.cloudmix.common.controller.ProfileController;
+import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
+import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
+import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 

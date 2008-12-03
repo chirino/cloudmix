@@ -29,9 +29,9 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
-import org.apache.servicemix.grid.common.GridController;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
  * @version $Revision: 1.1 $

@@ -6,9 +6,9 @@
                       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
   <bean id="simpleDataProviderBean" class="org.apache.servicemix.grid.controller.provisioning.SimpleControllerDataProvider"/>
-  <osgi:service ref="simpleDataProviderBean" id="dataProviderOSGiService" interface="org.apache.servicemix.grid.common.ControllerDataProvider"/>
+  <osgi:service ref="simpleDataProviderBean" id="dataProviderOSGiService" interface="org.fusesource.cloudmix.common.ControllerDataProvider"/>
 
   <bean id="noOpAuthenticator" class="org.apache.servicemix.grid.controller.security.NoOpAuthenticator" />
-  <osgi:service ref="noOpAuthenticator" id="httpAuthenticatorOSGiService" interface="org.apache.servicemix.grid.common.HttpAuthenticator" />
+  <osgi:service ref="noOpAuthenticator" id="httpAuthenticatorOSGiService" interface="org.fusesource.cloudmix.common.HttpAuthenticator" />
 
 </beans>

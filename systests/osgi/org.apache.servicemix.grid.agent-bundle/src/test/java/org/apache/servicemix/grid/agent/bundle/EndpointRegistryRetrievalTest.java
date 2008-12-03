@@ -1,8 +1,8 @@
-package org.apache.servicemix.grid.agent.bundle;
+package org.fusesource.cloudmix.agent.bundle;
 
 import java.util.jar.Manifest;
 
-import org.apache.servicemix.grid.agent.EndpointRegistry;
+import org.fusesource.cloudmix.agent.EndpointRegistry;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 
@@ -43,9 +43,9 @@ public class EndpointRegistryRetrievalTest extends AbstractIntegrationTest {
                 getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.jaxb-impl"),
                 getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.mina"),
                 getBundle("org.apache.servicemix.grid", "org.apache.servicemix.grid.jersey.wrapper"),
-                getBundle("org.apache.servicemix.grid", "org.apache.servicemix.grid.common"),
-                getBundle("org.apache.servicemix.grid", "org.apache.servicemix.grid.agent"),
-                getBundle("org.apache.servicemix.grid", "org.apache.servicemix.grid.agent.smx4"),
+                getBundle("org.apache.servicemix.grid", "org.fusesource.cloudmix.common"),
+                getBundle("org.apache.servicemix.grid", "org.fusesource.cloudmix.agent"),
+                getBundle("org.apache.servicemix.grid", "org.fusesource.cloudmix.agent.smx4"),
         };
     }
 

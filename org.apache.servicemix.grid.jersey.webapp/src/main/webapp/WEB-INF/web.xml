@@ -37,7 +37,7 @@
     <!-- TODO switch to standard Jersey Spring Sevlet
     <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
     -->
-    <servlet-class>org.apache.servicemix.grid.common.spring.SpringServlet</servlet-class>
+    <servlet-class>org.fusesource.cloudmix.common.spring.SpringServlet</servlet-class>
     <init-param>
       <param-name>com.sun.jersey.config.feature.Redirect</param-name>
       <param-value>true</param-value>

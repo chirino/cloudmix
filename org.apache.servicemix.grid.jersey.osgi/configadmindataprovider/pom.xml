@@ -3,7 +3,7 @@
 
   <parent>
     <groupId>org.fusesource.cloudmix</groupId>
-    <artifactId>org.apache.servicemix.grid.jersey.osgi</artifactId>
+    <artifactId>org.fusesource.cloudmix.jersey.osgi</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
@@ -12,14 +12,14 @@
     <bundle.namespace>org.apache.servicemix.grid.controller.configadmindataprovider</bundle.namespace>
     <spring.maven.artifact.version>2.5.1</spring.maven.artifact.version>
 
-    <grid.osgi.import.pkg>org.apache.servicemix.grid.common,
-                          org.apache.servicemix.grid.controller.provisioning,
-                          org.apache.servicemix.grid.controller.security,
-                          *</grid.osgi.import.pkg>
+    <grid.osgi.import.pkg>org.fusesource.cloudmix.common,
+      org.apache.servicemix.grid.controller.provisioning,
+      org.apache.servicemix.grid.controller.security,
+      *</grid.osgi.import.pkg>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.apache.servicemix.grid.controller.configadmindataprovider</artifactId>
+  <artifactId>org.fusesource.cloudmix.controller.configadmindataprovider</artifactId>
 
   <name>CloudMix :: Controller - ConfigAdmin Data Provider OSGi Service</name>
   <description>CloudMix :: Controller - ConfigAdmin Data Provider OSGi Service</description>
@@ -39,7 +39,7 @@
 
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>
-      <artifactId>org.apache.servicemix.grid.controller</artifactId>
+      <artifactId>org.fusesource.cloudmix.controller</artifactId>
       <version>${project.version}</version>
     </dependency>
     

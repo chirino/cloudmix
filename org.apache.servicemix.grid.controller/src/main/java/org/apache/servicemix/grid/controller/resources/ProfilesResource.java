@@ -22,8 +22,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.apache.servicemix.grid.common.GridController;
-import org.apache.servicemix.grid.common.dto.ProfileDetailsList;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
 
 @Path("/profiles")
 public class ProfilesResource extends ResourceSupport {

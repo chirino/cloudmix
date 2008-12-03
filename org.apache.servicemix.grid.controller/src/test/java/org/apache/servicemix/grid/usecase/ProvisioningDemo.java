@@ -5,12 +5,12 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.servicemix.grid.agent.GridControllerClient;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.FeatureDetails;
-import org.apache.servicemix.grid.common.dto.ProvisioningAction;
-import org.apache.servicemix.grid.common.dto.ProvisioningHistory;
-import org.apache.servicemix.grid.common.jetty.WebServer;
+import org.fusesource.cloudmix.agent.GridControllerClient;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.jetty.WebServer;
 
 public class ProvisioningDemo {
 

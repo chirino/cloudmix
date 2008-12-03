@@ -5,8 +5,8 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
                       
-  <osgi:reference id="dataProviderRef" interface="org.apache.servicemix.grid.common.ControllerDataProvider"/>
-  <osgi:reference id="authenticatorRef" interface="org.apache.servicemix.grid.common.HttpAuthenticator"/>
+  <osgi:reference id="dataProviderRef" interface="org.fusesource.cloudmix.common.ControllerDataProvider"/>
+  <osgi:reference id="authenticatorRef" interface="org.fusesource.cloudmix.common.HttpAuthenticator"/>
   <osgi:reference id="httpServiceRef" interface="org.osgi.service.http.HttpService"/>
 
   <bean id="gridController" class="org.apache.servicemix.grid.controller.provisioning.ProvisioningGridController">

@@ -23,6 +23,6 @@
                            http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
                            http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
-  <osgi:reference id="endpointRegistryOSGiService" interface="org.apache.servicemix.grid.agent.EndpointRegistry"/>
+  <osgi:reference id="endpointRegistryOSGiService" interface="org.fusesource.cloudmix.agent.EndpointRegistry"/>
 
 </beans>

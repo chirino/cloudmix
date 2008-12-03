@@ -6,14 +6,14 @@ import javax.servlet.Servlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.grid.common.HttpAuthenticator;
+import org.fusesource.cloudmix.common.HttpAuthenticator;
 import org.osgi.service.http.HttpService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 //import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import org.apache.servicemix.grid.common.spring.SpringServlet;
+import org.fusesource.cloudmix.common.spring.SpringServlet;
 
 @SuppressWarnings("unused")
 public class JerseyServletFactory implements ApplicationContextAware, InitializingBean {

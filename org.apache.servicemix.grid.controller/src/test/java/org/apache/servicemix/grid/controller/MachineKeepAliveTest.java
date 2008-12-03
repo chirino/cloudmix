@@ -22,9 +22,9 @@ import java.net.URI;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.AgentDetailsList;
-import org.apache.servicemix.grid.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.AgentDetailsList;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
  * @version $Revision: 1.1 $

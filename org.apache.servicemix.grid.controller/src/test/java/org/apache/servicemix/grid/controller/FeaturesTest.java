@@ -19,10 +19,10 @@ package org.apache.servicemix.grid.controller;
 
 import java.util.List;
 
-import org.apache.servicemix.grid.agent.RestGridClient;
-import org.apache.servicemix.grid.common.GridClient;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
 
 /**
  * @version $Revision: 1.1 $

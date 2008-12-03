@@ -27,7 +27,7 @@ import javax.ws.rs.Produces;
 
 import junit.framework.TestCase;
 
-import org.apache.servicemix.grid.common.GridController;
+import org.fusesource.cloudmix.common.GridController;
 import org.easymock.EasyMock;
 
 public class ProfilesResourceTest extends TestCase {

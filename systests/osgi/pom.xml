@@ -34,7 +34,7 @@
   <description>CloudMix OSGi System Tests</description>
 
   <modules>
-    <module>org.apache.servicemix.grid.agent-bundle</module>
+    <module>org.fusesource.cloudmix.agent-bundle</module>
   </modules>
 
 </project>

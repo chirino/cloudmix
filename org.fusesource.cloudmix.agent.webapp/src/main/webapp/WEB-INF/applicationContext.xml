@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="propertyConfigurer"
+    	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound">
+            <value>true</value>
+        </property>
+    	<property name="location">
+    		<value>file:conf/agent.properties</value>
+    	</property>
+    	<property name="properties">
+    	  <props>           
+            <prop key="agent.user">Agent</prop>
+    	    <prop key="agent.profile">default</prop>
+            <prop key="agent.workdir">.</prop> <!--  ${catalina.home}  -->
+    	    <prop key="agent.installdir">webapps</prop>
+		    <prop key="agent.controller.uri">http://localhost:9091/controller</prop>
+            <prop key="agent.max.features">25</prop>
+            <prop key="agent.initial.polling.delay">1000</prop>
+            <prop key="agent.polling.period">1000</prop>            
+            <prop key="agent.type">tomcat6</prop>        
+    	  </props>
+    	</property>
+    </bean>
+
+    <!-- use the following password provider for a pop-up dialog -->
+    <!--   
+    <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.DialogPasswordProvider">
+        <property name="username" value="Agent" />
+    </bean>
+    -->
+
+    <!-- use the following password provider for file based password-->
+        <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.FilePasswordProvider">
+        <property name="passwordFile" value="${agent.workdir}/conf/agent.password"/>
+        </bean>
+
+    <!-- use the following password provider for raw password -->
+    <!--   
+	<bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.SimplePasswordProvider">
+		<property name="rawPassword" value="agent"/>
+	</bean>
+    -->
+
+	<bean id="restGridClient" class="org.fusesource.cloudmix.agent.RestGridClient">
+	    <property name="rootUri" value="${agent.controller.uri}" />
+	    <property name="username" value="${agent.user}" />
+	    <property name="passwordProvider" ref="passwordProvider" />
+	</bean>
+
+
+	<bean id="directoryAgent" class="org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent">
+        <property name="client" ref="restGridClient" />
+        <property name="profile" value="${agent.profile}" />
+        <property name="supportPackageTypes"><list><value>war</value></list></property>
+	    <property name="maxFeatures" value="${agent.max.features}" />
+	    <property name="detailsPropertyFilePath" value="${agent.workdir}/conf/agent.properties" />
+        <property name="workDirectory" value="${agent.workdir}/agent" />
+	    <property name="installDirectory" value="${agent.workdir}/${agent.installdir}"/>
+        <property name="containerType" value="${agent.type}"/>        
+        <property name="tempSuffix" value=".tmp"/>
+	</bean>
+
+	<bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller">
+	    <property name="agent" ref="directoryAgent"/>
+	    <property name="initialPollingDelay" value="${agent.initial.polling.delay}"/>
+	    <property name="pollingPeriod" value="${agent.polling.period}"/>
+	</bean>
+
+	<bean id="endpointRegistry"
+		class="org.fusesource.cloudmix.agent.EndpointRegistry">
+		<property name="client" ref="restGridClient" />
+		<property name="agent" ref="directoryAgent" />
+	</bean>
+
+	<bean name="gridAgentWebapp" class="org.fusesource.cloudmix.agent.webapp.GridAgentWebapp">
+	    <property name="client" ref="restGridClient" />
+	    <property name="agent" ref="directoryAgent" />
+	    <property name="poller" ref="agentPoller" />
+	</bean>
+
+</beans>

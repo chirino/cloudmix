@@ -19,7 +19,7 @@ package org.apache.servicemix.grid.controller;
 
 import junit.framework.TestCase;
 
-import org.apache.servicemix.grid.common.jetty.WebServer;
+import org.fusesource.cloudmix.common.jetty.WebServer;
 
 /**
  * @version $Revision: 1.1 $

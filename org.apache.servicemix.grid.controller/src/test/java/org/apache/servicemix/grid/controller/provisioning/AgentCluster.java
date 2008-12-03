@@ -26,12 +26,12 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.servicemix.grid.agent.AgentPoller;
-import org.apache.servicemix.grid.agent.InstallerAgent;
-import org.apache.servicemix.grid.agent.util.CompositeCallable;
-import org.apache.servicemix.grid.common.dto.AgentDetails;
-import org.apache.servicemix.grid.common.dto.ProvisioningAction;
-import org.apache.servicemix.grid.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.agent.AgentPoller;
+import org.fusesource.cloudmix.agent.InstallerAgent;
+import org.fusesource.cloudmix.agent.util.CompositeCallable;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 

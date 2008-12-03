@@ -24,9 +24,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.apache.servicemix.grid.common.GridController;
-import org.apache.servicemix.grid.common.dto.FeatureDetails;
-import org.apache.servicemix.grid.common.dto.StringList;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.StringList;
 
 /**
  * @version $Revision: 1.1 $
