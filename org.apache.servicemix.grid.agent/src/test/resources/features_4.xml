@@ -1,0 +1,8 @@
+<features>
+    <feature name="f4">
+        <bundle>http://example.com/r1.txt</bundle>
+        <bundle>https://example.com/r2.txt</bundle>
+        <bundle>http://example.com/r3.txt</bundle>
+        <bundle>https://example.com/r4.txt</bundle>
+    </feature>
+</features>

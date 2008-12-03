@@ -1,0 +1,5 @@
+<features>
+    <feature name="unknown">
+        <bundle>http://localhost/unknown</bundle>
+    </feature>
+</features>

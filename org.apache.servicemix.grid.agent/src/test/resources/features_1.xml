@@ -1,0 +1,13 @@
+<features>
+    <feature name="f1">
+        <config name="ports">
+            fooPort = 1234
+            barPort = 4321
+        </config>
+        <config name="misc">
+            name = Funky
+            desc = Monkey
+        </config>
+        <bundle name="r_1.txt" type="osgi">http://example.com/r1.txt</bundle>
+    </feature>
+</features>

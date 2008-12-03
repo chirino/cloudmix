@@ -1,0 +1,13 @@
+---
+title:       Welcome
+created_at:  2008-08-02 14:06:40.000000 -06:00
+filter:
+  - erb
+  - textile
+---
+p(title). <%= @page.title %>
+
+Welcome to CloudMix!
+h2. Aims of CloudMix
+
+To be a simple declarative rules engine based on the Event Condition Action pattern where Java code is used to write the Events, Conditions and Actions with annotations used to wire things together.

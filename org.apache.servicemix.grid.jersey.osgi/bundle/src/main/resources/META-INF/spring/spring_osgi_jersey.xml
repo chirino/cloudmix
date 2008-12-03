@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+                      
+  <osgi:reference id="dataProviderRef" interface="org.apache.servicemix.grid.common.ControllerDataProvider"/>
+  <osgi:reference id="authenticatorRef" interface="org.apache.servicemix.grid.common.HttpAuthenticator"/>
+  <osgi:reference id="httpServiceRef" interface="org.osgi.service.http.HttpService"/>
+
+  <bean id="gridController" class="org.apache.servicemix.grid.controller.provisioning.ProvisioningGridController">
+    <property name="agentTimeout" value="1000"/>
+    <property name="dataProvider" ref="dataProviderRef"/>
+    <property name="startupProvisioningDelay" value="1000"/>
+  </bean>
+
+  <bean name="jerseyServletFactory" class="org.apache.servicemix.grid.controller.bundle.JerseyServletFactory" >
+  	<property name="jerseyClassNames">
+  	  <list>
+		<value>org.apache.servicemix.grid.controller.resources.AgentResource</value>
+  		<value>org.apache.servicemix.grid.controller.resources.AgentsResource</value>
+  		<value>org.apache.servicemix.grid.controller.resources.FeatureResource</value>
+	 	<value>org.apache.servicemix.grid.controller.resources.FeaturesResource</value>
+  		<value>org.apache.servicemix.grid.controller.resources.ProfileResource</value>
+	 	<value>org.apache.servicemix.grid.controller.resources.ProfilesResource</value>
+  		<value>org.apache.servicemix.grid.controller.resources.ResourceSupport</value>
+  	  </list>
+  	</property>
+    <property name="rootContext" value="/controller"/>
+  	<property name="httpService" ref="httpServiceRef"/>  	
+    <property name="authenticator" ref="authenticatorRef"/>
+  </bean>
+</beans>

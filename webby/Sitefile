@@ -1,0 +1,10 @@
+#SITE.user = 'jstrachan'
+SITE.host = 'forge.fusesource.org'
+SITE.remote_dir = '/usr/local/jetty/webapps/cloudmix'
+
+task :default => :build
+
+desc 'deploy the site to the webserver'
+task :deploy => [:build, 'deploy:rsync']
+
+# EOF

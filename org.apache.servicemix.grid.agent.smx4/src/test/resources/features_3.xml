@@ -1,0 +1,5 @@
+<features>
+    <feature name="f3">
+        <bundle>http://localhost/3</bundle>
+    </feature>
+</features>

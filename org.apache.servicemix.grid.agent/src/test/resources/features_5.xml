@@ -1,0 +1,6 @@
+<features>
+    <feature name="f5">
+        <bundle name="r1.txt" type="jbi">http://example.com/r1.txt</bundle>
+        <bundle name="r2.txt" type="jbi">http://example.com/r2.txt</bundle>
+    </feature>
+</features>

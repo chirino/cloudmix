@@ -1,0 +1,43 @@
+package org.apache.servicemix.grid.common.controller.constraints.agent;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.grid.common.controller.AgentController;
+import org.apache.servicemix.grid.common.controller.FeatureController;
+
+/**
+ * filters an agent list based their assigned feature
+ */
+public class AgentLivenessChecker implements IAgentConstraintChecker {
+    
+    private static final transient Log LOG = LogFactory.getLog(AgentLivenessChecker.class);
+
+    public Collection<AgentController> applyConstraint(String profileId,
+                                                       FeatureController fc,
+                                                       Collection<AgentController> someCandidates) {
+        LOG.debug("filtering on liveness...");
+
+        if (someCandidates == null) {
+            return new ArrayList<AgentController>(0);
+        }
+        
+        if (profileId == null || fc == null || someCandidates.size() == 0) {
+            return new ArrayList<AgentController>(someCandidates);
+        }
+        
+        List<AgentController> acceptedCandidates = new ArrayList<AgentController>();
+        for (AgentController ac : someCandidates) {
+            if (!ac.isDeActivated()) {
+                acceptedCandidates.add(ac);
+            }
+        }
+        return acceptedCandidates;
+    }
+    
+    
+
+}

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <parent>
+    <relativePath>../</relativePath>
+    <groupId>org.apache.servicemix.grid</groupId>
+    <artifactId>org.apache.servicemix.grid.jersey.wrapper.parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>jersey</bundle.symbolicName>
+    <wrapped.groupId>com.sun.jersey</wrapped.groupId>
+    <wrapped.artifactId>jersey-bundle</wrapped.artifactId>
+    <wrapped.version>${jersey-version}</wrapped.version>
+
+    <!-- Import a load of stuff from the JRE, as Jersey needs quite a bit of it
+         Note that these need also be specified on the 
+             org.osgi.framework.system.packages 
+         property. -->
+    <grid.osgi.import>javax.servlet,
+      javax.servlet.http,
+      javax.activation,
+      javax.xml.bind,
+      javax.xml.bind.annotation,
+      javax.xml.bind.annotation.adapters,
+      javax.xml.bind.attachment,
+      javax.xml.bind.helpers,
+      javax.xml.bind.util,
+      javax.mail,
+      javax.mail.event,
+      javax.mail.internet,
+      javax.mail.search,
+      javax.mail.util,
+      javax.xml.stream,
+      javax.xml.stream.events,
+      javax.xml.stream.util,
+      org.objectweb.asm,
+      org.objectweb.asm.attrs,
+      org.objectweb.asm.commons,
+      org.objectweb.asm.signature,
+      org.objectweb.asm.tree,
+      org.objectweb.asm.tree.analysis,
+      org.objectweb.asm.util,
+      org.objectweb.asm.util.attrs,
+      org.objectweb.asm.xml,
+      org.springframework.web.context.support;resolution:=optional,
+      org.springframework.web.context;resolution:=optional,
+      ${org.osgi.framework.system.packages},
+      !*</grid.osgi.import>
+    <grid.osgi.embed.dependency>*;scope=compile;inline=false;artifactId=!org.apache.servicemix.bundles.*|geronimo-*|org.apache.servicemix.specs.*</grid.osgi.embed.dependency>
+    <grid.osgi.embed.directory>lib</grid.osgi.embed.directory>
+  </properties>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.apache.servicemix.grid.jersey.wrapper</artifactId>
+  <version>${jersey-version}</version>
+
+  <name>Grid :: Jersey - OSGi Wrapper</name>
+
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>${wrapped.groupId}</groupId>
+      <artifactId>${wrapped.artifactId}</artifactId>
+      <version>${wrapped.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>${wrapped.groupId}</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <version>${wrapped.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+      <version>0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jettison</groupId>
+      <artifactId>jettison</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.asm</artifactId>
+      <version>2.2.3_1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.specs</groupId>
+      <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+      <version>${smx.specs-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+      <version>2.1.6_1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-activation_1.1_spec</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-javamail_1.4_spec</artifactId>
+      <version>1.3</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
+
+    <repository>
+      <id>ibiblio</id>
+      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+    </repository>
+  </repositories> 
+</project>

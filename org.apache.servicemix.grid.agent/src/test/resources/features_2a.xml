@@ -1,0 +1,5 @@
+<features>
+    <feature name="f2">
+        <bundle name="r2.txt">http://example.com/r2.txt</bundle>
+    </feature>
+</features>	

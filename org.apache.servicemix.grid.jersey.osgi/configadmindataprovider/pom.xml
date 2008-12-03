@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <parent>
+    <groupId>org.apache.servicemix.grid</groupId>
+    <artifactId>org.apache.servicemix.grid.jersey.osgi</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>org.apache.servicemix.grid.controller.configadmindataprovider</bundle.symbolicName>
+    <bundle.namespace>org.apache.servicemix.grid.controller.configadmindataprovider</bundle.namespace>
+    <spring.maven.artifact.version>2.5.1</spring.maven.artifact.version>
+
+    <grid.osgi.import.pkg>org.apache.servicemix.grid.common,
+                          org.apache.servicemix.grid.controller.provisioning,
+                          org.apache.servicemix.grid.controller.security,
+                          *</grid.osgi.import.pkg>
+  </properties>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>org.apache.servicemix.grid.controller.configadmindataprovider</artifactId>
+
+  <name>Grid :: Controller - ConfigAdmin Data Provider OSGi Service</name>
+  <description>Grid :: Controller - ConfigAdmin Data Provider OSGi Service</description>
+
+  <packaging>bundle</packaging>
+
+  <dependencies>
+    <!--
+     | uncomment to add all imported (non-local) bundles to your compilation classpath
+    <dependency>
+      <type>pom</type>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>provision</artifactId>
+      <optional>true</optional>
+    </dependency>
+    -->
+
+    <dependency>
+      <groupId>org.apache.servicemix.grid</groupId>
+      <artifactId>org.apache.servicemix.grid.controller</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <version>1.0</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.maven.artifact.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.maven.artifact.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${spring.maven.artifact.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+</project>

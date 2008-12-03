@@ -1,0 +1,53 @@
+body, html {
+	/* Gives contained divs something to base their percentages off */
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family:arial,tahoma,helvetica,sans-serrif;
+    font-size:11px;
+    font-size-adjust:none;
+    font-style:normal;
+    font-variant:normal;
+    font-weight:normal;
+    line-height:normal;
+    background: #ffffff;
+    color: #000000;
+    margin: 10px;
+
+}
+
+h1 {
+	background: #c3d9ff;
+	background-image: url(../images/agent.gif);
+	background-repeat: no-repeat;
+	text-indent: 25px;
+}
+
+h2 {	
+	background: #e8eef7;
+}
+
+a {
+    color: #000;
+}
+
+a:visited {
+    color: #000;
+}
+
+
+div#application {
+    font-weight: bold;
+	background-image: url(../images/application.gif);
+	background-repeat: no-repeat;
+	text-indent: 25px;
+}
+
+ul#artifact  {
+    font-style: italic;
+	list-style-image: url(../images/artifact.gif)
+}

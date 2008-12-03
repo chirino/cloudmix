@@ -1,0 +1,30 @@
+---
+title:       Site
+created_at:  2008-08-02 14:06:40.000000 -06:00
+filter:
+  - erb
+  - textile
+---
+
+The *CloudMix* documentation and site is created using "Webby":http://webby.rubyforge.org/ 
+
+If you "grab the source code":source.html you can get the webby source in the *webby* directory.
+
+So to "check out the code":source.html and build the website try the following (assuming you have installed webby).
+
+  svn co https://projects.fusesource.com/projects/svn/fusesource/fuseforge/cloudmix/trunk cloudmix
+  cd cloudmix/webby
+  webby
+  
+
+h2. Installing Webby
+
+Before running the webby command above you need to install it by "following these instructions":http://webby.rubyforge.org/user-manual/#h1_2
+
+  sudo gem install webby
+ 
+You also need to install "coderay":http://webby.rubyforge.org/rdoc/classes/Webby/Helpers/CodeRayHelper.html as follows
+
+  sudo gem install coderay
+  
+  

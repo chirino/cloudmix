@@ -1,0 +1,10 @@
+<features>
+    <feature name="f6">
+        <config name="applicationProperties">
+            appProp1 = Application cfg 1
+            appProp2 = appCfg2
+            app_Prop_3 = 3
+        </config>
+        <bundle name="r_1.txt" type="osgi">http://example.com/r1.txt</bundle>
+    </feature>
+</features>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                           http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
+
+  <bean id="agentPoller" class="org.apache.servicemix.grid.agent.AgentPoller">
+    <property name="agent" ref="smxAgent" />
+    <property name="initialPollingDelay" value="${initialPollingDelay}" />
+    <property name="pollingPeriod" value="${pollingPeriod}" />
+  </bean>
+
+  <!-- use the following password provider for a pop-up dialog -->
+  <!--
+  <bean id="passwordProvider" class="org.apache.servicemix.grid.agent.security.DialogPasswordProvider">
+    <property name="username" value="Agent"/>
+  </bean>
+  -->
+  
+  <!-- use the following password provider for file based password-->
+  <bean id="passwordProvider" class="org.apache.servicemix.grid.agent.security.FilePasswordProvider">
+    <property name="passwordFile" value="${servicemix.home}/etc/agent.password"/>
+  </bean>
+  
+  <bean id="smxAgent" class="org.apache.servicemix.grid.agent.smx4.ServiceMixAgent">
+    <property name="client" ref="restGridClient"/>
+    <property name="featuresService" ref="featuresService" />
+    <property name="maxFeatures" value="${maxFeatures}"/>
+    <property name="profile" value="${profile}"/>
+    <property name="detailsPropertyFilePath" value="${servicemix.home}/data/grid/agent.properties"/>
+    <property name="workDirectory" value="${servicemix.home}/data/grid"/>
+  </bean>
+  
+
+  <bean id="restGridClient" class="org.apache.servicemix.grid.agent.RestGridClient">
+    <property name="rootUri" value="${controllerRootUri}"/>
+    <property name="username" value="Agent"/>
+    <property name="passwordProvider" ref="passwordProvider"/>
+  </bean>
+
+  <bean id="endpointRegistry" class="org.apache.servicemix.grid.agent.EndpointRegistry">
+    <property name="client" ref="restGridClient"/>
+    <property name="agent" ref="smxAgent" />
+  </bean>
+
+  <osgi:service ref="endpointRegistry" id="endpointRegistryOSGiService" interface="org.apache.servicemix.grid.agent.EndpointRegistry"/>
+
+  <osgi:reference id="featuresService" interface="org.apache.servicemix.gshell.features.FeaturesService" />
+
+  <osgix:property-placeholder persistent-id="org.apache.servicemix.grid.agent">
+    <osgix:default-properties>
+      <prop key="initialPollingDelay">1000</prop>
+      <prop key="maxFeatures">25</prop>
+      <prop key="pollingPeriod">500</prop>
+      <prop key="profile">default</prop>
+      <prop key="controllerRootUri">http://localhost:9091/controller</prop>
+    </osgix:default-properties>
+  </osgix:property-placeholder>
+
+</beans>

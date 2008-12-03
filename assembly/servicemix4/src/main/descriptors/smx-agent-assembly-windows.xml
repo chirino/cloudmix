@@ -1,0 +1,31 @@
+<assembly>
+    <id>windows-bin</id>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/windows/apache-servicemix-kernel-${smx4-version}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+    	        <include>**</include>
+       	    </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>/deploy</outputDirectory>
+            <includes>
+                <include>org.apache.servicemix.grid.agent-bundle-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/etc</outputDirectory>
+            <includes>
+                <include>org.apache.servicemix.grid.agent.cfg</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
