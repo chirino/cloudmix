@@ -23,8 +23,8 @@ SITE.project_id = 'cloudmix'
 SITE.project_jira_key = 'CLOUDMIX'
 
 # these are probably all canonical values generated from the above
-SITE.project_svn_url = 'https://projects.fusesource.com/projects/svn/fusesource/fuseforge/' + SITE.project_id + '/trunk'
-SITE.project_svn_branches_url = 'https://projects.fusesource.com/projects/svn/fusesource/fuseforge/' + SITE.project_id + '/branches'
+SITE.project_svn_url = 'https://projects.fusesource.org/projects/svn/fuse/' + SITE.project_id + '/trunk'
+SITE.project_svn_branches_url = 'https://projects.fusesource.org/projects/svn/fuse/' + SITE.project_id + '/branches'
 SITE.project_issue_url = 'http://fusesource.com/issues/browse/' + SITE.project_jira_key
 SITE.maven_groupId = 'org.fusesource.' + SITE.project_id
 SITE.maven_artifactId = SITE.project_id
