@@ -51,7 +51,7 @@ public class EndpointRegistryRetrievalTest extends AbstractIntegrationTest {
 
     @Override
     protected String[] getConfigLocations() {
-        return new String[] { "/org/apache/servicemix/grid/agent/bundle/endpoint-registry-retrieval-test.xml" };
+        return new String[] {"/org/fusesource/cloudmix/agent/bundle/endpoint-registry-retrieval-test.xml"};
     }
 
     @Override
