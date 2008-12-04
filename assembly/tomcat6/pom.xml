@@ -23,7 +23,7 @@
 
     <parent>
         <groupId>org.fusesource.cloudmix</groupId>
-        <artifactId>cloudmix-parent</artifactId>
+        <artifactId>cloudmix</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
