@@ -27,30 +27,26 @@
   </prerequisites>
 
   <properties>
-    <felix-version>1.4.0</felix-version>
-    <jetty-version>6.1.8</jetty-version>
-    <slf4j-version>1.3.0</slf4j-version>
-    <spring-version>2.5.2</spring-version>
-    <smx3-version>3.3.1.4-fuse</smx3-version>
-    <smx.specs-version>1.1.0.0-fuse</smx.specs-version>
     <activemq-version>5.1.0.2-fuse</activemq-version>
+    <asm-version>3.1</asm-version>
     <camel-version>1.3.2.0-fuse</camel-version>
-    <xbean-version>3.1.0.3-fuse</xbean-version>
-    <smx4-version>1.0.1.0-fuse</smx4-version>
-    <smx4-features-plugin-version>1.0.0.0-fuse</smx4-features-plugin-version>
-
-    <!-- Jersey versions -->
-    <!-- TODO consider upgrading to 0.8-ea version -->
-    <!-- <jersey-version>0.6-ea</jersey-version> -->
+    <enunciate-version>1.8.1</enunciate-version>
+    <felix-version>1.4.0</felix-version>
+    <javax-persistence-version>1.0.2</javax-persistence-version>
     <jersey-version>1.0</jersey-version>
+    <jetty-version>6.1.8</jetty-version>
     <jsr250-version>1.0</jsr250-version>
     <jsr311-version>1.0</jsr311-version>
+    <slf4j-version>1.3.0</slf4j-version>
     <servlet-version>2.5</servlet-version>
-    <asm-version>3.1</asm-version>
-    <javax-persistence-version>1.0.2</javax-persistence-version>
+    <smx3-version>3.3.1.4-fuse</smx3-version>
+    <smx.specs-version>1.1.0.0-fuse</smx.specs-version>
+    <spring-version>2.5.2</spring-version>
+    <smx4-version>1.0.1.0-fuse</smx4-version>
+    <smx4-features-plugin-version>1.0.0.0-fuse</smx4-features-plugin-version>
+    <xbean-version>3.1.0.3-fuse</xbean-version>
 
     <!-- OSGi bundles properties -->
-
     <grid.osgi.import.pkg>!javax.xml.bind.annotation.adapters,*</grid.osgi.import.pkg>
     <grid.osgi.private.pkg>!*</grid.osgi.private.pkg>
     <grid.osgi.export.pkg>${artifactId}.*</grid.osgi.export.pkg>
