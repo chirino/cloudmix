@@ -19,8 +19,8 @@
   <artifactId>cloudmix-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>ServiceMix Grid</name>
-  <description>ServiceMix Grid Parent POM</description>
+  <name>CloudMix</name>
+  <description>CloudMix Parent POM</description>
 
   <prerequisites>
     <maven>2.0.6</maven>

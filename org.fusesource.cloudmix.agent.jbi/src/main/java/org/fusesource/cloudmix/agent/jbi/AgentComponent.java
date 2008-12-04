@@ -101,7 +101,7 @@ public class AgentComponent implements ComponentLifeCycle, Component {
         StringBuilder sb =
             new StringBuilder()
                 .append("\n")
-                .append("ServiceMix Grid Agent JBI Service Assembly Deployer\n");
+                .append("CloudMix Agent JBI Service Assembly Deployer\n");
 
         try {
             Properties properties = System.getProperties();

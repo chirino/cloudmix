@@ -32,7 +32,7 @@
         <version>${smx3-version}</version>
         <extensions>true</extensions>
         <configuration>
-          <description>ServiceMix Grid JBI Service Assembly Deployer</description>
+          <description>CloudMix JBI Service Assembly Deployer</description>
           <type>service-engine</type>
           <component>org.fusesource.cloudmix.agent.jbi.AgentComponent</component>
         </configuration>

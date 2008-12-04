@@ -23,9 +23,9 @@
          version="2.4">
 
   <description>
-    ServiceMix Grid
+    CloudMix
   </description>
-  <display-name>ServiceMix Grid</display-name>
+  <display-name>CloudMix</display-name>
 
 
   <listener>
