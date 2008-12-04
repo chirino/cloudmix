@@ -1,23 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-
-  Copyright (C) 2008 Progress Software, Inc. All rights reserved.                    
-  http://fusesource.com                                                              
-
-  The software in this package is published under the terms of the GPL license       
-  a copy of which has been included with this distribution in the license.txt file.  
-
--->
-
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.fusesource.cloudmix</groupId>
   <artifactId>cloudmix-parent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>pom</packaging>
   <name>CloudMix</name>
   <description>CloudMix Parent POM</description>
@@ -48,19 +35,19 @@
     <xbean-version>3.1.0.3-fuse</xbean-version>
 
     <!-- OSGi bundles properties -->
-    <grid.osgi.import.pkg>!javax.xml.bind.annotation.adapters,*</grid.osgi.import.pkg>
-    <grid.osgi.private.pkg>!*</grid.osgi.private.pkg>
-    <grid.osgi.export.pkg>${artifactId}.*</grid.osgi.export.pkg>
-    <grid.osgi.export>${grid.osgi.export.pkg};${grid.osgi.version}</grid.osgi.export>
-    <grid.osgi.version>version=${project.version}</grid.osgi.version>
-    <grid.osgi.split.pkg>-split-package:=first</grid.osgi.split.pkg>
-    <grid.osgi.import>${grid.osgi.import.pkg}</grid.osgi.import>
-    <grid.osgi.symbolic.name>${artifactId}</grid.osgi.symbolic.name>
-    <grid.osgi.embed.dependency></grid.osgi.embed.dependency>
-    <grid.osgi.embed.transitive>false</grid.osgi.embed.transitive>
-    <grid.osgi.embed.directory></grid.osgi.embed.directory>
-    <grid.osgi.unpack.bundle>false</grid.osgi.unpack.bundle>
-    <grid.osgi._exportcontents>*</grid.osgi._exportcontents>
+    <cloudmix.osgi.import.pkg>!javax.xml.bind.annotation.adapters,*</cloudmix.osgi.import.pkg>
+    <cloudmix.osgi.private.pkg>!*</cloudmix.osgi.private.pkg>
+    <cloudmix.osgi.export.pkg>${artifactId}.*</cloudmix.osgi.export.pkg>
+    <cloudmix.osgi.export>${cloudmix.osgi.export.pkg};${cloudmix.osgi.version}</cloudmix.osgi.export>
+    <cloudmix.osgi.version>version=${project.version}</cloudmix.osgi.version>
+    <cloudmix.osgi.split.pkg>-split-package:=first</cloudmix.osgi.split.pkg>
+    <cloudmix.osgi.import>${cloudmix.osgi.import.pkg}</cloudmix.osgi.import>
+    <cloudmix.osgi.symbolic.name>${artifactId}</cloudmix.osgi.symbolic.name>
+    <cloudmix.osgi.embed.dependency />
+    <cloudmix.osgi.embed.transitive>false</cloudmix.osgi.embed.transitive>
+    <cloudmix.osgi.embed.directory />
+    <cloudmix.osgi.unpack.bundle>false</cloudmix.osgi.unpack.bundle>
+    <cloudmix.osgi._exportcontents>*</cloudmix.osgi._exportcontents>
   </properties>
 
   <url>http://forge.fusesource.org/cloudmix/</url>
@@ -218,9 +205,9 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:svn:http://projects.fusesource.org/projects/svn/fuse/cloudmix/trunk</connection>
-    <developerConnection>scm:svn:https://projects.fusesource.org/projects/svn/fuse/cloudmix/trunk</developerConnection>
-    <url>http://projects.fusesource.org/projects/trac/fuse/browser/cloudmix/trunk</url>
+    <connection>scm:svn:http://projects.fusesource.org/projects/svn/fuse/cloudmix/tags/cloudmix-parent-1.0</connection>
+    <developerConnection>scm:svn:https://projects.fusesource.org/projects/svn/fuse/cloudmix/tags/cloudmix-parent-1.0</developerConnection>
+    <url>http://projects.fusesource.org/projects/trac/fuse/browser/cloudmix/tags/cloudmix-parent-1.0</url>
   </scm>
   
   <distributionManagement>
@@ -769,7 +756,8 @@
             <useReleaseProfile>false</useReleaseProfile>
             <preparationGoals>clean install</preparationGoals>
             <goals>deploy</goals>
-            <arguments>-Prelease,deploy</arguments>
+            <!-- <arguments>-Prelease,deploy</arguments> -->
+            <arguments>deploy</arguments>
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
         </plugin>
@@ -785,19 +773,19 @@
         <extensions>true</extensions>
         <inherited>true</inherited>
         <configuration>
-          <unpackBundle>${grid.osgi.unpack.bundle}</unpackBundle>
+          <unpackBundle>${cloudmix.osgi.unpack.bundle}</unpackBundle>
           <instructions>
             <Bundle-Name>${artifactId}</Bundle-Name>
-            <Bundle-SymbolicName>${grid.osgi.symbolic.name}</Bundle-SymbolicName>
-            <Export-Package>${grid.osgi.export}</Export-Package>
-            <Import-Package>${grid.osgi.import}</Import-Package>
-            <Private-Package>${grid.osgi.private.pkg}</Private-Package>
-            <Embed-Dependency>${grid.osgi.embed.dependency}</Embed-Dependency>
-            <Embed-Transitive>${grid.osgi.embed.transitive}</Embed-Transitive>
-            <Embed-Directory>${grid.osgi.embed.directory}</Embed-Directory>
+            <Bundle-SymbolicName>${cloudmix.osgi.symbolic.name}</Bundle-SymbolicName>
+            <Export-Package>${cloudmix.osgi.export}</Export-Package>
+            <Import-Package>${cloudmix.osgi.import}</Import-Package>
+            <Private-Package>${cloudmix.osgi.private.pkg}</Private-Package>
+            <Embed-Dependency>${cloudmix.osgi.embed.dependency}</Embed-Dependency>
+            <Embed-Transitive>${cloudmix.osgi.embed.transitive}</Embed-Transitive>
+            <Embed-Directory>${cloudmix.osgi.embed.directory}</Embed-Directory>
             <Implementation-Title>${project.name}</Implementation-Title>
             <Implementation-Version>${project.version}</Implementation-Version>
-            <_exportcontents>${grid.osgi._exportcontents}</_exportcontents>
+            <_exportcontents>${cloudmix.osgi._exportcontents}</_exportcontents>
           </instructions>
         </configuration>
       </plugin>
@@ -928,81 +916,70 @@
                 <phase>validate</phase>
                 <configuration>
                   <tasks>
-                    <path id="ecp.ws.path" location="${eclipse.workspace.dir}"/>
-                    <property name="full.eclipse.workspace" refid="ecp.ws.path"/>
-                    <path path="${basedir}/etc" id="etc.path"/>
+                    <path id="ecp.ws.path" location="${eclipse.workspace.dir}" />
+                    <property name="full.eclipse.workspace" refid="ecp.ws.path" />
+                    <path path="${basedir}/etc" id="etc.path" />
 
                     <whichresource resource="/activemq-eclipse-pmd" property="pmd.url">
-                      <classpath refid="etc.path"/>
+                      <classpath refid="etc.path" />
                     </whichresource>
                     <whichresource resource="/activemq-pmd-ruleset.xml" property="pmdruleset.url">
-                      <classpath refid="etc.path"/>
+                      <classpath refid="etc.path" />
                     </whichresource>
                     <whichresource resource="/activemq-eclipse-checkstyle" property="eclipse.checkstyle.url">
-                      <classpath refid="etc.path"/>
+                      <classpath refid="etc.path" />
                     </whichresource>
                     <whichresource resource="/activemq-checkstyle.xml" property="checkstyle.url">
-                      <classpath refid="etc.path"/>
+                      <classpath refid="etc.path" />
                     </whichresource>
-                    >
+                    &gt;
 
-                    <mkdir dir="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings"/>
-                    <mkdir dir="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle"/>
-                    <mkdir dir="${full.eclipse.workspace}/.metadata/.plugins/net.sourceforge.pmd.eclipse"/>
+                    <mkdir dir="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings" />
+                    <mkdir dir="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle" />
+                    <mkdir dir="${full.eclipse.workspace}/.metadata/.plugins/net.sourceforge.pmd.eclipse" />
 
-                    <get src="${checkstyle.url}" dest="${full.eclipse.workspace}/activemq-checkstyle.xml"/>
+                    <get src="${checkstyle.url}" dest="${full.eclipse.workspace}/activemq-checkstyle.xml" />
 
                     <!-- Add checkstyle config -->
-                    <copy file="${basedir}/etc/eclipse/template.checkstyle-config.xml"
-                          tofile="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml"
-                          overwrite="no">
+                    <copy file="${basedir}/etc/eclipse/template.checkstyle-config.xml" tofile="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml" overwrite="no">
                       <filterset>
-                        <filter token="CHECKSTYLE_CONFIG_FILE"
-                                value="${full.eclipse.workspace}/activemq-checkstyle.xml"/>
-                        <filter token="APACHE_HEADER_FILE" value="${full.eclipse.workspace}/activemq-header.txt"/>
+                        <filter token="CHECKSTYLE_CONFIG_FILE" value="${full.eclipse.workspace}/activemq-checkstyle.xml" />
+                        <filter token="APACHE_HEADER_FILE" value="${full.eclipse.workspace}/activemq-header.txt" />
                       </filterset>
                     </copy>
 
-                    <xslt style="${basedir}/etc/eclipse/addcheckstyle.xsl"
-                          in="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml"
-                          out="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml.new">
-                      <param name="checkstyleconfig" expression="${full.eclipse.workspace}/activemq-checkstyle.xml"/>
+                    <xslt style="${basedir}/etc/eclipse/addcheckstyle.xsl" in="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml" out="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml.new">
+                      <param name="checkstyleconfig" expression="${full.eclipse.workspace}/activemq-checkstyle.xml" />
                     </xslt>
-                    <copy file="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml.new"
-                          tofile="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml"
-                          overwrite="yes"/>
+                    <copy file="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml.new" tofile="${full.eclipse.workspace}/.metadata/.plugins/com.atlassw.tools.eclipse.checkstyle/checkstyle-config.xml" overwrite="yes" />
 
 
                     <!-- Add warning flags that we want -->
-                    <propertyfile
-                            file="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs">
-                      <entry key="org.eclipse.jdt.core.compiler.problem.missingSerialVersion" value="ignore"/>
-                      <entry key="org.eclipse.jdt.core.compiler.problem.unusedImport" value="ignore"/>
-                      <entry key="org.eclipse.jdt.core.compiler.problem.annotationSuperInterface" value="ignore"/>
-                      <entry key="org.eclipse.jdt.core.compiler.problem.rawTypeReference" value="ignore"/>
+                    <propertyfile file="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs">
+                      <entry key="org.eclipse.jdt.core.compiler.problem.missingSerialVersion" value="ignore" />
+                      <entry key="org.eclipse.jdt.core.compiler.problem.unusedImport" value="ignore" />
+                      <entry key="org.eclipse.jdt.core.compiler.problem.annotationSuperInterface" value="ignore" />
+                      <entry key="org.eclipse.jdt.core.compiler.problem.rawTypeReference" value="ignore" />
                     </propertyfile>
 
 
                     <!-- Add code format rules -->
-                    <concat destfile="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs"
-                            append="true" fixlastline="true">
-                      <filelist dir="${basedir}/etc/eclipse" files="org.eclipse.jdt.core.prefs"/>
+                    <concat destfile="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.core.prefs" append="true" fixlastline="true">
+                      <filelist dir="${basedir}/etc/eclipse" files="org.eclipse.jdt.core.prefs" />
                     </concat>
-                    <loadfile property="eclipse.code.format"
-                              srcFile="${basedir}/etc/eclipse/ActiveMQCodeFormatter.xml"/>
-                    <loadfile property="eclipse.code.templates" srcFile="${basedir}/etc/eclipse/codetemplates.xml"/>
-                    <propertyfile
-                            file="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs">
-                      <entry key="formatter_profile" value="_ActiveMQ Java Conventions"/>
-                      <entry key="org.eclipse.jdt.ui.formatterprofiles" value="${eclipse.code.format}"/>
-                      <entry key="org.eclipse.jdt.ui.text.custom_code_templates" value="${eclipse.code.templates}"/>
+                    <loadfile property="eclipse.code.format" srcFile="${basedir}/etc/eclipse/ActiveMQCodeFormatter.xml" />
+                    <loadfile property="eclipse.code.templates" srcFile="${basedir}/etc/eclipse/codetemplates.xml" />
+                    <propertyfile file="${full.eclipse.workspace}/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs">
+                      <entry key="formatter_profile" value="_ActiveMQ Java Conventions" />
+                      <entry key="org.eclipse.jdt.ui.formatterprofiles" value="${eclipse.code.format}" />
+                      <entry key="org.eclipse.jdt.ui.text.custom_code_templates" value="${eclipse.code.templates}" />
 
                       <!-- Add import order -->
-                      <entry key="org.eclipse.jdt.ui.importorder" value="java;javax;org.w3c;org.xml;w3c;"/>
+                      <entry key="org.eclipse.jdt.ui.importorder" value="java;javax;org.w3c;org.xml;w3c;" />
                       <!-- Sort order -->
-                      <entry key="org.eclipse.jdt.ui.visibility.order" value="B,R,D,V,"/>
-                      <entry key="outlinesortoption" value="T,SF,F,SI,I,C,SM,M,"/>
-                      <entry key="org.eclipse.jdt.ui.enable.visibility.order" value="true"/>
+                      <entry key="org.eclipse.jdt.ui.visibility.order" value="B,R,D,V," />
+                      <entry key="outlinesortoption" value="T,SF,F,SI,I,C,SM,M," />
+                      <entry key="org.eclipse.jdt.ui.enable.visibility.order" value="true" />
                     </propertyfile>
                   </tasks>
                 </configuration>
@@ -1074,7 +1051,7 @@
           <releases>
             <enabled>false</enabled>
           </releases>
-          <snapshots/>
+          <snapshots />
           <id>Codehaus Snapshots</id>
           <url>http://snapshots.repository.codehaus.org/</url>
         </repository>
@@ -1084,7 +1061,7 @@
           <releases>
             <enabled>false</enabled>
           </releases>
-          <snapshots/>
+          <snapshots />
           <id>Codehaus Snapshots</id>
           <url>http://snapshots.repository.codehaus.org/</url>
         </pluginRepository>

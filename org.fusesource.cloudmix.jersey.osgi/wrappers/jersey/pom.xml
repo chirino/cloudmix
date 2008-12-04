@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <relativePath>../</relativePath>
     <groupId>org.fusesource.cloudmix</groupId>
     <artifactId>org.fusesource.cloudmix.jersey.wrapper.parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <properties>
@@ -18,7 +17,7 @@
          Note that these need also be specified on the 
              org.osgi.framework.system.packages 
          property. -->
-    <grid.osgi.import>javax.servlet,
+    <cloudmix.osgi.import>javax.servlet,
       javax.servlet.http,
       javax.activation,
       javax.xml.bind,
@@ -47,14 +46,14 @@
       org.springframework.web.context.support;resolution:=optional,
       org.springframework.web.context;resolution:=optional,
       ${org.osgi.framework.system.packages},
-      !*</grid.osgi.import>
-    <grid.osgi.embed.dependency>*;scope=compile;inline=false;artifactId=!org.apache.servicemix.bundles.*|geronimo-*|org.apache.servicemix.specs.*</grid.osgi.embed.dependency>
-    <grid.osgi.embed.directory>lib</grid.osgi.embed.directory>
+      !*</cloudmix.osgi.import>
+    <cloudmix.osgi.embed.dependency>*;scope=compile;inline=false;artifactId=!org.apache.servicemix.bundles.*|geronimo-*|org.apache.servicemix.specs.*</cloudmix.osgi.embed.dependency>
+    <cloudmix.osgi.embed.directory>lib</cloudmix.osgi.embed.directory>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.fusesource.cloudmix.jersey.wrapper</artifactId>
-  <version>${jersey-version}</version>
+  <version>1.0</version>
 
   <name>CloudMix :: Jersey - OSGi Wrapper</name>
 
