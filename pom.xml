@@ -38,7 +38,7 @@
     <xbean-version>3.1.0.3-fuse</xbean-version>
     <smx4-version>1.0.1.0-fuse</smx4-version>
     <smx4-features-plugin-version>1.0.0.0-fuse</smx4-features-plugin-version>
-    
+
     <!-- Jersey versions -->
     <!-- TODO consider upgrading to 0.8-ea version -->
     <!-- <jersey-version>0.6-ea</jersey-version> -->
@@ -48,10 +48,10 @@
     <servlet-version>2.5</servlet-version>
     <asm-version>3.1</asm-version>
     <javax-persistence-version>1.0.2</javax-persistence-version>
- 
+
     <!-- OSGi bundles properties -->
 
-    <grid.osgi.import.pkg>!javax.xml.bind.annotation.adapters,*</grid.osgi.import.pkg> 
+    <grid.osgi.import.pkg>!javax.xml.bind.annotation.adapters,*</grid.osgi.import.pkg>
     <grid.osgi.private.pkg>!*</grid.osgi.private.pkg>
     <grid.osgi.export.pkg>${artifactId}.*</grid.osgi.export.pkg>
     <grid.osgi.export>${grid.osgi.export.pkg};${grid.osgi.version}</grid.osgi.export>
@@ -90,30 +90,34 @@
     </repository-->
     <!-- Default repository -->
     <repository>
-        <id>central</id>
-        <name>Default maven repo</name>
-        <url>http://repo1.maven.org/maven2</url>
+      <id>central</id>
+      <name>Default maven repo</name>
+      <url>http://repo1.maven.org/maven2</url>
     </repository>
     <!-- ServiceMix repo -->
     <repository>
-        <id>servicemix</id>
-        <name>Apache ServiceMix Repository</name>
-        <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+      <id>servicemix</id>
+      <name>Apache ServiceMix Repository</name>
+      <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
     </repository>
-       <!-- OPS4J repo -->
-       <repository>
-           <id>ops4j</id>
-           <name>OPS4j Repository</name>
-           <url>http://repository.ops4j.org/maven2</url>
-       </repository>
-       <!-- OPS4J snapshots repo -->
-       <repository>
-           <id>ops4j-snapshots</id>
-           <name>OPS4j Snapshots Repository</name>
-           <url>http://repository.ops4j.org/mvn-snapshots</url>
-           <releases><enabled>false</enabled></releases>
-           <snapshots><enabled>true</enabled></snapshots>
-       </repository>      
+    <!-- OPS4J repo -->
+    <repository>
+      <id>ops4j</id>
+      <name>OPS4j Repository</name>
+      <url>http://repository.ops4j.org/maven2</url>
+    </repository>
+    <!-- OPS4J snapshots repo -->
+    <repository>
+      <id>ops4j-snapshots</id>
+      <name>OPS4j Snapshots Repository</name>
+      <url>http://repository.ops4j.org/mvn-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>apache.incubating.releases</id>
       <name>Apache Incubating Release Distribution Repository</name>
@@ -218,15 +222,15 @@
 
   <distributionManagement>
     <repository>
-      <id>fusesource.m2-internal</id>
-      <name>FuseSource Community Internal Release Repository</name>
-      <url>scpexe://repo.fusesource.com/www/repo.open.iona.com/maven2-internal</url>
+      <id>fusesource.m2</id>
+      <name>FuseSource Community Release Repository</name>
+      <url>scpexe://repo.open.iona.com/www/repo.open.iona.com/maven2</url>
     </repository>
     <snapshotRepository>
       <uniqueVersion>false</uniqueVersion>
-      <id>fusesource.m2-internal-snapshot</id>
-      <name>FuseSource Community Internal Snapshot Repository</name>
-      <url>scpexe://repo.fusesource.com/www/repo.open.iona.com/maven2-internal-snapshot</url>
+      <id>fusesource.m2-snapshot</id>
+      <name>FuseSource Community Snapshot Repository</name>
+      <url>scpexe://repo.open.iona.com/www/repo.open.iona.com/maven2-snapshot</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -317,13 +321,13 @@
 
 
       <!-- Jersey and dependencies -->
-<!--
-      <dependency>
-        <groupId>jersey-debug</groupId>
-        <artifactId>jersey</artifactId>
-        <version>${jersey-version}</version>
-      </dependency>
--->
+      <!--
+            <dependency>
+              <groupId>jersey-debug</groupId>
+              <artifactId>jersey</artifactId>
+              <version>${jersey-version}</version>
+            </dependency>
+      -->
 
       <dependency>
         <groupId>javax.ws.rs</groupId>
@@ -407,7 +411,6 @@
       </dependency>
 
 
-
       <!-- optional mina dependencies -->
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -478,9 +481,9 @@
         <version>1.2.1</version>
       </dependency>
       <dependency>
-	<groupId>commons-codec</groupId>
-	<artifactId>commons-codec</artifactId>
-	<version>1.3</version>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.3</version>
       </dependency>
 
       <dependency>
@@ -788,7 +791,7 @@
             <Private-Package>${grid.osgi.private.pkg}</Private-Package>
             <Embed-Dependency>${grid.osgi.embed.dependency}</Embed-Dependency>
             <Embed-Transitive>${grid.osgi.embed.transitive}</Embed-Transitive>
-            <Embed-Directory>${grid.osgi.embed.directory}</Embed-Directory> 
+            <Embed-Directory>${grid.osgi.embed.directory}</Embed-Directory>
             <Implementation-Title>${project.name}</Implementation-Title>
             <Implementation-Version>${project.version}</Implementation-Version>
             <_exportcontents>${grid.osgi._exportcontents}</_exportcontents>
