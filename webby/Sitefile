@@ -20,7 +20,7 @@ end
 #
 SITE.project_name = 'CloudMix'
 SITE.project_id = 'cloudmix'
-SITE.project_jira_key = 'CLOUDMIX'
+SITE.project_jira_key = 'CM'
 
 # these are probably all canonical values generated from the above
 SITE.project_svn_url = 'https://projects.fusesource.org/projects/svn/fuse/' + SITE.project_id + '/trunk'
