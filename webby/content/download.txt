@@ -1,0 +1,24 @@
+---
+title:       "Download #{@config.project_name}"
+created_at:  2008-08-02 14:06:40.000000 -06:00
+filter:
+  - erb
+  - textile
+---
+
+You can download *<%= @config.project_name %>* from the "FuseForge Maven Repository":http://repo.fusesource.com/maven2/ in the "<%= @config.project_name %> area":http://repo.fusesource.com/maven2/org/fusesource/<%= @config.project_id %>/.
+
+If you use Maven then you can add the following to your *pom.xml*
+ 
+<% coderay :lang => 'xml' do -%>
+<dependency>
+  <groupId>org.fusesource.<%= @config.project_id %></groupId>
+  <artifactId><%= @config.project_id %>-core</artifactId>
+  <version>${<%= @config.project_id %>-version}</version>  
+</dependency>
+<% end -%>
+
+
+h2. Getting the source code
+
+If you prefer you can try building from "the source code":source.html and "building it":building.html

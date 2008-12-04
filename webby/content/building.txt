@@ -1,0 +1,79 @@
+---
+title:       "Building #{@config.project_name}"
+created_at:  2008-08-02 14:06:40.000000 -06:00
+filter:
+  - erb
+  - textile
+---
+
+h2. Building 
+
+<%= @config.project_name %> uses "Maven":http://maven.apache.org/ as its build tool. If you don't fancy using Maven you can use your IDE directly or "Download":download.html a distribution or JAR.
+
+h3. Prequisites
+
+*Required:*
+* Download and "install Maven":http://maven.apache.org/download.html
+* Get the latest "Source":source.html 
+* Java 1.5
+
+h3. Maven options
+
+To build <%= @config.project_name %> maven has to be configured to use more memory
+
+  set MAVEN_OPTS=-Xmx512m -XX:MaxPermSize=128m
+
+h3. A normal build
+
+  mvn install
+
+h3. Doing a Quick Build
+
+The following avoids running all the unit test cases, we just skip the test running phase and not the building part
+
+  mvn -Dtest=false clean install
+
+h3. Using an IDE
+
+If you prefer to use an IDE then you can auto-generate the IDE's project files using maven plugins. e.g.
+
+  mvn eclipse:eclipse
+  
+or
+
+  mvn idea:idea
+
+h4. Importing into Eclipse
+
+If you have not already done so, you will need to make Eclipse aware of the Maven repository so that it can build everything. In the preferences, go to Java->Build Path->Classpath and define a new Classpath Variable named M2_REPO that points to your local Maven repository (i.e., **~/.m2/repository** on Unix and **c:\Documents and Settings\<user>\.m2\repository** on Windows).
+
+You can also get Maven to do this for you:
+
+  mvn eclipse:add-maven-repo -Declipse.workspace=/path/to/the/workspace/ 
+
+
+h3. Building in ActiveMQ
+
+If you want to build ActiveMQ with <%= @config.project_name %> included, "check out the code":source.html
+
+  svn co <%= @config.project_svn_url %> <%= @config.project_id %>
+  cd <%= @config.project_id %>
+  mvn clean install
+
+Then if you build trunk of FUSE Message broker
+
+  svn co https://projects.open.iona.com/projects/svn/iona/activemq/trunk/ fuse-activemq
+  cd fuse-activemq
+  mvn -Dtest=false -DfailIfNoTests=false clean install
+
+then run the tarball
+
+  cd target
+  tar xf apache-activemq-5.2.0-fuse-SNAPSHOT-bin.tar.gz 
+  cd apache-activemq-5.2.0-fuse-SNAPSHOT
+  bin/activemq
+
+h3. See Also
+
+* "Source":source.html
+

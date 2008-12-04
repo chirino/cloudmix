@@ -1,0 +1,100 @@
+---
+extension: html
+filter:    
+  - erb
+  - basepath
+---
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+     <%# lets expand any expressions in the title %>
+     <title><%= evalstring(@page.title) %></title>
+   <meta name="author" content="<%= @page.author %>" />
+
+   <!--- Blueprint CSS Framework -->
+   <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection" />
+   <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print" />
+
+   <!-- CodeRay syntax highlighting CSS -->
+   <link rel="stylesheet" href="/css/coderay.css" type="text/css" />
+
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="/css/site.css" type="text/css" media="screen, projection" />
+   
+   <!-- edit page link - see http://universaleditbutton.org/ -->
+   <link rel="edit" 
+      type="application/x-wiki" 
+      title="Edit this page!" 
+      href="/editpage.html?<%= @config.edit_page_params %><%= @page.path %>" />
+</head>
+<body>
+
+<div class="container">
+
+   <div class="column span-20 prepend-2 append-2 first last" id="header">
+     <a href="/"><p class="title"><%= @config.project_name %></p></a>
+     <hr>
+   </div>
+
+   <div class="column span-15 prepend-2 first">
+      <%= @content %>
+   </div>
+
+   <div class="column span-5 append-2 last">
+     <h4>Overview</h4>
+     <ul>
+       <li><a href="/">Home</a></li>
+       <li><a href="/download.html">Download</a></li>
+       <li><a href="/faq.html">FAQ</a></li>
+       <li><a href="/support.html">Support</a></li>
+     </ul>
+     <h4>Developers</h4>
+     <ul>
+       <li><a href="/source.html">Source</a></li>
+       <li><a href="/building.html">Building</a></li>
+       <li><a href="/maven.html">Maven</a></li>
+       <li><a href="/site.html">Site</a></li>
+     </ul>
+<%#     
+<!--     
+      <h4>Sidebar</h4>
+      <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras ornare mattis nunc. Mauris venenatis, pede sed aliquet vehicula, lectus tellus pulvinar neque, non cursus sem nisi vel augue. </p>
+
+      <div class="box">
+         <p class="last">Mauris a lectus. Aliquam erat volutpat. Phasellus ultrices mi a sapien. Nunc rutrum egestas lorem. Duis ac sem sagittis elit tincidunt gravida.</p>
+      </div>
+
+      <p class="quiet">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras ornare mattis nunc. Mauris venenatis, pede sed aliquet vehicula, lectus tellus pulvinar neque, non cursus sem nisi vel augue.</p>
+
+      <h5>Incremental leading</h5>
+      <p class="incr">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras ornare mattis nunc. Mauris venenatis, pede sed aliquet vehicula, lectus tellus pulvinar neque, non cursus sem nisi vel augue. sed aliquet vehicula, lectus tellus.</p>
+-->
+%>
+   </div>
+
+   <div class="column span-20 prepend-2 append-2 first last" id="footer">
+     <hr />
+     <table class="layout" width="100%">
+       <tr>
+         <td align="left" valign="center">
+             <a href="/editpage.html?<%= @config.edit_page_params %><%= @page.path %>" rel="nofollow"><img class="button" src="/images/wiki.png" /></a>
+             <a href="/editpage.html?<%= @config.edit_page_params %><%= @page.path %>" rel="nofollow">Edit This Page</a> or <a href="<%= @config.svn_root %>/<%= @page.path %>">View Source</a> of this page
+     
+           <!-- edit page link - see http://universaleditbutton.org/ -->
+           <link rel="alternate" 
+              type="application/x-wiki" 
+              title="Edit this page!" 
+              href="/editpage.html?<%= @config.edit_page_params %><%= @page.path %>" />
+          </td>
+          <td align="right" valign="center">
+              <a href="/http://fusesource.com/">Fuse Open Source Community Site</a> created with <a href="/http://webby.rubyforge.org">Webby</a>
+          </td>
+        </tr>
+      </table>
+   </div>
+</div>
+</body>
+</html>

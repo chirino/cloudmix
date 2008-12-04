@@ -1,0 +1,26 @@
+---
+title:       "FAQ"
+created_at:  2008-08-02 14:06:40.000000 -06:00
+filter:
+  - erb
+  - textile
+  - outline
+---
+
+This page contains all the frequently asked questions about the *<%= @config.project_name %>* project.
+
+<toc toc_style="ul" numbering="off" toc_range="h2-h4" />
+
+h2. General Questions
+
+General questions on the *<%= @config.project_name %>* project.
+
+h3. What is the license?
+
+The license is ...
+
+h2. Using <%= @config.project_name %>
+
+h3. How do I get started?
+
+h2. Errors
