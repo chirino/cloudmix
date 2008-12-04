@@ -245,7 +245,7 @@
     <module>org.fusesource.cloudmix.agent.standalone</module>
     <module>org.fusesource.cloudmix.agent.webapp</module>
     <module>org.fusesource.cloudmix.agent.jbi</module>
-    <module>org.apache.servicemix.grid.controller</module>
+    <module>org.fusesource.cloudmix.controller</module>
     <module>org.apache.servicemix.grid.jersey.osgi</module> 
     <module>org.apache.servicemix.grid.jersey.webapp</module> 
     <module>bundles</module>
