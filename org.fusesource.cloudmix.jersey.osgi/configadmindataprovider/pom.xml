@@ -14,7 +14,7 @@
 
     <grid.osgi.import.pkg>org.fusesource.cloudmix.common,
       org.fusesource.cloudmix.controller.provisioning,
-      org.fusesource.cloudmix.controller.security *</grid.osgi.import.pkg>
+      org.fusesource.cloudmix.controller.security, *</grid.osgi.import.pkg>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>

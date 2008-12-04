@@ -73,7 +73,7 @@
     <grid.osgi._exportcontents>*</grid.osgi._exportcontents>
   </properties>
 
-  <url>http://servicemix.apache.org/grid/</url>
+  <url>http://forge.fusesource.org/cloudmix/</url>
 
   <organization>
     <name>Fuse Source</name>
