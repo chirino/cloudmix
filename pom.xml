@@ -217,6 +217,12 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <scm>
+    <connection>scm:svn:http://projects.fusesource.org/projects/svn/fuse/cloudmix/trunk</connection>
+    <developerConnection>scm:svn:https://projects.fusesource.org/projects/svn/fuse/cloudmix/trunk</developerConnection>
+    <url>http://projects.fusesource.org/projects/trac/fuse/browser/cloudmix/trunk</url>
+  </scm>
+  
   <distributionManagement>
     <repository>
       <id>fusesource.m2</id>
