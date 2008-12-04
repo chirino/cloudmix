@@ -76,7 +76,7 @@ public final class WebServer {
 
         System.out.println();
         System.out.println("==============================================================================");
-        System.out.println("Started the ServiceMix Grid Runtime: point your web browser at http://localhost:" + port + "/");
+        System.out.println("Started the CloudMix Runtime: point your web browser at http://localhost:" + port + "/");
         System.out.println("==============================================================================");
 
         System.out.println();

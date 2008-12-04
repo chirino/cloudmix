@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <groupId>org.fusesource.cloudmix</groupId>
     <artifactId>org.fusesource.cloudmix.jersey.osgi</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <properties>
@@ -12,9 +11,9 @@
     <bundle.namespace>org.fusesource.cloudmix.controller.simpledataprovider</bundle.namespace>
     <spring.maven.artifact.version>2.5.1</spring.maven.artifact.version>
 
-    <grid.osgi.import.pkg>org.fusesource.cloudmix.common,
+    <cloudmix.osgi.import.pkg>org.fusesource.cloudmix.common,
       org.fusesource.cloudmix.controller.provisioning,
-      orgorg.fusesource.cloudmix.controller.security *</grid.osgi.import.pkg>
+      orgorg.fusesource.cloudmix.controller.security *</cloudmix.osgi.import.pkg>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
