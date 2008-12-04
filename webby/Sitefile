@@ -18,9 +18,9 @@ end
 #
 # project specific variables
 #
-SITE.project_name = 'MyProject'
-SITE.project_id = 'myproject'
-SITE.project_jira_key = 'FUSECON'
+SITE.project_name = 'CloudMix'
+SITE.project_id = 'cloudmix'
+SITE.project_jira_key = 'CLOUDMIX'
 
 # these are probably all canonical values generated from the above
 SITE.project_svn_url = 'https://projects.fusesource.com/projects/svn/fusesource/fuseforge/' + SITE.project_id + '/trunk'
