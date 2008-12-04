@@ -31,10 +31,10 @@
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.asm/2.2.3_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/1.2_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.1.6_1</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.apache.servicemix.grid.jersey.wrapper/0.6-ea</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.common/${version}</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.agent/${version}</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.agent.smx4/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/0.6-ea</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.common/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.smx4/${version}</bundle>
     </feature>
     <feature name="grid-controller">
         <config name="org.ops4j.pax.web">
@@ -52,11 +52,11 @@
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/1.2_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/2.1.6_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jetty-bundle/6.1.12rc1_1</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.apache.servicemix.grid.jersey.wrapper/0.6-ea</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/0.6-ea</bundle>
         <bundle>mvn:org.springframework/spring-web</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.common/${version}</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.agent/${version}</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.apache.servicemix.grid.controller.bundle/${version}</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.controller.configadmindataprovider/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.common/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.controller.bundle/${version}</bundle>
+        <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.controller.configadmindataprovider/${version}</bundle>
     </feature>
 </features>

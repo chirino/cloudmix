@@ -8,8 +8,8 @@
   </parent>
 
   <properties>
-    <bundle.symbolicName>org.apache.servicemix.grid.controller.bundle</bundle.symbolicName>
-    <bundle.namespace>org.apache.servicemix.grid.controller.bundle</bundle.namespace>
+    <bundle.symbolicName>org.fusesource.cloudmix.controller.bundle</bundle.symbolicName>
+    <bundle.namespace>org.fusesource.cloudmix.controller.bundle</bundle.namespace>
     <spring.maven.artifact.version>2.5.1</spring.maven.artifact.version>
 
     <!-- disable a few things that aren't needed by the OSGi bundle -->
@@ -64,8 +64,8 @@
                           com.sun.xml.txw2.annotation,
                           com.sun.xml.txw2.output,
                           *</grid.osgi.import.pkg>
-    <grid.osgi.export.pkg>org.apache.servicemix.grid.controller.bundle</grid.osgi.export.pkg>
-    <grid.osgi.embed.dependency>*;scope=compile;inline=false;artifactId=org.apache.servicemix.grid.controller</grid.osgi.embed.dependency>
+    <grid.osgi.export.pkg>org.fusesource.cloudmix.controller.bundle</grid.osgi.export.pkg>
+    <grid.osgi.embed.dependency>*;scope=compile;inline=false;artifactId=org.fusesource.cloudmix.controller</grid.osgi.embed.dependency>
     <grid.osgi.embed.directory>lib</grid.osgi.embed.directory>
   </properties>
 

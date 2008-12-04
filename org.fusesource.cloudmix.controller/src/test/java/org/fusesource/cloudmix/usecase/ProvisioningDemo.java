@@ -21,12 +21,12 @@ public class ProvisioningDemo {
         GridControllerClient gridController = new GridControllerClient();
 
         FeatureDetails broker = new FeatureDetails("org.apache.activemq.broker.multicast",
-                                                   "mvn:org.apache.servicemix.grid/org.apache.activemq.broker.multicast/1.0-SNAPSHOT/xml/feature").ownsMachine().maximumInstances("1");
+                                                   "mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/1.0-SNAPSHOT/xml/feature").ownsMachine().maximumInstances("1");
 
         FeatureDetails producer = new FeatureDetails("org.apache.activemq.producer",
-                                                     "mvn:org.apache.servicemix.grid/org.apache.activemq.producer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("2");
+                                                     "mvn:org.fusesource.cloudmix/org.apache.activemq.producer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("2");
         FeatureDetails consumer = new FeatureDetails("org.apache.activemq.consumer",
-                                                     "mvn:org.apache.servicemix.grid/org.apache.activemq.consumer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("3");
+                                                     "mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("3");
 
         gridController.addFeatures(broker, producer, consumer);
 

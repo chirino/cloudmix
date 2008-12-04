@@ -12,7 +12,7 @@
         <value>org.osgi.service.cm.ManagedService</value>
     </osgi:interfaces>
     <osgi:service-properties>
-        <entry key="service.pid" value="org.apache.servicemix.grid.controller"/>
+        <entry key="service.pid" value="org.fusesource.cloudmix.controller"/>
     </osgi:service-properties>
   </osgi:service>
 

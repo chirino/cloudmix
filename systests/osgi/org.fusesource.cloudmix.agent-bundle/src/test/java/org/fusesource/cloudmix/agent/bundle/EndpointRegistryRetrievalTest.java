@@ -42,10 +42,10 @@ public class EndpointRegistryRetrievalTest extends AbstractIntegrationTest {
                 getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.commons-codec"),
                 getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.jaxb-impl"),
                 getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.mina"),
-                getBundle("org.apache.servicemix.grid", "org.apache.servicemix.grid.jersey.wrapper"),
-                getBundle("org.apache.servicemix.grid", "org.fusesource.cloudmix.common"),
-                getBundle("org.apache.servicemix.grid", "org.fusesource.cloudmix.agent"),
-                getBundle("org.apache.servicemix.grid", "org.fusesource.cloudmix.agent.smx4"),
+                getBundle("org.fusesource.cloudmix", "org.fusesource.cloudmix.jersey.wrapper"),
+                getBundle("org.fusesource.cloudmix", "org.fusesource.cloudmix.common"),
+                getBundle("org.fusesource.cloudmix", "org.fusesource.cloudmix.agent"),
+                getBundle("org.fusesource.cloudmix", "org.fusesource.cloudmix.agent.smx4"),
         };
     }
 

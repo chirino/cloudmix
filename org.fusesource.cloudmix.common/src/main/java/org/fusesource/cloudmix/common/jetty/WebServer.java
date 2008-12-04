@@ -69,7 +69,7 @@ public final class WebServer {
                 webAppDir = defaultWebAppDir;
             }
             else {
-                webAppDir = "org.apache.servicemix.grid.runtime/" + defaultWebAppDir;
+                webAppDir = "org.fusesource.cloudmix.runtime/" + defaultWebAppDir;
             }
             System.out.println("Defauling the web app dir to: " + webAppDir);
         }
