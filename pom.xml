@@ -4,7 +4,7 @@
 
   <groupId>org.fusesource.cloudmix</groupId>
   <artifactId>cloudmix</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>CloudMix</name>
   <description>CloudMix</description>
@@ -205,9 +205,9 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:svn:http://projects.fusesource.org/projects/svn/fuse/cloudmix/tags/cloudmix-1.0</connection>
-    <developerConnection>scm:svn:https://projects.fusesource.org/projects/svn/fuse/cloudmix/tags/cloudmix-1.0</developerConnection>
-    <url>http://projects.fusesource.org/projects/trac/fuse/browser/cloudmix/tags/cloudmix-1.0</url>
+    <connection>scm:svn:http://projects.fusesource.org/projects/svn/fuse/cloudmix/tags/cloudmix-parent-1.0</connection>
+    <developerConnection>scm:svn:https://projects.fusesource.org/projects/svn/fuse/cloudmix/tags/cloudmix-parent-1.0</developerConnection>
+    <url>http://projects.fusesource.org/projects/trac/fuse/browser/cloudmix/tags/cloudmix-parent-1.0</url>
   </scm>
   
   <distributionManagement>
