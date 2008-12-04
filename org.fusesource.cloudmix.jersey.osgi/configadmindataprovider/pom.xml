@@ -8,8 +8,8 @@
   </parent>
 
   <properties>
-    <bundle.symbolicName>org.apache.servicemix.grid.controller.configadmindataprovider</bundle.symbolicName>
-    <bundle.namespace>org.apache.servicemix.grid.controller.configadmindataprovider</bundle.namespace>
+    <bundle.symbolicName>org.fusesource.cloudmix.controller.configadmindataprovider</bundle.symbolicName>
+    <bundle.namespace>org.fusesource.cloudmix.controller.configadmindataprovider</bundle.namespace>
     <spring.maven.artifact.version>2.5.1</spring.maven.artifact.version>
 
     <grid.osgi.import.pkg>org.fusesource.cloudmix.common,

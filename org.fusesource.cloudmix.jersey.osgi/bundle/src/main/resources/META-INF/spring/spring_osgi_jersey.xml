@@ -15,7 +15,7 @@
     <property name="startupProvisioningDelay" value="1000"/>
   </bean>
 
-  <bean name="jerseyServletFactory" class="org.apache.servicemix.grid.controller.bundle.JerseyServletFactory" >
+  <bean name="jerseyServletFactory" class="org.fusesource.cloudmix.controller.bundle.JerseyServletFactory" >
   	<property name="jerseyClassNames">
   	  <list>
 		<value>org.fusesource.cloudmix.controller.resources.AgentResource</value>

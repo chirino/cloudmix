@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-  <bean id="configadminDataProviderBean" class="org.apache.servicemix.grid.controller.configadmindataprovider.ConfigAdminControllerDataProvider"/>
+  <bean id="configadminDataProviderBean" class="org.fusesource.cloudmix.controller.configadmindataprovider.ConfigAdminControllerDataProvider"/>
   <osgi:service ref="configadminDataProviderBean" id="dataProviderOSGiService">
     <osgi:interfaces>
         <value>org.fusesource.cloudmix.common.ControllerDataProvider</value>

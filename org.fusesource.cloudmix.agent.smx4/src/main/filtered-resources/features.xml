@@ -57,6 +57,6 @@
         <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.common/${version}</bundle>
         <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.agent/${version}</bundle>
         <bundle>mvn:org.apache.servicemix.grid/org.apache.servicemix.grid.controller.bundle/${version}</bundle>
-        <bundle>mvn:org.apache.servicemix.grid/org.apache.servicemix.grid.controller.configadmindataprovider/${version}</bundle>
+        <bundle>mvn:org.apache.servicemix.grid/org.fusesource.cloudmix.controller.configadmindataprovider/${version}</bundle>
     </feature>
 </features>
