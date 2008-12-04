@@ -56,7 +56,7 @@
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.apache.servicemix.grid.controller.resources</param-value>
+      <param-value>org.fusesource.cloudmix.controller.resources</param-value>
     </init-param>
 
     <load-on-startup>1</load-on-startup>

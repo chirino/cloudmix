@@ -9,7 +9,7 @@
   <osgi:reference id="authenticatorRef" interface="org.fusesource.cloudmix.common.HttpAuthenticator"/>
   <osgi:reference id="httpServiceRef" interface="org.osgi.service.http.HttpService"/>
 
-  <bean id="gridController" class="org.apache.servicemix.grid.controller.provisioning.ProvisioningGridController">
+  <bean id="gridController" class="org.fusesource.cloudmix.controller.provisioning.ProvisioningGridController">
     <property name="agentTimeout" value="1000"/>
     <property name="dataProvider" ref="dataProviderRef"/>
     <property name="startupProvisioningDelay" value="1000"/>
@@ -18,13 +18,13 @@
   <bean name="jerseyServletFactory" class="org.apache.servicemix.grid.controller.bundle.JerseyServletFactory" >
   	<property name="jerseyClassNames">
   	  <list>
-		<value>org.apache.servicemix.grid.controller.resources.AgentResource</value>
-  		<value>org.apache.servicemix.grid.controller.resources.AgentsResource</value>
-  		<value>org.apache.servicemix.grid.controller.resources.FeatureResource</value>
-	 	<value>org.apache.servicemix.grid.controller.resources.FeaturesResource</value>
-  		<value>org.apache.servicemix.grid.controller.resources.ProfileResource</value>
-	 	<value>org.apache.servicemix.grid.controller.resources.ProfilesResource</value>
-  		<value>org.apache.servicemix.grid.controller.resources.ResourceSupport</value>
+		<value>org.fusesource.cloudmix.controller.resources.AgentResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.AgentsResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.FeatureResource</value>
+	 	<value>org.fusesource.cloudmix.controller.resources.FeaturesResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.ProfileResource</value>
+	 	<value>org.fusesource.cloudmix.controller.resources.ProfilesResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.ResourceSupport</value>
   	  </list>
   	</property>
     <property name="rootContext" value="/controller"/>

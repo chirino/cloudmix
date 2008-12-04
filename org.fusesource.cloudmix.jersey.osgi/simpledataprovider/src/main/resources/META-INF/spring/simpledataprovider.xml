@@ -5,10 +5,10 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-  <bean id="simpleDataProviderBean" class="org.apache.servicemix.grid.controller.provisioning.SimpleControllerDataProvider"/>
+  <bean id="simpleDataProviderBean" class="org.fusesource.cloudmix.controller.provisioning.SimpleControllerDataProvider"/>
   <osgi:service ref="simpleDataProviderBean" id="dataProviderOSGiService" interface="org.fusesource.cloudmix.common.ControllerDataProvider"/>
 
-  <bean id="noOpAuthenticator" class="org.apache.servicemix.grid.controller.security.NoOpAuthenticator" />
+  <bean id="noOpAuthenticator" class="org.fusesource.cloudmix.controller.security.NoOpAuthenticator" />
   <osgi:service ref="noOpAuthenticator" id="httpAuthenticatorOSGiService" interface="org.fusesource.cloudmix.common.HttpAuthenticator" />
 
 </beans>
