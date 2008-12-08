@@ -7,6 +7,7 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent;
 
+import java.net.ConnectException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -52,6 +53,8 @@ public class AgentPoller implements InitializingBean, DisposableBean {
     public void agentPoll() {
         try {
             agent.call();
+        } catch (ConnectException e) {
+            LOG.debug("polling attempt failed: depot server unavailable");
         } catch (Exception e) {
             LOG.warn("Caught exception while polling Agent: ", e);
         }
