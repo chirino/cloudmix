@@ -203,6 +203,17 @@
       <name>mortbay-repo</name>
       <url>http://www.mortbay.org/maven2/snapshot</url>
     </pluginRepository>
+    <pluginRepository>
+      <id>mc-release</id>
+      <name>Local Maven repository of releases</name>
+      <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
   </pluginRepositories>
 
   <scm>
@@ -818,6 +829,51 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <!--<basedir>${basedir}</basedir>
+          <header>${basedir}/etc/header.txt</header>
+          --><header>etc/header.txt</header>
+          <quiet>false</quiet>
+          <failIfMissing>false</failIfMissing>
+          <aggregate>false</aggregate>
+          <includes>
+            <include>pom.xml</include>
+            <include>*/pom.xml</include>
+            <include>**/pom.xml</include>
+            <include>**/src/**</include>
+            <include>*/src/**</include>
+            <include>**/src/**/password*.txt</include>
+            <include>**/src/test/resources/**/*.txt</include>
+          </includes>
+          <excludes>
+            <exclude>target/**</exclude>
+            <exclude>etc/**</exclude>
+            <exclude>webby/**</exclude>
+          </excludes>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <useDefaultMapping>true</useDefaultMapping>
+          <encoding>UTF-8</encoding>
+<!--
+          <mapping>
+            <jwc>XML_STYLE</jwc>
+            <application>XML_STYLE</application>
+            <myFileExtension>JAVADOC_STYLE</myFileExtension>
+          </mapping>
+          <properties>
+            <year>${project.inceptionYear}</year>
+            <email>my@email.com</email>
+          </properties>
+          <headerDefinitions>
+            <headerDefinition>def1.xml</headerDefinition>
+            <headerDefinition>def2.xml</headerDefinition>
+          </headerDefinitions>
+-->
         </configuration>
       </plugin>
     </plugins>
