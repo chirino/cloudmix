@@ -848,13 +848,14 @@
             <include>**/pom.xml</include>
             <include>**/src/**</include>
             <include>*/src/**</include>
-            <include>**/src/**/password*.txt</include>
-            <include>**/src/test/resources/**/*.txt</include>
           </includes>
           <excludes>
             <exclude>target/**</exclude>
             <exclude>etc/**</exclude>
             <exclude>webby/**</exclude>
+            <exclude>**/src/**/password*.txt</exclude>
+            <exclude>**/src/test/resources/**/*.txt</exclude>
+            <exclude>**/src/main/resources/META-INF/services/*</exclude>
           </excludes>
           <useDefaultExcludes>true</useDefaultExcludes>
           <useDefaultMapping>true</useDefaultMapping>
