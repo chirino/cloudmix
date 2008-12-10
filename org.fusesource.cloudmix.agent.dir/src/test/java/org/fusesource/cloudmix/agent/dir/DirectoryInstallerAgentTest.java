@@ -18,6 +18,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -91,6 +93,7 @@ public class DirectoryInstallerAgentTest extends TestCase {
         assertTrue(installer.installBundle(feature, r1));
         assertDirContains(installDir, "r_1.txt");
         assertEquals("Resource one.", getResourceAsString(installDir, "r_1.txt"));
+        assertEquals(0, ResourceURLConnection.reqProps.size());
         
         // Install r2
         Bundle r2 = new Bundle(null, "", "resource:///r2.txt");
@@ -98,13 +101,17 @@ public class DirectoryInstallerAgentTest extends TestCase {
         assertTrue(installer.installBundle(feature, r2));
         assertDirContains(installDir, "r_1.txt", "r2.txt");
         assertEquals("Resource two.", getResourceAsString(installDir, "r2.txt"));
+        assertEquals(0, ResourceURLConnection.reqProps.size());
       
         // Install r3
-        Bundle r3 = new Bundle("", "", "resource:///r3.txt");
+        Bundle r3 = new Bundle("", "", "resource://foo:bar@spam.eggs:1234/r3.txt");
         feature.addBundle(r3);
         assertTrue(installer.installBundle(feature, r3));
         assertDirContains(installDir, "r_1.txt", "r2.txt", "r3.txt");
         assertEquals("Resource three.", getResourceAsString(installDir, "r3.txt"));
+        assertEquals(1, ResourceURLConnection.reqProps.size());
+		assertEquals(DirectoryInstallerAgent.getBasicAuthHeader("foo:bar"), 
+				     ResourceURLConnection.reqProps.get("Authorization"));
             
         // Uninstall r2
         assertTrue(installer.uninstallBundle(feature, r2));
@@ -158,8 +165,6 @@ public class DirectoryInstallerAgentTest extends TestCase {
         assertDirEmpty(installDir);
     }
 
-    
-    
     private void listDirContents(File dir) {
         int count = 0;
         System.out.println("Contents of directory " + dir.getPath());
@@ -234,10 +239,12 @@ public class DirectoryInstallerAgentTest extends TestCase {
      * URLConnection class to resolve resource URLS.
      *
      */
-    class ResourceURLConnection extends URLConnection {
-
+    static class ResourceURLConnection extends URLConnection {
+    	public static Map<String, String> reqProps = new HashMap<String, String>();
+    	
         protected ResourceURLConnection(URL url) {
             super(url);
+            reqProps.clear();
         }
 
         @Override
@@ -247,7 +254,19 @@ public class DirectoryInstallerAgentTest extends TestCase {
         
         @Override
         public InputStream getInputStream() throws IOException {
+        	String auth = reqProps.get("Authorization");
+        	String usrInfo = getURL().getUserInfo();
+        	if (usrInfo != null && !"".equals(usrInfo)) {
+        		assertEquals(DirectoryInstallerAgent.getBasicAuthHeader(usrInfo), auth);
+        	} else {
+        		assertNull(auth);
+        	}
             return this.getClass().getResourceAsStream(url.getPath());
+        }
+        
+        @Override
+        public void setRequestProperty(String key, String value) {
+        	reqProps.put(key, value);
         }
     }
 }

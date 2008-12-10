@@ -12,7 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.InstallerAgent;
@@ -94,14 +96,20 @@ public class DirectoryInstallerAgent extends InstallerAgent {
                                            + feature
                                            + " contains a bundle with null or empty URI");
             }
-            URL url = new URL(bundle.getUri());
+            URL url = new URL(uri);
             
             os = new FileOutputStream(tmpPath);
             if (os == null) {
                 throw new RuntimeException("Cannot write to " + tmpPath);
             }
             
-            is = url.openStream();
+            URLConnection conn = url.openConnection();
+            String userInfo = url.getUserInfo();
+            if (userInfo != null && !"".equals(userInfo)) { 
+            	conn.setRequestProperty("Authorization", getBasicAuthHeader(userInfo)); 
+            }
+            is = conn.getInputStream();
+            
             if (is == null) {
                 os.close();
                 throw new RuntimeException("Cannot read from URL " + url);
@@ -178,6 +186,9 @@ public class DirectoryInstallerAgent extends InstallerAgent {
         return true;
     }
 
+    static String getBasicAuthHeader(String userInfo) {
+    	return "Basic " + new String(Base64.encodeBase64(userInfo.getBytes()));
+    }
 
     private String getFilename(Bundle bundle) {
         String name = bundle.getName();
