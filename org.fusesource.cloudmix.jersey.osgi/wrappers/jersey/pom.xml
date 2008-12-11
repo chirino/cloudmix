@@ -4,7 +4,7 @@
     <relativePath>../</relativePath>
     <groupId>org.fusesource.cloudmix</groupId>
     <artifactId>org.fusesource.cloudmix.jersey.wrapper.parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
   </parent>
 
   <properties>
@@ -53,7 +53,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.fusesource.cloudmix.jersey.wrapper</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
 
   <name>CloudMix :: Jersey - OSGi Wrapper</name>
 
