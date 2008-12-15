@@ -7,6 +7,10 @@
  */
 package org.fusesource.cloudmix.agent.security;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
@@ -29,7 +33,26 @@ public final class SecurityUtils {
 		StringBuilder sb = new StringBuilder().append(username).append(":").append(String.valueOf(password));
 		// Clear array.
 		Arrays.fill(password, ' ');
-		return "Basic " + new String(Base64.encodeBase64(sb.toString().getBytes()));
+		return getBasicAuthHeader(sb.toString());
 	}
+	
+    public static String getBasicAuthHeader(String userInfo) {
+        return "Basic " + new String(Base64.encodeBase64(userInfo.getBytes()));
+    }
+    
+    /**
+     * Get input stream for URL adding credentials if neccessary.
+     * @param url
+     * @return input stream for URL
+     * @throws IOException
+     */
+    public static InputStream getInputStream(URL url) throws IOException {
+        URLConnection conn = url.openConnection();
+        String userInfo = url.getUserInfo();
+        if (userInfo != null && !"".equals(userInfo)) {
+            conn.setRequestProperty("Authorization", getBasicAuthHeader(userInfo));
+        }
+        return conn.getInputStream();
+    }
 	
 }

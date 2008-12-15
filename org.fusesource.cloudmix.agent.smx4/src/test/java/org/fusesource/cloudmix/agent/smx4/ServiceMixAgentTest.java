@@ -275,7 +275,7 @@ public class ServiceMixAgentTest extends TestCase {
         ServiceMixAgent agent = new ServiceMixAgent();
         System.setProperty(ServiceMixAgent.VM_PROP_SMX_HOME, "home");
         assertEquals("home" + File.separator + "data"
-                     + File.separator + "grid"
+                     + File.separator + "cloudmix"
                      + File.separator + "agent.properties",
                      agent.getDetailsPropertyFilePath());
     }

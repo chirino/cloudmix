@@ -70,7 +70,7 @@ public class AgentComponent implements ComponentLifeCycle, Component {
                                                       + "ContainerName=ServiceMix,"
                                                       + "Type=SystemService,"
                                                       + "Name=DeploymentService";
-    private static final String DEFAULT_PACKAGES = "jbi, osgi"; // Adding osgi as a workaround
+    private static final String DEFAULT_PACKAGES = "jbi";
     private static final String DEFAULT_AGENT_MBEAN_CONTAINER = "ServiceMix";
     
     private static final int MAX_FEATURES = 25;

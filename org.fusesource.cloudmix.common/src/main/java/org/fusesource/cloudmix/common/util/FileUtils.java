@@ -19,8 +19,9 @@ import org.apache.commons.logging.LogFactory;
 
 public final class FileUtils {
 
+    public static final int BUFFER_SIZE = 1024;
+
     private static final Log LOGGER = LogFactory.getLog(FileUtils.class);
-    private static final int BUFFER_SIZE = 1024;
     
     private FileUtils() { /* Utility classes should not have a public constructor */ }
     

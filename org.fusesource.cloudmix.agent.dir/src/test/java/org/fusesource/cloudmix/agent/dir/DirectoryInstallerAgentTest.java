@@ -27,6 +27,7 @@ import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent;
+import org.fusesource.cloudmix.agent.security.SecurityUtils;
 
 public class DirectoryInstallerAgentTest extends TestCase {
     
@@ -110,7 +111,7 @@ public class DirectoryInstallerAgentTest extends TestCase {
         assertDirContains(installDir, "r_1.txt", "r2.txt", "r3.txt");
         assertEquals("Resource three.", getResourceAsString(installDir, "r3.txt"));
         assertEquals(1, ResourceURLConnection.reqProps.size());
-		assertEquals(DirectoryInstallerAgent.getBasicAuthHeader("foo:bar"), 
+		assertEquals(SecurityUtils.getBasicAuthHeader("foo:bar"), 
 				     ResourceURLConnection.reqProps.get("Authorization"));
             
         // Uninstall r2
@@ -257,7 +258,7 @@ public class DirectoryInstallerAgentTest extends TestCase {
         	String auth = reqProps.get("Authorization");
         	String usrInfo = getURL().getUserInfo();
         	if (usrInfo != null && !"".equals(usrInfo)) {
-        		assertEquals(DirectoryInstallerAgent.getBasicAuthHeader(usrInfo), auth);
+        		assertEquals(SecurityUtils.getBasicAuthHeader(usrInfo), auth);
         	} else {
         		assertNull(auth);
         	}

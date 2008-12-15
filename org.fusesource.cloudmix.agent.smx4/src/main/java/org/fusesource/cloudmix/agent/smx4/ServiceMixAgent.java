@@ -27,7 +27,7 @@ public class ServiceMixAgent extends InstallerAgent {
 
     protected static final String VM_PROP_SMX_HOME = "servicemix.home";
 
-    protected static final String AGENT_WORK_DIR = File.separator + "data" + File.separator + "grid";
+    protected static final String AGENT_WORK_DIR = File.separator + "data" + File.separator + "cloudmix";
     protected static final String AGENT_PROPS_PATH_SUFFIX = "agent.properties";
     
     private static final Log LOGGER = LogFactory.getLog(ServiceMixAgent.class);

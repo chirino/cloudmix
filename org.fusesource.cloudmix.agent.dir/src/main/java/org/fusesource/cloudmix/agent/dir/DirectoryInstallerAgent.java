@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.Feature;
+import org.fusesource.cloudmix.agent.security.SecurityUtils;
 import org.fusesource.cloudmix.common.util.FileUtils;
 
 public class DirectoryInstallerAgent extends InstallerAgent {
@@ -103,13 +104,7 @@ public class DirectoryInstallerAgent extends InstallerAgent {
                 throw new RuntimeException("Cannot write to " + tmpPath);
             }
             
-            URLConnection conn = url.openConnection();
-            String userInfo = url.getUserInfo();
-            if (userInfo != null && !"".equals(userInfo)) { 
-            	conn.setRequestProperty("Authorization", getBasicAuthHeader(userInfo)); 
-            }
-            is = conn.getInputStream();
-            
+            is = SecurityUtils.getInputStream(url);            
             if (is == null) {
                 os.close();
                 throw new RuntimeException("Cannot read from URL " + url);
@@ -184,10 +179,6 @@ public class DirectoryInstallerAgent extends InstallerAgent {
 
         LOGGER.warn ("cannot find installed file for bundle " + bundle);
         return true;
-    }
-
-    static String getBasicAuthHeader(String userInfo) {
-    	return "Basic " + new String(Base64.encodeBase64(userInfo.getBytes()));
     }
 
     private String getFilename(Bundle bundle) {
