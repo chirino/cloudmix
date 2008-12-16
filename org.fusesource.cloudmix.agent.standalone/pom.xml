@@ -1,94 +1,92 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.fusesource.cloudmix</groupId>
-    <artifactId>cloudmix</artifactId>
-    <version>1.2-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.fusesource.cloudmix</groupId>
+        <artifactId>cloudmix</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>org.fusesource.cloudmix.agent.standalone</artifactId>
-  <packaging>jar</packaging>
-  <name>CloudMix :: Agent - Standalone Installer</name>
-  <description>CloudMix Agent</description>
+    <artifactId>org.fusesource.cloudmix.agent.logging</artifactId>
+    <packaging>jar</packaging>
+    <name>CloudMix :: Agent - Logging Installer</name>
+    <description>CloudMix Agent</description>
 
-  <properties>
-    <agent.properties.file>agent.properties</agent.properties.file>
-    <agent.debug/>
-    <Xagent.debug>-Xdebug -Xrunjdwp:transport=dt_socket,address=9009,server=y,suspend=y</Xagent.debug>
-  </properties>
+    <properties>
+        <agent.properties.file>agent.properties</agent.properties.file>
+        <agent.debug />
+        <Xagent.debug>-Xdebug -Xrunjdwp:transport=dt_socket,address=9009,server=y,suspend=y</Xagent.debug>
+    </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.fusesource.cloudmix</groupId>
-      <artifactId>org.fusesource.cloudmix.common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.fusesource.cloudmix</groupId>
-      <artifactId>org.fusesource.cloudmix.agent</artifactId>
-    </dependency>
-<!--
-    <dependency>
-      <groupId>jersey-debug</groupId>
-      <artifactId>jersey</artifactId>
-    </dependency>
--->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-      <optional>true</optional>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.fusesource.cloudmix</groupId>
+            <artifactId>org.fusesource.cloudmix.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.cloudmix</groupId>
+            <artifactId>org.fusesource.cloudmix.agent</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <optional>true</optional>
+        </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>2.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
-      <version>2.2</version>
-      <scope>test</scope>   
-    </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymockclassextension</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
 
-  </dependencies>
+    </dependencies>
 
-  <profiles>
-    <profile>
-      <id>run.logging.agent</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>test</phase>
-                <configuration>
-                  <tasks>
-                    <path id="mvn.classpath">
-                      <path refid="maven.test.classpath" />
-                    </path>
-                    <java classname="org.fusesource.cloudmix.agent.logging.LoggingInstallerAgent" fork="true" failonerror="true" classpathref="mvn.classpath">
-                      <jvmarg line="${agent.debug} -Dagent.properties.file=${agent.properties.file}" />
-                    </java>
-                  </tasks>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+    <profiles>
+        <profile>
+            <id>run.logging.agent</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <configuration>
+                                    <tasks>
+                                        <path id="mvn.classpath">
+                                            <path refid="maven.test.classpath" />
+                                        </path>
+                                        <java classname="org.fusesource.cloudmix.agent.logging.LoggingInstallerAgent" fork="true"
+                                            failonerror="true" classpathref="mvn.classpath">
+                                            <jvmarg line="${agent.debug} -Dagent.properties.file=${agent.properties.file}" />
+                                        </java>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
