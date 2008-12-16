@@ -75,7 +75,7 @@
                     <path id="mvn.classpath">
                       <path refid="maven.test.classpath" />
                     </path>
-                    <java classname="org.fusesource.cloudmix.agent.standalone.LoggingInstallerAgent" fork="true" failonerror="true" classpathref="mvn.classpath">
+                    <java classname="org.fusesource.cloudmix.agent.logging.LoggingInstallerAgent" fork="true" failonerror="true" classpathref="mvn.classpath">
                       <jvmarg line="${agent.debug} -Dagent.properties.file=${agent.properties.file}" />
                     </java>
                   </tasks>

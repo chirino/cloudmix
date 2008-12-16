@@ -68,7 +68,7 @@
         <property name="supportPackageTypes"><list><value>war</value></list></property>
 	    <property name="maxFeatures" value="${agent.max.features}" />
 	    <property name="detailsPropertyFilePath" value="${agent.workdir}/conf/agent.properties" />
-        <property name="workDirectory" value="${agent.workdir}/agent" />
+        <property name="workDirectory" value="${agent.workdir}/cloudmix" />
 	    <property name="installDirectory" value="${agent.workdir}/${agent.installdir}"/>
         <property name="containerType" value="${agent.type}"/>        
         <property name="tempSuffix" value=".tmp"/>
