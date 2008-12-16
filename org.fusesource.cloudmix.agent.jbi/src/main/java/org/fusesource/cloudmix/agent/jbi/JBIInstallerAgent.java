@@ -54,7 +54,7 @@ import org.apache.servicemix.jbi.util.DOMUtil;
 
 public class JBIInstallerAgent extends InstallerAgent {
 
-    private static final String SA_NAME_KEY = "saName";
+    private static final String SA_NAME_KEY = JBIInstallerAgent.class.getName() + ".saName";
     
     private static final Log LOGGER = LogFactory.getLog(JBIInstallerAgent.class);
     private static final String JBI_NS = "http://java.sun.com/xml/ns/jbi/management-message";

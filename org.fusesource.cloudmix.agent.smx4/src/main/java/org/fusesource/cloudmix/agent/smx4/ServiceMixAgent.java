@@ -32,7 +32,7 @@ public class ServiceMixAgent extends InstallerAgent {
     
     private static final Log LOGGER = LogFactory.getLog(ServiceMixAgent.class);
 
-    private static final String FEATURE_FILE_KEY = "features";
+    private static final String FEATURE_FILE_KEY = ServiceMixAgent.class.getName() + ".featureFile";
 
     private static final String SMX4_CONTAINER_TYPE = "smx4";
 
@@ -79,7 +79,6 @@ public class ServiceMixAgent extends InstallerAgent {
             LOGGER.info("Adding features repository " + reposUri);
             featuresService.removeRepository(reposUri);
             featuresService.addRepository(reposUri);
-            
             super.installFeature(feature, featureCfgOverrides);
             
             try {

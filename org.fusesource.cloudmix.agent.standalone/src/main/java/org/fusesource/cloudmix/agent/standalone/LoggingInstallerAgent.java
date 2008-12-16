@@ -54,7 +54,9 @@ public class LoggingInstallerAgent extends InstallerAgent {
 
     private RestGridClient gridClient = new RestGridClient();
     private AgentPoller poller = new AgentPoller();
+    private LoggingInstallerAgent agent;
     private int installDelay;
+    private boolean doWait = true;
 
     public LoggingInstallerAgent() {
         
@@ -102,7 +104,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
             gridClient.setUsername(agentUser);
             gridClient.setPasswordProvider(provider);
             
-            LoggingInstallerAgent agent = this;
+            agent = this;
 
             agentId = id;
             agent.setAgentName(agentName);
@@ -148,28 +150,43 @@ public class LoggingInstallerAgent extends InstallerAgent {
 
             poller.start();
 
+            System.out.println("\nLogging Agent Installer Ready");
+            System.out.println("---------------------------------------------");
+            System.out.println("\n");
+
         } catch (Exception e) {
             e.printStackTrace();
+            unblock();
+            try {
+                agent.setClient(null);
+                poller.destroy();
+            } catch (Exception e1) {
+                // Complete
+            }
         }
-        System.out.println("\nLogging Agent Installer Ready");
-        System.out.println("---------------------------------------------");
-        System.out.println("\n");
     }
 
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         LoggingInstallerAgent agent = new LoggingInstallerAgent();
         agent.block();
     }
-    
+
     private synchronized void block() {
         try {
-            wait();
+            if (!doWait) {
+                wait();
+            }
         } catch (InterruptedException e) {
             // Complete
         }
     }
-
+    
+    private synchronized void unblock() {
+        doWait = false;
+        notifyAll();            
+    }
+    
     public void setInstallDelay(int d) {
         installDelay = d;        
     }

@@ -39,34 +39,35 @@ public class AgentStateTest extends TestCase {
         } 
         
         public void assertEmptyState() throws Exception {
-            assertEquals(0, agentProperties.keySet().size());
+            assertEquals(0, agentState.getAgentProperties().keySet().size());
+            assertEquals(0, agentState.getAgentFeatures().keySet().size());
         }
     
         public void assertInitState() throws Exception {
-            assertEquals(2, agentProperties.keySet().size());
-            assertTrue(agentProperties.get("started") instanceof Date);
-            assertTrue(agentProperties.get("created") instanceof Date);
+            assertEquals(2, agentState.getAgentProperties().keySet().size());
+            assertTrue(agentState.getAgentProperties().get("org.fusesource.cloudmix.agent.InstallerAgent.started") instanceof Date);
+            assertTrue(agentState.getAgentProperties().get("org.fusesource.cloudmix.agent.InstallerAgent.created") instanceof Date);
         }
         
         public void testCreateState() throws Exception {
-            Object o = agentProperties.get("keyA");
+            Object o = agentState.getAgentProperties().get("keyA");
             assertNull(o);
-            agentProperties.put("keyA", "ValueA");
+            agentState.getAgentProperties().put("keyA", "ValueA");
             
-            o = agentProperties.get("KeyB");
+            o = agentState.getAgentProperties().get("KeyB");
             assertNull(o);            
-            agentProperties.put("KeyB", new Integer(1234));
+            agentState.getAgentProperties().put("KeyB", new Integer(1234));
             
             assertStateExists();
         }
         
         public void assertStateExists() {
-            Object o = agentProperties.get("keyA");
+            Object o = agentState.getAgentProperties().get("keyA");
             assertNotNull(o);
             String s = (String) o;
             assertEquals("ValueA", s);
 
-            o = agentProperties.get("KeyB");
+            o = agentState.getAgentProperties().get("KeyB");
             assertNotNull(o);
             Integer i = (Integer) o;
             assertEquals(1234, i.intValue());           

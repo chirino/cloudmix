@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.sun.jersey.api.NotFoundException;
+import com.thoughtworks.xstream.XStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,14 +56,19 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public static final String PERSISTABLE_PROPERTY_AGENT_ID = "agent.id";
     public static final String PERSISTABLE_PROPERTY_AGENT_NAME = "agent.name";
     public static final String PERSISTABLE_PROPERTY_PROFILE_ID = "agent.profile";
-
+    
+    public static final String CREATED_KEY = InstallerAgent.class.getName() + ".created";
+    public static final String STARTED_KEY = InstallerAgent.class.getName() + ".started";
+    public static final String TIMESTAMP_KEY = InstallerAgent.class.getName() + ".timestamp";
+    
     public static final String PROP_ACCESS_LOCK = "agent.profile";
 
     private static final transient Log LOGGER = LogFactory.getLog(InstallerAgent.class);
-    private static final String AGENT_STATE_FILE = "agent.state";
+    private static final String AGENT_STATE_FILE = "agent-state.xml";
     
     // Persistent properties.
-    protected Map<String, Object> agentProperties = new HashMap<String, Object>();
+    protected AgentState agentState = new AgentState();
+    private XStream xstream= new XStream();
 
     
     protected String propertyFilePath;
@@ -79,6 +85,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     protected boolean addedToClient;
      
+    private String[] initialFeatures;
     private File workDirectory;
     
     private GridClient client;
@@ -318,8 +325,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         details.setSupportPackageTypes(getSupportPackageTypes());
         details.setAgentLink(getAgentLink());
         
-        String[] features = getFeatures();
-        details.setCurrentFeatures(features);
+        initialFeatures = getFeatures();
+        details.setCurrentFeatures(initialFeatures);
 
     }
 
@@ -350,13 +357,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     protected String[] getFeatures() {
 
-        Set<String> features = new HashSet<String>();
-        for (String k : agentProperties.keySet()) {
-            Object o = agentProperties.get(k);
-            if (o instanceof Feature) {
-                features.add(((Feature) o).getName());
-            }
-        }
+        Set<String> features = agentState.getAgentFeatures().keySet();
         return features.toArray(new String[features.size()]);
     }
 
@@ -431,6 +432,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     protected void onProvisioningHistoryChanged(ProvisioningHistory aProvisioningHistory) {
         
+        //logProvisioningHistory(aProvisioningHistory);
+        
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("timestamp of previous provisioning history: " + lastAppliedHistory);
             LOGGER.debug("timestamp of current provisioning history: "
@@ -496,9 +499,9 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                     LOGGER.debug("onProvisioningHistoryChanged - uninstall " + uninstallActions);
                     for (ProvisioningAction action : uninstallActions.values()) {
                         String featureName = action.getFeature();
-                        Object o = agentProperties.get(featureName);
-                        if (o instanceof Feature) {
-                            uninstallFeature((Feature) o);
+                        Feature f = agentState.getAgentFeatures().get(featureName);
+                        if (f != null) {
+                            uninstallFeature(f);
                         } else {
                             LOGGER.warn("Cannot find installed feature " + featureName + " to uninstall");
                         }
@@ -514,9 +517,9 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                         Feature feature = features.getFeature(action.getFeature());
                         if (feature != null) {
                             // Uninstall old version of feature if it still exists.
-                            Object o = agentProperties.get(feature.getName());
-                            if (o instanceof Feature) {
-                                uninstallFeature((Feature) o);    
+                            Feature f = agentState.getAgentFeatures().get(feature.getName());
+                            if (f != null) {
+                                uninstallFeature(f);    
                             }
                             
                             installFeature(feature, action.getCfgUpdates());
@@ -541,6 +544,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         
     }
 
+
+
     protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
 
         LOGGER.info("Installing feature " + feature.getName());
@@ -550,11 +555,11 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             Map<String, Object> bundleProperties = bundle.getAgentProperties();
             if (installBundle(feature, bundle)) {
                 LOGGER.info("Successfully added bundle " + bundle);
-                bundleProperties.put("timestamp", new Date());
+                bundleProperties.put(TIMESTAMP_KEY, new Date());
             }
         }
-        featureProperties.put("timestamp", new Date());
-        agentProperties.put(feature.getName(), feature);
+        featureProperties.put(TIMESTAMP_KEY, new Date());
+        agentState.getAgentFeatures().put(feature.getName(), feature);
     }
 
 
@@ -566,7 +571,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 LOGGER.info("Successfully removed bundle " + bundle);
             }
         }
-        agentProperties.remove(feature.getName());
+        agentState.getAgentFeatures().remove(feature.getName());
     }
 
     protected void installProperties(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
@@ -599,9 +604,9 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     public List<Bundle> getFeatureBundles(String featureName) {
 
-        Object o = agentProperties.get(featureName);
-        if (o instanceof Feature) {
-            return ((Feature) o).getBundles();
+        Feature f = agentState.getAgentFeatures().get(featureName);
+        if (f != null) {
+            return f.getBundles();
         } else {
             return new ArrayList<Bundle>();
         }
@@ -722,7 +727,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 throw new RuntimeException("Cannot create work directory " + dir);
             }
             loadState();
-            agentProperties.put("started", new Date());
+            agentState.getAgentProperties().put(STARTED_KEY, new Date());
         }
     }
 
@@ -736,20 +741,15 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
             File stateFile = new File(dir, AGENT_STATE_FILE);
             LOGGER.info("Saving agent state to " + stateFile);
-            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(stateFile));
-            try {
-                os.writeObject(agentProperties);
-            } finally {
-                os.close();
-            }
+            xstream.toXML(agentState, new FileOutputStream(stateFile));
         } catch (Throwable t) {
-            LOGGER.error("Error persisting agent state " + t);
+            LOGGER.error("Error persisting agent state", t);
             LOGGER.debug(t);
         }        
     }
     
     @SuppressWarnings("unchecked")
-    protected void loadState() throws IOException {
+    protected void loadState() throws Exception {
 
         File dir = getWorkDirectory();
         if (dir == null || !dir.exists()) {
@@ -760,22 +760,16 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         File stateFile = new File(dir, AGENT_STATE_FILE);
         if (!stateFile.exists()) {
             LOGGER.info("agent state file " + stateFile + " does not exist");
-            agentProperties.put("created", new Date());
+            agentState.getAgentProperties().put(CREATED_KEY, new Date());
             return;
         }
         
-        ObjectInputStream is = new ObjectInputStream(new FileInputStream(stateFile));
-        Object o;
         try {
-            o = is.readObject();
-            agentProperties = (Map<String, Object>) o;
-            
-            showAgentProperties();
-        } catch (ClassNotFoundException e) {
-            LOGGER.error("error loading state - exception " + e);
-            throw new IOException("ClassNotFoundException during readObject()");
-        } finally {
-            is.close();
+            Object o = xstream.fromXML(new FileInputStream(stateFile));
+            agentState = (AgentState) o;
+        } catch (Exception e) {
+            LOGGER.error("Error reading agent state", e);
+            throw e;
         }
     }
     
@@ -783,33 +777,53 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         if (LOGGER.isInfoEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("\nAgent properties...\n");
-            addProperties(sb, agentProperties, "  ");
+            addProperties(sb, agentState.getAgentProperties(), "  ");
+            addFeatures(sb, agentState.getAgentFeatures(), "  ");
 
             LOGGER.info(sb.toString());
         }
     }
     
-    private void addProperties(StringBuilder sb, Map<String, Object> properties, String prefix) {
-        
+    private void addProperties(StringBuilder sb, Map<String, Object> properties, String prefix) {        
         for (String k : properties.keySet()) {
             sb.append(prefix).append(k).append(" = ");
-            Object o = properties.get(k);
-            if (o instanceof Feature) {
-                Feature f = (Feature) o;
-                sb.append("feature\n");
-                sb.append(prefix).append("  Feature properties...\n");
-                addProperties(sb, f.getAgentProperties(), prefix + "  ");
-                for (Bundle b : f.getBundles()) {
-                    sb.append(prefix).append("  bundle = ").append(b).append("\n");
-                    sb.append(prefix).append("    Bundle properties...\n");
-                    addProperties(sb, b.getAgentProperties(), prefix + "    ");
-                }
-                sb.append("\n");
-            } else {
-                sb.append(properties.get(k)).append("\n");
-            }
+            sb.append(properties.get(k)).append("\n");
         }        
     }
 
+    private void addFeatures(StringBuilder sb, Map<String, Feature> properties, String prefix) {        
+        for (String k : properties.keySet()) {
+            sb.append(prefix).append(k).append(" = ");
+            Feature f = properties.get(k);
+            sb.append("feature\n");
+            sb.append(prefix).append("  Feature properties...\n");
+            addProperties(sb, f.getAgentProperties(), prefix + "  ");
+            for (Bundle b : f.getBundles()) {
+                sb.append(prefix).append("  bundle = ").append(b).append("\n");
+                sb.append(prefix).append("    Bundle properties...\n");
+                addProperties(sb, b.getAgentProperties(), prefix + "    ");
+            }
+            sb.append("\n");
+        }        
+    }
+
+    private void logProvisioningHistory(ProvisioningHistory ph) {
+        
+        List<AgentCfgUpdate> cfgUpdates = ph.getCfgUpdates();
+        System.out.println("  Config Updates:");
+        if (cfgUpdates != null) {
+            for (AgentCfgUpdate c : cfgUpdates) {
+                System.out.println("    " + c.getId() + ": " + c.getProperty() + "=" + c.getValue());
+            }
+        }
+                
+        List<ProvisioningAction> actions = ph.getActions();
+        System.out.println("  Actions:");
+        if (actions != null) {
+            for (ProvisioningAction a : actions) {
+                System.out.println("    " + a.getId() + ": " + a.getCommand() + " " + a.getFeature());
+            }
+        }
+    }
 
 }

@@ -15,8 +15,8 @@
 
   <properties>
     <agent.properties.file>agent.properties</agent.properties.file>
-    <agent.debug />
-    <!-- agent.debug>-Xdebug -Xrunjdwp:transport=dt_socket,address=9009,server=y,suspend=y</agent.debug -->
+    <agent.debug/>
+    <Xagent.debug>-Xdebug -Xrunjdwp:transport=dt_socket,address=9009,server=y,suspend=y</Xagent.debug>
   </properties>
 
   <dependencies>

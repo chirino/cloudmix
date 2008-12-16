@@ -27,7 +27,7 @@ public class DirectoryInstallerAgent extends InstallerAgent {
 
     private static final Log LOGGER = LogFactory.getLog(DirectoryInstallerAgent.class);
 
-    private static final String BUNDLE_FILE_KEY = "file";
+    private static final String BUNDLE_FILE_KEY = DirectoryInstallerAgent.class.getName() + ".file";
 
     private String installDir;
     private String tmpSuffix;
