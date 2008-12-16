@@ -10,16 +10,14 @@ package org.fusesource.cloudmix.agent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -741,7 +739,10 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
             File stateFile = new File(dir, AGENT_STATE_FILE);
             LOGGER.info("Saving agent state to " + stateFile);
-            xstream.toXML(agentState, new FileOutputStream(stateFile));
+            OutputStream os = new FileOutputStream(stateFile);
+            xstream.toXML(agentState, os);
+            os.close();
+            
         } catch (Throwable t) {
             LOGGER.error("Error persisting agent state", t);
             LOGGER.debug(t);
@@ -765,8 +766,10 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         }
         
         try {
-            Object o = xstream.fromXML(new FileInputStream(stateFile));
+            InputStream is = new FileInputStream(stateFile);
+            Object o = xstream.fromXML(is);
             agentState = (AgentState) o;
+            is.close();
         } catch (Exception e) {
             LOGGER.error("Error reading agent state", e);
             throw e;

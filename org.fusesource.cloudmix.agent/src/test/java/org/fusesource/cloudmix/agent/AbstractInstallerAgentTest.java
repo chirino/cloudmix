@@ -101,6 +101,10 @@ public class AbstractInstallerAgentTest extends TestCase {
         File tmpWorkDirectory = new File("tmp.work.dir");
         FileUtils.deleteDirectory(tmpWorkDirectory);
 
+        if (tmpWorkDirectory.exists()) {
+            System.out.println("\n\nWARNING: directory " + tmpWorkDirectory + " still exists\n\n");
+        }
+        
         installer = new TestInstaller();
         installer.setClient(cl);
         installer.setWorkDirectory(tmpWorkDirectory);
