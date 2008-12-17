@@ -17,12 +17,11 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.agent.InstallerAgent;
-import org.easymock.EasyMock;
 
 public class InstallerAgentTest extends TestCase {
     public void testMaxProcessesAccessor() {

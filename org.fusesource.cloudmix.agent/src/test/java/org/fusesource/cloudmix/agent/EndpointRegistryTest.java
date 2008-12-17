@@ -12,15 +12,10 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import junit.framework.TestCase;
 
-import org.fusesource.cloudmix.agent.EndpointRegistry;
-import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.agent.common.EndpointReferenceBuilder;
-import org.fusesource.cloudmix.agent.InstallerAgent;
-
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-
 import org.easymock.classextension.EasyMock;
 import org.easymock.classextension.IMocksControl;
+import org.fusesource.cloudmix.agent.common.EndpointReferenceBuilder;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 
 public class EndpointRegistryTest extends TestCase {
 
@@ -32,7 +27,7 @@ public class EndpointRegistryTest extends TestCase {
     public void testAddEndpoint() throws Exception {
         EndpointRegistry registry = setUpRegistry();
         String id = "urn:{http://cxf.apache.org}SoapPort";
-        String encodedId = "urn:%7Bhttp:%2F%2Fcxf.apache.org%7DSoapPort";
+        //String encodedId = "urn:%7Bhttp:%2F%2Fcxf.apache.org%7DSoapPort";
         W3CEndpointReference ref = 
             EndpointReferenceBuilder.create("http://tempuri.org/foo/bar");
         String agentId = "localhost_agent_1";

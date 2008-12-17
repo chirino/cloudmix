@@ -8,7 +8,9 @@
 package org.fusesource.cloudmix.agent;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Bundle implements Serializable {
@@ -18,12 +20,14 @@ public class Bundle implements Serializable {
     private String name;
     private String type;
     private String uri;
+    private List<String> depUris;
     private Map<String, Object> agentProperties;
     
     public Bundle(String name, String type, String uri) {
         this.name = name;
         this.type = type;
         this.uri = uri;
+        depUris = new ArrayList<String>();
     }
     
     public String getName() {
@@ -54,6 +58,15 @@ public class Bundle implements Serializable {
         return this;
     }
     
+    public Bundle addDepUri(String depUri) {
+        depUris.add(depUri);
+        return this;
+    }
+
+    public List<String> getDepUris() {
+        return depUris;
+    }
+
     public Map<String, Object> getAgentProperties() {
         if (agentProperties == null) {
             agentProperties = new HashMap<String, Object>();

@@ -17,6 +17,6 @@
             name = Funky
             desc = Monkey
         </config>
-        <bundle name="r_1.txt" type="osgi">http://example.com/r1.txt</bundle>
+        <bundle name="r_1.txt" type="osgi" uri="http://example.com/r1.txt"/>
     </feature>
 </features>

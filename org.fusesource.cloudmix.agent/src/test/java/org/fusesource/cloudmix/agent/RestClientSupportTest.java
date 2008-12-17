@@ -10,7 +10,6 @@ package org.fusesource.cloudmix.agent;
 import java.net.URI;
 
 import junit.framework.TestCase;
-import org.fusesource.cloudmix.agent.RestClientSupport;
 
 public class RestClientSupportTest extends TestCase {
     public void testRootURI() throws Exception {

@@ -9,7 +9,6 @@ package org.fusesource.cloudmix.common.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -58,24 +57,34 @@ public class ProvisioningHistory {
     }
 
     public void addCfgUpdate(AgentCfgUpdate anUpdate) {
-        cfgUpdates.add(anUpdate);        
-        onUpdated();
-        LOG.debug("Added configuration update: " + anUpdate);
+        synchronized (cfgUpdates) {
+            doRemoveCfgUpdate(anUpdate.getProperty());
+            cfgUpdates.add(anUpdate);        
+            onUpdated();
+            LOG.debug("Added configuration update: " + anUpdate);
+        }
     }
 
     public boolean removeCfgUpdate(AgentCfgUpdate anUpdate) {
-        boolean answer = cfgUpdates.remove(anUpdate);
-        onUpdated();
-        return answer;
+        synchronized (cfgUpdates) {
+            boolean answer = cfgUpdates.remove(anUpdate);
+            onUpdated();
+            return answer;
+        }
     }
     
     public boolean removeCfgUpdate(String aPropName) {
+        synchronized (cfgUpdates) {
+            return doRemoveCfgUpdate(aPropName);
+        }
+    }
+
+    private boolean doRemoveCfgUpdate(String aPropName) {
         if (aPropName == null || aPropName.trim().length() == 0) {
             return false;
         }
         
-        for (Iterator<AgentCfgUpdate> iter = cfgUpdates.iterator(); iter.hasNext();) {
-            AgentCfgUpdate anUpdate = iter.next();
+        for (AgentCfgUpdate anUpdate : cfgUpdates) {
             if (aPropName.equals(anUpdate.getProperty())) {
                 boolean answer = cfgUpdates.remove(anUpdate);
                 onUpdated();

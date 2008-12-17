@@ -10,8 +10,8 @@
 <features>
     <feature name="f2">
         <!-- no config here -->
-        <bundle name="r2.txt" type="war">http://example.com/r2.txt</bundle>
-        <bundle type="">http://example.com/r3.txt</bundle>
-        <bundle name="">http://example.com/r4.txt</bundle>
+        <bundle name="r2.txt" type="war" uri="http://example.com/r2.txt"/>
+        <bundle type="" uri="http://example.com/r3.txt"/>
+        <bundle name="" uri="http://example.com/r4.txt"/>
     </feature>
 </features>

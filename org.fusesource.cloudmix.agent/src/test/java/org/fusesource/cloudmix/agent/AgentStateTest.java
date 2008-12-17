@@ -10,12 +10,9 @@ package org.fusesource.cloudmix.agent;
 import java.io.File;
 import java.util.Date;
 
-import org.fusesource.cloudmix.common.util.FileUtils;
-import org.fusesource.cloudmix.agent.InstallerAgent;
-import org.fusesource.cloudmix.agent.Feature;
-import org.fusesource.cloudmix.agent.Bundle;
-
 import junit.framework.TestCase;
+
+import org.fusesource.cloudmix.common.util.FileUtils;
 
 public class AgentStateTest extends TestCase {
 
@@ -45,8 +42,10 @@ public class AgentStateTest extends TestCase {
     
         public void assertInitState() throws Exception {
             assertEquals(2, agentState.getAgentProperties().keySet().size());
-            assertTrue(agentState.getAgentProperties().get("org.fusesource.cloudmix.agent.InstallerAgent.started") instanceof Date);
-            assertTrue(agentState.getAgentProperties().get("org.fusesource.cloudmix.agent.InstallerAgent.created") instanceof Date);
+            assertTrue(agentState.getAgentProperties()
+                           .get("org.fusesource.cloudmix.agent.InstallerAgent.started") instanceof Date);
+            assertTrue(agentState.getAgentProperties()
+                           .get("org.fusesource.cloudmix.agent.InstallerAgent.created") instanceof Date);
         }
         
         public void testCreateState() throws Exception {

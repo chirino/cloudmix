@@ -8,6 +8,7 @@
 package org.fusesource.cloudmix.common.dto;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -50,9 +51,9 @@ public class AgentDetails extends IdentifiedType {
 //  @XmlElement(required = false) davidb TODO why do I have to comment this out to make it work?
     private Map<String, String> systemProperties;
     @XmlElement(required = false)
-    private ArrayList<String> endpointNames = new ArrayList<String>();
+    private List<String> endpointNames = new ArrayList<String>();
     @XmlElement(required = false)
-    private ArrayList<W3CEndpointReference> endpointReferences = new ArrayList<W3CEndpointReference>();
+    private List<W3CEndpointReference> endpointReferences = new ArrayList<W3CEndpointReference>();
 
 
     @Override
@@ -178,23 +179,23 @@ public class AgentDetails extends IdentifiedType {
     }
 
     public void addEndpoint(String key, W3CEndpointReference value) {
-    	int pos = endpointNames.indexOf(key);
-    	if (pos < 0) {
-    	    endpointNames.add(key);
-    	    endpointReferences.add(value);
-    	} else {
-    		endpointReferences.remove(pos);
-    	    endpointReferences.add(pos, value);
-    	}
+        int pos = endpointNames.indexOf(key);
+        if (pos < 0) {
+            endpointNames.add(key);
+            endpointReferences.add(value);
+        } else {
+            endpointReferences.remove(pos);
+            endpointReferences.add(pos, value);
+        }
     }
 
     public boolean removeEndpoint(String key) {
-    	int pos;
-    	boolean exists = (pos = endpointNames.indexOf(key)) >= 0;
-    	if (exists) {
+        int pos = endpointNames.indexOf(key);
+        boolean exists = pos >= 0;
+        if (exists) {
             endpointNames.remove(pos);
             endpointReferences.remove(pos);
-    	}
-    	return exists;
+        }
+        return exists;
     }
 }

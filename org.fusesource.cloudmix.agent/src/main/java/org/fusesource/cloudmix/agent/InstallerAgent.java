@@ -309,8 +309,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         
         details.setAgentLink(null);
         details.setContainerType(null);
-        String [] supportPackageTypes = {};
-        details.setSupportPackageTypes(supportPackageTypes);
+        details.setSupportPackageTypes(new String[] {});
         
         Map<String, String> m = new HashMap<String, String>(System.getProperties().size());
         for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {

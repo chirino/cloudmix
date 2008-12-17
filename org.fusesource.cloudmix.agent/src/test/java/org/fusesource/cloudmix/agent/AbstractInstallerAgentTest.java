@@ -14,6 +14,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
@@ -21,10 +22,6 @@ import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.util.FileUtils;
-import org.fusesource.cloudmix.agent.InstallerAgent;
-import org.fusesource.cloudmix.agent.Feature;
-import org.fusesource.cloudmix.agent.Bundle;
-import org.easymock.EasyMock;
 
 public class AbstractInstallerAgentTest extends TestCase {
     
@@ -34,7 +31,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         private Set<String> installedNames;
         private Set<String> installedURIs;
         private boolean validated;
-        private String smx4Doc;
+        private String featureList;
         
         public TestInstaller() {
             super();
@@ -54,14 +51,14 @@ public class AbstractInstallerAgentTest extends TestCase {
             return validated;
         }
         
-        public String getSmx4Doc() {
-            return smx4Doc;
+        public String getFeatureListDoc() {
+            return featureList;
         }
         
         @Override
         protected void installFeature(Feature feature, List<ConfigurationUpdate> cfg) {
             super.installFeature(feature, cfg);
-            smx4Doc = feature.getFeatureList().toServiceMix4Doc();            
+            featureList = feature.getFeatureList().toString();            
         }
         
         @Override
@@ -240,8 +237,8 @@ public class AbstractInstallerAgentTest extends TestCase {
 
         installer.onProvisioningHistoryChanged(ph);
         assertInstalled("http://example.com/r1.txt", 
-                         "http://example.com/r2.txt", 
-                         "http://example.com/r3.txt", 
+                        "http://example.com/r2.txt", 
+                        "http://example.com/r3.txt", 
                         "http://example.com/r4.txt");
 
         details = installer.getAgentDetails();   
@@ -349,29 +346,6 @@ public class AbstractInstallerAgentTest extends TestCase {
         assertEquals(initialAgentId, details.getId());
     }
 
-    public void testInstallJbiUrls() throws Exception {
-        
-        assertNothingInstalled();        
-        ph.addAction(createInstallAction("f5", "/features_5.xml"));
-            
-        AgentDetails details = installer.getAgentDetails();
-        assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
-
-        installer.onProvisioningHistoryChanged(ph);
-        assertInstalledNames("r1.txt", "r2.txt");
-        assertInstalled("http://example.com/r1.txt", "http://example.com/r2.txt");
-
-        details = installer.getAgentDetails();   
-        assertEquals(1, details.getCurrentFeatures().length);
-        assertEquals("f5", details.getCurrentFeatures()[0]);
-        
-        String smx4Doc = installer.getSmx4Doc();
-        assertTrue(smx4Doc.contains("<bundle>jbi:http://example.com/r1.txt</bundle>"));
-        assertTrue(smx4Doc.contains("<bundle>jbi:http://example.com/r1.txt</bundle>"));
-         
-    }
-    
     public void testSetApplicationProperties() throws Exception {
         assertNothingInstalled();        
         ph.addAction(createInstallAction("f6", "/features_6.xml"));

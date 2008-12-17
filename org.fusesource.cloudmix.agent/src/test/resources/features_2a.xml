@@ -9,6 +9,6 @@
 -->
 <features>
     <feature name="f2">
-        <bundle name="r2.txt">http://example.com/r2.txt</bundle>
+        <bundle name="r2.txt" uri="http://example.com/r2.txt"/>
     </feature>
 </features>	

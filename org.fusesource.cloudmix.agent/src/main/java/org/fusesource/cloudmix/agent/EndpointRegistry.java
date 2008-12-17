@@ -53,7 +53,7 @@ public class EndpointRegistry {
                 getClient().updateAgentDetails(getAgent().getAgentId(),
                                                getAgentDetails());
             }
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             LOG.warn("update agent details failed", t);
         }
         return exists; 

@@ -13,7 +13,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,10 +33,6 @@ public class FeatureList implements Serializable {
     
     private static final long serialVersionUID = -563410326809040533L;
 
-    private static final String JBI_TYPE = "jbi";
-
-    private static final String JBI_URL_PREFIX = "jbi:";
-    
     private Map<String, Feature> features;
 
     public FeatureList(URL url, String credentials) throws IOException {
@@ -89,9 +87,7 @@ public class FeatureList implements Serializable {
                 NodeList bundleNodes = e.getElementsByTagName("bundle");
                 for (int j = 0; j < bundleNodes.getLength(); j++) {
                     Element b = (Element) bundleNodes.item(j);
-                    String uri = b.getTextContent();
-                    Bundle bundle = new Bundle(b.getAttribute("name"), b.getAttribute("type"), uri);
-                    f.addBundle(bundle);
+                    f.addBundle(extractBundleInfo(b));
                 }
                 features.put(name, f);
             }
@@ -103,6 +99,20 @@ public class FeatureList implements Serializable {
         
     }
 
+    protected Bundle extractBundleInfo(Element b) {
+        Bundle bundle = new Bundle(b.getAttribute("name"),
+                                   b.getAttribute("type"),
+                                   b.getAttribute("uri"));
+        
+        NodeList depNodes = b.getElementsByTagName("depends");
+        for (int k = 0; k < depNodes.getLength(); k++) {
+            Element d = (Element) depNodes.item(k);
+            String depUri = d.getTextContent();
+            bundle.addDepUri(depUri);
+        }
+        return bundle;
+    }
+
     public int getNumFeatures() {
         return features.size();
     }
@@ -111,34 +121,8 @@ public class FeatureList implements Serializable {
         return features.get(featureName);
     }
     
-    public String toServiceMix4Doc() {
-        StringBuilder sb = new StringBuilder().append("<features>\n");
-        for (Feature feature : features.values()) {
-            sb.append("  <feature name=\"")
-                  .append(feature.getName()).append("\">\n");
-            for (String pn : feature.getPropertyNames()) {
-                sb.append("    <config name=\"")
-                    .append(pn).append("\">\n");
-                Properties props = feature.getProperties(pn);
-                for (Object o : props.keySet()) {
-                    sb.append("      ").append(o)
-                      .append(" = ").append(props.get(o)).append("\n");
-                }
-                sb.append("    </config>\n");
-            }
-            for (Bundle b : feature.getBundles()) {
-                sb.append("    <bundle>");
-                String type = b.getType();
-                if (JBI_TYPE.equals(type)) {
-                    sb.append(JBI_URL_PREFIX);
-                }
-                sb.append(b.getUri()).append("</bundle>\n");                
-            }
-                    
-            sb.append("  </feature>\n");
-        }
-        sb.append("</features>\n");
-        return sb.toString();
+    public List<Feature> getAllFeatures() {
+        return new ArrayList<Feature>(features.values());
     }
     
     public String toString() {

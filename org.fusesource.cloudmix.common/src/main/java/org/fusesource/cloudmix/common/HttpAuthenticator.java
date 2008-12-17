@@ -11,6 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface HttpAuthenticator {
 
-	boolean authenticate(HttpServletRequest request);
+    boolean authenticate(HttpServletRequest request);
 
 }

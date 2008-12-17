@@ -1,0 +1,44 @@
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<!-- 
+  bundle_A
+    -  bundle_A1
+    -  bundle_A2
+      -  bundle_A21
+        -  bundle_A1
+    - bundle_B
+  bundle_B
+    -  bundle_B1
+    -  bundle_C
+  bundle_C
+-->
+
+<features>
+    <feature name="f5">
+        <bundle name="bundle_A.jar" type="osgi" uri="http://example.com/bundle_A.jar">
+            <depends>http://example.com/bundle_A1.jar</depends> 
+            <depends>http://example.com/bundle_A2.jar</depends> 
+            <depends>http://example.com/bundle_B.jar</depends> 
+        </bundle>
+        <bundle name="bundle_A1.jar" type="osgi" uri="http://example.com/bundle_A1.jar"/>
+        <bundle name="bundle_A2.jar" type="osgi" uri="http://example.com/bundle_A2.jar">
+            <depends>http://example.com/bundle_A21.jar</depends> 
+        </bundle>
+        <bundle name="bundle_A21.jar" type="osgi" uri="http://example.com/bundle_A21.jar">
+            <depends>http://example.com/bundle_A1.jar</depends> 
+        </bundle>
+        <bundle name="bundle_B.jar" type="osgi" uri="http://example.com/bundle_B.jar">
+            <depends>http://example.com/bundle_B1.jar</depends> 
+            <depends>http://example.com/bundle_C.jar</depends> 
+        </bundle>
+        <bundle name="bundle_B1.jar" type="osgi" uri="http://example.com/bundle_B1.jar"/>
+        <bundle name="bundle_C.jar" type="osgi" uri="http://example.com/bundle_C.jar"/>
+    </feature>
+</features>

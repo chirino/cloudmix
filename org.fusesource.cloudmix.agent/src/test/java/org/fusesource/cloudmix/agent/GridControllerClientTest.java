@@ -9,10 +9,9 @@ package org.fusesource.cloudmix.agent;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.agent.GridControllerClient;
-import org.easymock.EasyMock;
 
 public class GridControllerClientTest extends TestCase {
     public void testAddNoProfiles() throws Exception {

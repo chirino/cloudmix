@@ -15,17 +15,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Element;
+
 import junit.framework.TestCase;
 
-import org.fusesource.cloudmix.common.GridClient;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.common.util.FileUtils;
-import org.fusesource.cloudmix.agent.smx4.ServiceMixAgent;
-import org.fusesource.cloudmix.agent.FeatureList;
-import org.fusesource.cloudmix.agent.Bundle;
 import org.apache.servicemix.gshell.features.FeaturesService;
 import org.apache.servicemix.gshell.features.Repository;
 import org.easymock.EasyMock;
+import org.fusesource.cloudmix.agent.Bundle;
+import org.fusesource.cloudmix.agent.FeatureList;
+import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.util.FileUtils;
 
 public class ServiceMixAgentTest extends TestCase {
     private GridClient cl;
@@ -41,7 +42,12 @@ public class ServiceMixAgentTest extends TestCase {
         private List<String> bundles = new ArrayList<String>();
         
         public void addRepository(URI uri) throws Exception {
-            FeatureList featureList = new FeatureList(uri.toURL(), null);
+            FeatureList featureList = new FeatureList(uri.toURL(), null) {
+                @Override
+                protected Bundle extractBundleInfo(Element b) {
+                    return new Bundle(b.getAttribute("name"), b.getAttribute("type"), b.getTextContent());
+                }
+            };
             assertNotNull(featureList);
             assertNull(repos.get(uri));
             repos.put(uri, featureList);
@@ -142,6 +148,39 @@ public class ServiceMixAgentTest extends TestCase {
         assertEquals("jbi", details.getSupportPackageTypes()[1]);
     }
 
+    public void testGenerateSMX4FeatureDoc() throws Exception {
+        
+        // JBI urls
+        FeatureList flist = getFeatureList("/features_5.xml");
+        String expectedSmxFeatureDoc = "<features>"
+                                           + "<feature name=\"f5\">"
+                                               + "<bundle>jbi:http://example.com/r1.txt</bundle>"
+                                               + "<bundle>jbi:http://example.com/r2.txt</bundle>"
+                                           + "</feature>"
+                                       + "</features>";
+      
+        String smx4Doc = smxa.generateSMX4FeatureDoc(flist);
+        assertEquals(expectedSmxFeatureDoc, smx4Doc.replaceAll("\n", "").replaceAll("  ", ""));
+
+        // complex deps
+        flist = getFeatureList("/features_6.xml");
+        expectedSmxFeatureDoc = "<features>"
+                                    + "<feature name=\"f5\">"
+                                        + "<bundle>http://example.com/bundle_A1.jar</bundle>"
+                                        + "<bundle>http://example.com/bundle_A21.jar</bundle>"
+                                        + "<bundle>http://example.com/bundle_A2.jar</bundle>"
+                                        + "<bundle>http://example.com/bundle_B1.jar</bundle>"
+                                        + "<bundle>http://example.com/bundle_C.jar</bundle>"
+                                        + "<bundle>http://example.com/bundle_B.jar</bundle>"
+                                        + "<bundle>http://example.com/bundle_A.jar</bundle>"
+                                    + "</feature>"
+                                + "</features>";
+      
+        smx4Doc = smxa.generateSMX4FeatureDoc(flist);
+        assertEquals(expectedSmxFeatureDoc, smx4Doc.replaceAll("\n", "").replaceAll("  ", ""));
+
+    }
+
     public void testInstallNothing() throws Exception {        
         FeatureList flist = getFeatureList("/features_1.xml");
 
@@ -169,6 +208,20 @@ public class ServiceMixAgentTest extends TestCase {
         fs.assertFeatureInstalled(f2);
         fs.assertBundleInstalled(url2);    
         assertAgentDetails(f2);
+    }
+
+    public void testInstallJBI() throws Exception {        
+        FeatureList flist = getFeatureList("/features_5.xml");
+        String f5 = "f5";
+        smxa.installFeature(flist.getFeature(f5), null);
+        
+        String[] features = fs.listFeatures();
+        assertEquals(1, features.length);
+        assertEquals(f5, features[0]);
+        fs.assertFeatureInstalled(f5);
+        fs.assertBundleInstalled("jbi:http://example.com/r1.txt");    
+        fs.assertBundleInstalled("jbi:http://example.com/r2.txt");    
+        assertAgentDetails(f5);
     }
 
     public void testInstall2() throws Exception {        

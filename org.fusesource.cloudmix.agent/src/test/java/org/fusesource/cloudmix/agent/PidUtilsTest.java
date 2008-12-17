@@ -8,7 +8,6 @@
 package org.fusesource.cloudmix.agent;
 
 import junit.framework.TestCase;
-import org.fusesource.cloudmix.agent.PidUtils;
 
 public class PidUtilsTest extends TestCase {
     public void testGetPid() {

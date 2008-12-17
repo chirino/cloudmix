@@ -13,11 +13,9 @@ import com.sun.jersey.api.client.WebResource.Builder;
 
 import junit.framework.TestCase;
 
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.agent.RestTemplate;
 import org.easymock.IAnswer;
 import org.easymock.classextension.EasyMock;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 
 public class RestGridClientTest extends TestCase {
     

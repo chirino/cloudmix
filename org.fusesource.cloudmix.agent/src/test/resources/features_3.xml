@@ -9,6 +9,6 @@
 -->
 <badfeatures>
     <feature name="f3">
-        <bundle>http://example.com/r1.txt</bundle>
+        <bundle uri="http://example.com/r1.txt"/>
     </feature>
 </features>

@@ -20,7 +20,7 @@ public class Feature implements Serializable {
     private static final long serialVersionUID = 1922479782169770368L;
 
     private String featureName;
-	private FeatureList featureList;
+    private FeatureList featureList;
     private List<Bundle> bundles;
     private Map<String, Properties> propertyMap;
     private Map<String, Object> agentProperties;
@@ -30,17 +30,17 @@ public class Feature implements Serializable {
         featureList = fl;
     }    
     
-	public FeatureList getFeatureList() {
-		return featureList;
-	}
-	
-	public Map<String, Object> getAgentProperties() {
-	    if (agentProperties == null) {
-	        agentProperties = new HashMap<String, Object>();
-	    }
-	    return agentProperties;
-	}
-	
+    public FeatureList getFeatureList() {
+        return featureList;
+    }
+    
+    public Map<String, Object> getAgentProperties() {
+        if (agentProperties == null) {
+            agentProperties = new HashMap<String, Object>();
+        }
+        return agentProperties;
+    }
+    
     public void addDependency(String aFeatureName) {
         // TODO
     }

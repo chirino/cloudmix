@@ -9,6 +9,6 @@
 -->
 <features>
     <feature name="unknown">
-        <bundle>http://localhost/unknown</bundle>
+        <bundle uri="http://localhost/unknown"/>
     </feature>
 </features>

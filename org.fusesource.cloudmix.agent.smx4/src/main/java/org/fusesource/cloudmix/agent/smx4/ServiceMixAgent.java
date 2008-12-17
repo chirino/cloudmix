@@ -11,20 +11,26 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.gshell.features.FeaturesService;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.Feature;
+import org.fusesource.cloudmix.agent.FeatureList;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.util.FileUtils;
-import org.apache.servicemix.gshell.features.FeaturesService;
 
 public class ServiceMixAgent extends InstallerAgent {
 
+    
     protected static final String VM_PROP_SMX_HOME = "servicemix.home";
 
     protected static final String AGENT_WORK_DIR = File.separator + "data" + File.separator + "cloudmix";
@@ -35,9 +41,12 @@ public class ServiceMixAgent extends InstallerAgent {
     private static final String FEATURE_FILE_KEY = ServiceMixAgent.class.getName() + ".featureFile";
 
     private static final String SMX4_CONTAINER_TYPE = "smx4";
+    private static final String JBI_TYPE = "jbi";
 
     private static final String[] SMX4_PACKAGE_TYPES = {"osgi", "jbi"};
     
+    private static final String JBI_URL_PREFIX = "jbi:";
+
     private FeaturesService featuresService;
 
     
@@ -71,7 +80,7 @@ public class ServiceMixAgent extends InstallerAgent {
             
             featuresFile = File.createTempFile("features_", ".xml", getWorkDirectory());
             FileWriter writer = new FileWriter(featuresFile);
-            writer.write(feature.getFeatureList().toServiceMix4Doc());
+            writer.write(generateSMX4FeatureDoc(feature.getFeatureList()));
             writer.close();
             LOGGER.info("Wrote features document to " + featuresFile);
 
@@ -140,6 +149,75 @@ public class ServiceMixAgent extends InstallerAgent {
             LOGGER.debug(e);
         }
     }
+
+    public String generateSMX4FeatureDoc(FeatureList fl) {
+        StringBuilder sb = new StringBuilder().append("<features>\n");
+        for (Feature feature : fl.getAllFeatures()) {
+            sb.append("  <feature name=\"")
+                .append(feature.getName())
+                .append("\">\n");
+            
+            for (String pn : feature.getPropertyNames()) {
+                sb.append("    <config name=\"")
+                    .append(pn)
+                    .append("\">\n");
+                
+                Properties props = feature.getProperties(pn);
+                for (Object o : props.keySet()) {
+                    sb.append("      ")
+                        .append(o)
+                        .append(" = ")
+                        .append(props.get(o))
+                        .append("\n");
+                }
+                sb.append("    </config>\n");
+            }
+            
+            Map<String, Bundle> unorderedBundles = new HashMap<String, Bundle>();
+            for (Bundle b : feature.getBundles()) {
+                unorderedBundles.put(b.getUri(), b);              
+            }
+            
+            List<Bundle> orderedBundles = new ArrayList<Bundle>(); 
+            for (Bundle b : feature.getBundles()) {
+                doOrderBundlesBasedOnTheirInterDependencies(b, orderedBundles, unorderedBundles);
+            }
+            
+            for (Bundle b : orderedBundles) {
+                sb.append("    <bundle>");
+                String type = b.getType();
+                if (JBI_TYPE.equals(type)) {
+                    sb.append(JBI_URL_PREFIX);
+                }
+                sb.append(b.getUri()).append("</bundle>\n");                
+            }
+                    
+            sb.append("  </feature>\n");
+        }
+        sb.append("</features>\n");
+        return sb.toString();
+    }
+
+    private void doOrderBundlesBasedOnTheirInterDependencies(Bundle b,
+                                                             List<Bundle> orderedBundles,
+                                                             Map<String, Bundle> unOrderedBundles) {
+        if (b == null) {
+            return;
+        }
+        
+        for (String depUri : b.getDepUris()) {
+            doOrderBundlesBasedOnTheirInterDependencies(unOrderedBundles.get(depUri),
+                                                        orderedBundles,
+                                                        unOrderedBundles);
+        }
+        
+        String uri = b.getUri();
+        if (unOrderedBundles.get(uri) != null) {
+            orderedBundles.add(b);
+            unOrderedBundles.remove(uri);
+        }
+    }
+
 
     @Override
     protected boolean installBundle(org.fusesource.cloudmix.agent.Feature feature, Bundle bundle) {
