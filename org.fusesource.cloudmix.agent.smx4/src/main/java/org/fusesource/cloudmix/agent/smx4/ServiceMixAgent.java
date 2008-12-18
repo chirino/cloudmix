@@ -245,7 +245,6 @@ public class ServiceMixAgent extends InstallerAgent {
     
     @Override
     public void init() throws Exception {
-        super.init();
       
         File dir = getWorkDirectory();
         if (dir != null) {            
@@ -261,6 +260,8 @@ public class ServiceMixAgent extends InstallerAgent {
             || getSupportPackageTypes().length == 0) {
             setSupportPackageTypes(SMX4_PACKAGE_TYPES);
         }
+
+        super.init();
     }
     
        

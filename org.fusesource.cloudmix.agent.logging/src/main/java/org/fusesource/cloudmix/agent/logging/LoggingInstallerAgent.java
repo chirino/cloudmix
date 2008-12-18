@@ -29,9 +29,9 @@ public class LoggingInstallerAgent extends InstallerAgent {
     private static final String CONFIG_PROP_FILE = "agent.properties.file";
     private static final String CONFIG_WORK_DIR = "agent.work.dir";
     private static final String CONFIG_REPO_URI = "agent.repository.uri";
-    private static final String CONFIG_ID = InstallerAgent.PERSISTABLE_PROPERTY_AGENT_ID;
-    private static final String CONFIG_NAME = InstallerAgent.PERSISTABLE_PROPERTY_AGENT_NAME;
-    private static final String CONFIG_PROFILE = InstallerAgent.PERSISTABLE_PROPERTY_PROFILE_ID;
+    private static final String CONFIG_ID = "agent.id";
+    private static final String CONFIG_NAME = "agent.name";
+    private static final String CONFIG_PROFILE = "agent.profile";
     private static final String CONFIG_AGENT_USER = "agent.user";
     private static final String CONFIG_AGENT_PASSWORD = "agent.password";
     private static final String CONFIG_AGENT_TYPE = "agent.type";
@@ -202,20 +202,6 @@ public class LoggingInstallerAgent extends InstallerAgent {
         return newId;
     }
     
-    @Override
-    public Object call() throws Exception {
-        //System.out.println("Calling Depot...");
-        return super.call();
-    }
-    
-    @Override
-    public AgentDetails getAgentDetails() {
-        //System.out.println("Going to fetch agent details : " + agentDetails);
-        AgentDetails ads = super.getAgentDetails();
-        //System.out.println("fetched agent details : " + agentDetails);
-        return ads;
-
-    }
     
     @Override
     public void setAgentName(String name) {

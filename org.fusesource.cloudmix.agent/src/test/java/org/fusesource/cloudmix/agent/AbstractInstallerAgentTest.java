@@ -57,6 +57,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         
         @Override
         protected void installFeature(Feature feature, List<ConfigurationUpdate> cfg) {
+
             super.installFeature(feature, cfg);
             featureList = feature.getFeatureList().toString();            
         }
@@ -158,6 +159,22 @@ public class AbstractInstallerAgentTest extends TestCase {
         assertEquals(1, details.getCurrentFeatures().length);
         assertEquals("f1", details.getCurrentFeatures()[0]);
     }
+    
+    
+    // TODO: Enable when CM-2 is fixed.
+    /*
+    public void testInstallRestart() throws Exception {        
+        testInstallSimple();
+        
+        installer.init();
+        
+        assertNothingInstalled();
+        
+        AgentDetails details = installer.getAgentDetails();   
+        assertEquals(0, details.getCurrentFeatures().length);
+    }
+    */
+   
 
     public void testInstallSimpleAsync() throws Exception {
         

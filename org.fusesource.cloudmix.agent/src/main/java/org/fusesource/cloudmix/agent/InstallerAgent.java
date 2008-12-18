@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.URISyntaxException;
@@ -29,7 +31,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.sun.jersey.api.NotFoundException;
-import com.thoughtworks.xstream.XStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,13 +63,14 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public static final String PROP_ACCESS_LOCK = "agent.profile";
 
     private static final transient Log LOGGER = LogFactory.getLog(InstallerAgent.class);
-    private static final String AGENT_STATE_FILE = "agent-state.xml";
+    private static final String AGENT_STATE_FILE = "agent-state.dat";
     
     // Persistent properties.
     protected AgentState agentState = new AgentState();
-    private XStream xstream= new XStream();
-
     
+    //private DomDriver dd = new DomDriver(); 
+    //private XStream xstream= new XStream(dd);
+
     protected String propertyFilePath;
  
     protected String agentId;
@@ -725,6 +727,28 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             }
             loadState();
             agentState.getAgentProperties().put(STARTED_KEY, new Date());
+            
+            // TODO: (CM-2) Clean up previously installed features.  This is currently
+            // disabled as there are problems related to the order in which the agent 
+            // and its deployed features are started when restarting servicemix.
+            // cleanInstalledFeatures();
+        }
+    }
+ 
+    protected void cleanInstalledFeatures() {
+        Map<String, Feature> features = agentState.getAgentFeatures();
+        if (features != null) {
+            for (String fn : features.keySet()) {
+                Feature feature = features.get(fn);
+                try {
+                    uninstallFeature(feature);
+                    
+                } catch (Exception e) {
+                    LOGGER.error("Exception uninstalling feature " + feature, e);
+                }
+            }
+            agentDetails = null;
+            agentDetails = getAgentDetails();
         }
     }
 
@@ -739,7 +763,13 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             File stateFile = new File(dir, AGENT_STATE_FILE);
             LOGGER.info("Saving agent state to " + stateFile);
             OutputStream os = new FileOutputStream(stateFile);
-            xstream.toXML(agentState, os);
+            
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+            oos.writeObject(agentState);
+            // TODO: (CM-4) Use XStream for serializing agent state.  Currently disabled
+            // until SMX4 OSGi bundle issues can be resolved.
+            //xstream.toXML(agentState, os);
+            oos.close();
             os.close();
             
         } catch (Throwable t) {
@@ -756,18 +786,23 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             // Persistence is not enabled.
             return;
         }
-       
         File stateFile = new File(dir, AGENT_STATE_FILE);
         if (!stateFile.exists()) {
             LOGGER.info("agent state file " + stateFile + " does not exist");
             agentState.getAgentProperties().put(CREATED_KEY, new Date());
+            persistState();
             return;
         }
         
         try {
             InputStream is = new FileInputStream(stateFile);
-            Object o = xstream.fromXML(is);
+            // TODO: (CM-4) Use XStream for serializing agent state.  Currently disabled
+            // until SMX4 OSGi bundle issues can be resolved.
+            //Object o = xstream.fromXML(is);
+            ObjectInputStream ois = new ObjectInputStream(is);
+            Object o = ois.readObject();
             agentState = (AgentState) o;
+            
             is.close();
         } catch (Exception e) {
             LOGGER.error("Error reading agent state", e);
@@ -808,24 +843,4 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             sb.append("\n");
         }        
     }
-
-    private void logProvisioningHistory(ProvisioningHistory ph) {
-        
-        List<AgentCfgUpdate> cfgUpdates = ph.getCfgUpdates();
-        System.out.println("  Config Updates:");
-        if (cfgUpdates != null) {
-            for (AgentCfgUpdate c : cfgUpdates) {
-                System.out.println("    " + c.getId() + ": " + c.getProperty() + "=" + c.getValue());
-            }
-        }
-                
-        List<ProvisioningAction> actions = ph.getActions();
-        System.out.println("  Actions:");
-        if (actions != null) {
-            for (ProvisioningAction a : actions) {
-                System.out.println("    " + a.getId() + ": " + a.getCommand() + " " + a.getFeature());
-            }
-        }
-    }
-
 }

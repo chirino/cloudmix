@@ -40,7 +40,7 @@
     <property name="maxFeatures" value="${maxFeatures}"/>
     <property name="profile" value="${profile}"/>
     <property name="detailsPropertyFilePath" value="${servicemix.home}/data/grid/agent.properties"/>
-    <property name="workDirectory" value="${servicemix.home}/data/grid"/>
+    <property name="workDirectory" value="${servicemix.home}/data/cloudmix"/>
   </bean>
   
 

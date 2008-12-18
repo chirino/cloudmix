@@ -1,9 +1,12 @@
 package org.fusesource.cloudmix.agent;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AgentState {
+public class AgentState implements Serializable {
+
+    private static final long serialVersionUID = 2809283835323250588L;
 
     private Map<String, Object> agentProperties;
     private Map<String, Feature> agentFeatures;
