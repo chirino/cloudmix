@@ -71,6 +71,7 @@ public class WebappTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        System.setProperty("catalina.home", ".");
         super.setUp();
         webServer.setWebAppContext("/service-grid");
         webServer.start();

@@ -19,13 +19,13 @@
             <value>true</value>
         </property>
     	<property name="location">
-    		<value>file:conf/agent.properties</value>
+    		<value>file:${catalina.home}/conf/agent.properties</value>
     	</property>
     	<property name="properties">
     	  <props>           
             <prop key="agent.user">Agent</prop>
     	    <prop key="agent.profile">default</prop>
-            <prop key="agent.workdir">.</prop> <!--  ${catalina.home}  -->
+            <prop key="agent.workdir">${catalina.home}</prop> <!--  ${catalina.home}  -->
     	    <prop key="agent.installdir">webapps</prop>
 		    <prop key="agent.controller.uri">http://localhost:9091/controller</prop>
             <prop key="agent.max.features">25</prop>
