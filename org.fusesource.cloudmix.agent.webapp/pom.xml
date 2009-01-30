@@ -34,13 +34,21 @@
     </dependency>
     
     <!-- this test-only dependency is only required to pull in the
-         WC3EndpointBuilder from the CXF JAX-WS frontend -->
+         WC3EndpointBuilder from the CXF JAX-WS frontend>
     <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-bundle</artifactId>
         <version>2.1.1.0-fuse</version>
         <scope>test</scope>
+    </dependency -->
+
+    <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>2.1.1.0-fuse</version>
+        <scope>test</scope>
     </dependency>
+    
 
 <!--
     <dependency>

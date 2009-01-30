@@ -77,7 +77,7 @@
     </dependency>
 
     <!-- this test-only dependency is only required to pull in the
-         WC3EndpointBuilder from the CXF JAX-WS frontend -->
+         WC3EndpointBuilder from the CXF JAX-WS frontend-->
     <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
