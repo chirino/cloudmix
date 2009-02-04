@@ -36,6 +36,7 @@ public class SpringServlet extends ServletContainer {
 
     private ApplicationContext applicationContext;
 	private HttpAuthenticator authenticator;
+	private boolean initialized = false;
 
     public SpringServlet() {
         super();
@@ -45,7 +46,7 @@ public class SpringServlet extends ServletContainer {
         applicationContext = ctx;
         authenticator = ca;
     }
-  
+    
     @Override
     protected void initiate(ResourceConfig rc, WebApplication wa) {
         ServletContext servletContext = getServletContext();
@@ -58,11 +59,13 @@ public class SpringServlet extends ServletContainer {
         }
 
         wa.initiate(rc, getComponentProvider((ConfigurableApplicationContext) ctx));
+        initialized = true;
     }
 
     protected SpringComponentProvider getComponentProvider(ConfigurableApplicationContext ctx) {
         return new SpringComponentProvider(ctx);
     }
+    
     
     /**
      * Overriding service method to provide a authentication filter.  This calls the authenticator
@@ -70,16 +73,26 @@ public class SpringServlet extends ServletContainer {
      */
     @Override
     public void service(final ServletRequest request, final ServletResponse response) throws ServletException, IOException {
-    	    	
-    	if (authenticator != null) {
-        	if (!(request instanceof HttpServletRequest)) {
-    			throw new ServletException("Need a HttpServletRequest for authentication");
-    		}
-        	if (!(response instanceof HttpServletResponse)) {
-    			throw new ServletException("Need a HttpServletRequest for authentication");
-    		}
-    		HttpServletRequest httpRequest = (HttpServletRequest) request;
-    		HttpServletResponse httpResponse = (HttpServletResponse) response;
+    
+        if (authenticator != null) {
+            if (!(request instanceof HttpServletRequest)) {
+                throw new ServletException("Need a HttpServletRequest for authentication");
+            }
+            if (!(response instanceof HttpServletResponse)) {
+                throw new ServletException("Need a HttpServletRequest for authentication");
+            }
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            
+            // Check for race condition where are request arrives before this 
+            // application context has been initialized.
+            if (!initialized) {
+                LOG.info("Application context not initialized; returning 503 for request " + httpRequest.getRequestURI());                
+                httpResponse.sendError(503, "Service not initialized");
+                httpResponse.addHeader("Retry-After", "10");
+                return;
+            }
+
     		
     		try {
     			LOG.info("Controller request " + httpRequest.getMethod() + " " + httpRequest.getRequestURI());
