@@ -77,7 +77,6 @@ public class FeatureList implements Serializable {
                     
                     Element c = (Element) configNodes.item(j);
                     String cfgName = c.getAttribute("name");
-                    System.out.println(" ===>> loading property batch: " + cfgName);
                     String data = c.getTextContent();
                     Properties properties = new Properties();
                     properties.load(new ByteArrayInputStream(data.getBytes()));

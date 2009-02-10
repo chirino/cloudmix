@@ -60,9 +60,9 @@ public class LoggingInstallerAgent extends InstallerAgent {
 
     public LoggingInstallerAgent() {
         
-        System.out.println("\n");
-        System.out.println("---------------------------------------------");
-        System.out.println("Initializing Logging Installer Agent");
+        log("\n");
+        log("---------------------------------------------");
+        log("Initializing Logging Installer Agent");
         
         try {
 
@@ -89,7 +89,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
             try {
                 custInstallDelay = Integer.parseInt(installDelayStr);
             } catch (Exception e) {
-                System.out.println("Cannot parse agent.install.delay \"" + installDelayStr + "\"");
+                log("Cannot parse agent.install.delay \"" + installDelayStr + "\"");
             }
 
             
@@ -121,27 +121,28 @@ public class LoggingInstallerAgent extends InstallerAgent {
             agent.setAgentLink(agentLink);
             agent.setInstallDelay(custInstallDelay);
 
-            System.out.println("\nConfiguration:\n");
-            System.out.println("  Agent ID           ["
+            log("\nConfiguration:\n");
+            log("  Agent ID           ["
                                + (agentId == null ? "unassigned yet" : agentId)
                                + "]");
-            System.out.println("  Agent Name         ["
+            log("  Agent Name         ["
                                + (agentName == null ? "unassigned yet" : agentName)
                                + "]");
-            System.out.println("  agent property file [" + agentPropertiesFile + "]");
-            System.out.println("  Agent profile      [" + agentProfile + "]");
-            System.out.println("  Repository URI     [" + rootUri + "]");
-            System.out.println("  Agent user         [" + agentUser + "]");
-            System.out.println("  Agent type         [" + agent.getContainerType() + "]");
-            System.out.println("  Agent link         [" + agentLink + "]");
-            System.out.print("  Package types      [");
+            log("  agent property file [" + agentPropertiesFile + "]");
+            log("  Agent profile      [" + agentProfile + "]");
+            log("  Repository URI     [" + rootUri + "]");
+            log("  Agent user         [" + agentUser + "]");
+            log("  Agent type         [" + agent.getContainerType() + "]");
+            log("  Agent link         [" + agentLink + "]");
+            StringBuilder sb = new StringBuilder();
+            sb.append("  Package types      [");
             String prefix = "";
             for (String packageType : supportPackageTypes) {
-                System.out.print(prefix + "\"" + packageType + "\"");
+                sb.append(prefix + "\"" + packageType + "\"");
                 prefix = ", ";
             }
-            System.out.print("]");
-            System.out.println();
+            sb.append("]");
+            log(sb.toString());
 
             agent.init();
             poller.setInitialPollingDelay(INITIAL_POLLING_DELAY);
@@ -150,9 +151,9 @@ public class LoggingInstallerAgent extends InstallerAgent {
 
             poller.start();
 
-            System.out.println("\nLogging Agent Installer Ready");
-            System.out.println("---------------------------------------------");
-            System.out.println("\n");
+            log("\nLogging Agent Installer Ready");
+            log("---------------------------------------------");
+            log("\n");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -197,7 +198,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
         boolean addedToClient2 = addedToClient;
         String newId = super.addToClient(details);
         if (!addedToClient2) {
-            System.out.println("registered agent to depot : " + newId);
+            log("agent id: \"" + newId + "\"");
         }
         return newId;
     }
@@ -205,64 +206,53 @@ public class LoggingInstallerAgent extends InstallerAgent {
     
     @Override
     public void setAgentName(String name) {
-        System.out.println("updating Name : " + agentName + "-->" + name);
+        log("updating agent name: \"" + name + "\" (was \"" + agentName + "\")");
         super.setAgentName(name);
     }
     
     @Override
     public void setProfile(String p) {
-        System.out.println("updating Profile : " + profile + "-->" + p);
+        log("updating profile name: \"" + p + "\" (was \"" + profile + "\")");
         super.setProfile(p);
     }
-    
-    @Override
-    public boolean loadPersistedAgentDetails() {
-        boolean didLoad = super.loadPersistedAgentDetails();
-        //System.out.println("loading persisted agent details : " + didLoad);
-        return didLoad;
-    }
-    
-    @Override
-    public boolean persistAgentDetails() {
-        System.out.println("persisting agent details to  : " + getDetailsPropertyFilePath());
-        boolean didPersist = super.persistAgentDetails();
-        System.out.println("persisted? : " + didPersist);
-        return didPersist;
-    }
-    
+        
     @Override
     protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
-        logAgentDetails();
-        System.out.println("installing feature " + feature.getName());
+
+        log("");
+        log("installing feature \"" + feature.getName() + "\" {");
         for (String propName : feature.getPropertyNames()) {
-            System.out.println("      properties " + propName + " {");
+            log("  properties \"" + propName + "\" {");
             
             Properties props = feature.getProperties(propName);
             for (Object o : props.keySet()) {
                 String n = (String) o;
-                System.out.println("        " + n + " = " + props.getProperty(n));                
+                log("    " + n + " = " + props.getProperty(n));                
             }            
-            System.out.println("      }");
+            log("  }");
         }
         super.installFeature(feature, featureCfgOverrides);
         
+        log("}");
+        
         if (installDelay > 0) {
-            System.out.println("Sleeping for " + installDelay + " seconds ...");
+            log("sleeping for " + installDelay + " seconds ...");
             try {
                 Thread.sleep(installDelay * 1000);
             } catch (InterruptedException e) {
                 // Complete
             }
-            System.out.println("Continuing");
+            log("continuing");
         }
-
     }
 
     @Override
     protected void uninstallFeature(Feature feature) {
-        logAgentDetails();
-        System.out.println("  uninstalling feature " + feature.getName());
+        
+        log("");
+        log("uninstalling feature \"" + feature.getName() + "\" {");
         super.uninstallFeature(feature);
+        log("}");
     }
     
     @Override
@@ -271,14 +261,14 @@ public class LoggingInstallerAgent extends InstallerAgent {
         String uri = bundle.getUri();
         
         StringBuilder sb = new StringBuilder()
-            .append("      bundle ");
+            .append("  bundle ");
         if (name == null || "".equals(name)) {
             sb.append(uri);
         } else {
-            sb.append(name).append(" (").append(uri).append(")");
+            sb.append("\"").append(name).append("\" (").append(uri).append(")");
         }
 
-        System.out.println(sb.toString());
+        log(sb.toString());
         
         return true;
     }
@@ -289,28 +279,20 @@ public class LoggingInstallerAgent extends InstallerAgent {
         String uri = bundle.getUri();
         
         StringBuilder sb = new StringBuilder()
-            .append("      bundle ");
+            .append("  bundle ");
         if (name == null || "".equals(name)) {
             sb.append(uri);
         } else {
-            sb.append(name).append(" (").append(uri).append(")");
+            sb.append("\"").append(name).append("\" (").append(uri).append(")");
         }
 
-        System.out.println(sb.toString());
+        log(sb.toString());
         return false;
     }
 
     @Override
     protected boolean validateAgent() {
         return true;
-    }
-
-    private void logAgentDetails() {
-        AgentDetails details = getAgentDetails();
-        System.out.println("\n* agent - id: " + details.getId()
-                + ", name " + details.getName()
-                + ", profile: " + details.getProfile());
-        
     }
 
     private Properties loadProperties(String file) {
@@ -320,12 +302,12 @@ public class LoggingInstallerAgent extends InstallerAgent {
                 return null;
             }
             Properties properties = new Properties();
-            System.out.println("\nLoading properties from file: " + file);
+            log("Loading properties from file: " + file);
             properties.load(new FileInputStream(file));
             return properties;
         } catch (Exception e) {
-            System.out.println("\nError loading properties file: " + file);
-            System.out.println("\nException: " + e);
+            log("Error loading properties file: " + file);
+            log("Exception: " + e);
             return null;
         }
     }
@@ -354,6 +336,10 @@ public class LoggingInstallerAgent extends InstallerAgent {
             array[i] = item.trim();
         }
         return array;
+    }
+    
+    private void log(String s) {
+        System.out.println("[agent] " + s);
     }
 
 }
