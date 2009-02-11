@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -38,8 +40,8 @@ public class LoggingInstallerAgent extends InstallerAgent {
     private static final String CONFIG_AGENT_LINK = "agent.link";
     private static final String CONFIG_AGENT_PACKAGES = "agent.packages";
     private static final String CONFIG_INSTALL_DELAY = "agent.install.delay";
+    private static final String CONFIG_SYS_PROPS = "agent.sys.props";
     
-
     private static final String DEFAULT_WORK_DIR = "agent.workdir";
     private static final String DEFAULT_CONTAINER_TYPE = "logging"; 
     private static final String DEFAULT_REPO_URI = "http://localhost:9091/controller";
@@ -48,15 +50,20 @@ public class LoggingInstallerAgent extends InstallerAgent {
     private static final String DEFAULT_AGENT_PASSWORD = "agent";
     private static final String DEFAULT_PACKAGES = "war, jbi, osgi, jar";
     private static final String DEFAULT_INSTALL_DELAY = "1";
+    private static final String DEFAULT_SYS_PROPS = "prop1, prop2, prop3";
     private static final int MAX_FEATURES = 25;
     private static final long INITIAL_POLLING_DELAY = 1000;
     private static final long POLLING_PERIOD = 1000;
+    
+    private static final DateFormat DATE_FORMAT = DateFormat.getTimeInstance();
 
     private RestGridClient gridClient = new RestGridClient();
     private AgentPoller poller = new AgentPoller();
     private LoggingInstallerAgent agent;
     private int installDelay;
+    private String[] systemProps;
     private boolean doWait = true;
+    
 
     public LoggingInstallerAgent() {
         
@@ -84,6 +91,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
             String agentLink = getConfig(properties, CONFIG_AGENT_LINK, null);
             String[] supportPackageTypes = getConfigList(properties, CONFIG_AGENT_PACKAGES, DEFAULT_PACKAGES);
             String installDelayStr = getConfig(properties, CONFIG_INSTALL_DELAY, DEFAULT_INSTALL_DELAY);
+            systemProps = getConfigList(properties, CONFIG_SYS_PROPS, DEFAULT_SYS_PROPS);
             
             int custInstallDelay = 0;
             try {
@@ -121,7 +129,8 @@ public class LoggingInstallerAgent extends InstallerAgent {
             agent.setAgentLink(agentLink);
             agent.setInstallDelay(custInstallDelay);
 
-            log("\nConfiguration:\n");
+            log("");
+            log("Configuration:");
             log("  Agent ID           ["
                                + (agentId == null ? "unassigned yet" : agentId)
                                + "]");
@@ -134,15 +143,8 @@ public class LoggingInstallerAgent extends InstallerAgent {
             log("  Agent user         [" + agentUser + "]");
             log("  Agent type         [" + agent.getContainerType() + "]");
             log("  Agent link         [" + agentLink + "]");
-            StringBuilder sb = new StringBuilder();
-            sb.append("  Package types      [");
-            String prefix = "";
-            for (String packageType : supportPackageTypes) {
-                sb.append(prefix + "\"" + packageType + "\"");
-                prefix = ", ";
-            }
-            sb.append("]");
-            log(sb.toString());
+            log("  Package types:     [" + list2String(supportPackageTypes) + "]");
+            log("  System props:      [" + list2String(systemProps) + "]");
 
             agent.init();
             poller.setInitialPollingDelay(INITIAL_POLLING_DELAY);
@@ -151,9 +153,9 @@ public class LoggingInstallerAgent extends InstallerAgent {
 
             poller.start();
 
-            log("\nLogging Agent Installer Ready");
-            log("---------------------------------------------");
-            log("\n");
+            log("");
+            log("Logging Agent Installer Ready");
+            log("");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,6 +168,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
             }
         }
     }
+
 
 
     public static void main(String[] args) {
@@ -206,13 +209,17 @@ public class LoggingInstallerAgent extends InstallerAgent {
     
     @Override
     public void setAgentName(String name) {
-        log("updating agent name: \"" + name + "\" (was \"" + agentName + "\")");
+        if (!name.equals(agentName)) {
+            log("updating agent name: \"" + name + "\" (was \"" + agentName + "\")");
+        }
         super.setAgentName(name);
     }
     
     @Override
     public void setProfile(String p) {
-        log("updating profile name: \"" + p + "\" (was \"" + profile + "\")");
+        if (!p.equals(profile)) {
+            log("updating profile name: \"" + p + "\" (was \"" + profile + "\")");
+        }
         super.setProfile(p);
     }
         
@@ -234,7 +241,19 @@ public class LoggingInstallerAgent extends InstallerAgent {
         super.installFeature(feature, featureCfgOverrides);
         
         log("}");
+        log("");
+        log("system properties {"); 
+        for (String s : systemProps) {
+            String v = System.getProperty(s);
+            if (v != null) {
+                log("  " + s + " = \"" + v + "\"");
+            } else {
+                log("  " + s + " is not set");
+            }
+        }
+        log("}");
         
+        log("");
         if (installDelay > 0) {
             log("sleeping for " + installDelay + " seconds ...");
             try {
@@ -337,9 +356,25 @@ public class LoggingInstallerAgent extends InstallerAgent {
         }
         return array;
     }
+
+    private String list2String(String... list) {
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        for (String s : list) {
+            sb.append(prefix + "\"" + s + "\"");
+            prefix = ", ";
+        }
+        return sb.toString();
+    }
+
     
     private void log(String s) {
-        System.out.println("[agent] " + s);
+        StringBuilder sb = new StringBuilder()
+            .append("[")
+            .append(DATE_FORMAT.format(new Date()))
+            .append("] ")
+            .append(s);
+        System.out.println(sb.toString());
     }
 
 }
