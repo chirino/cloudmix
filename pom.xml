@@ -121,7 +121,7 @@
       </snapshots>
     </repository>
     <repository>
-      <id>open.iona.m2-snapshots</id>
+      <id>open.iona.m2-snapshot</id>
       <name>FuseSource Community Dependency Snapshots Repository</name>
       <url>http://repo.fusesource.com/maven2-snapshot</url>
       <releases>
