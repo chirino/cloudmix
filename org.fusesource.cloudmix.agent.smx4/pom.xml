@@ -5,7 +5,7 @@
   <parent>
     <artifactId>cloudmix</artifactId>
     <groupId>org.fusesource.cloudmix</groupId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.fusesource.cloudmix.agent.smx4</artifactId>
