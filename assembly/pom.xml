@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.fusesource.cloudmix</groupId>
     <artifactId>cloudmix</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
   </parent>
 
   <artifactId>assemblies</artifactId>
