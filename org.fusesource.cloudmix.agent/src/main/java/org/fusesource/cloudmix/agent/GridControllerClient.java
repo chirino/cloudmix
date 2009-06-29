@@ -39,7 +39,19 @@ public class GridControllerClient {
         }
     }
     
+    public void addFeatures(Iterable<FeatureDetails> features) throws URISyntaxException {
+        for (FeatureDetails feature : features) {
+            getClient().addFeature(feature);
+        }
+    }
+
     public void addProfiles(ProfileDetails... profiles) throws URISyntaxException {
+        for (ProfileDetails profile : profiles) {
+            getClient().addProfile(profile);
+        }
+    }
+
+    public void addProfiles(Iterable<ProfileDetails> profiles) throws URISyntaxException {
         for (ProfileDetails profile : profiles) {
             getClient().addProfile(profile);
         }
