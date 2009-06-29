@@ -114,7 +114,7 @@ public class FeatureController {
      *
      * @return true if the minimum number of instances are currently deployed
      */
-    private boolean hasAtLeastMinimumInstances(String profileID) {
+    public boolean hasAtLeastMinimumInstances(String profileID) {
         int actual = instanceCount(profileID, true);
         int expected = Integer.parseInt(getDetails().getMinimumInstances());
         return actual >= expected;
