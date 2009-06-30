@@ -17,6 +17,7 @@ import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
 
 /**
  * @version $Revision: 1.1 $
@@ -48,5 +49,6 @@ public interface GridController {
     void removeProfile(String profileId);
     Collection<ProfileDetails> getProfileDetails();
     ProfileDetails getProfileDetails(String profileId);
-    
+
+    ProfileStatus getProfileStatus(String profileId);
 }

@@ -37,6 +37,7 @@ import org.fusesource.cloudmix.common.dto.ProcessList;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.mortbay.util.UrlEncoded;
 
 /**
@@ -322,6 +323,14 @@ public class DefaultGridController implements GridController, GridClient {
             throw new NotFoundException("Profile '" + profileId + "' does not exist");
         }
         return rc.getDetails();
+    }
+
+    public ProfileStatus getProfileStatus(String profileId) {
+        ProfileController rc = getProfileController(profileId);
+        if (rc == null) {
+            throw new NotFoundException("Profile '" + profileId + "' does not exist");
+        }
+        return rc.getStatus();
     }
 
     protected ProfileController getProfileController(String profileId) {

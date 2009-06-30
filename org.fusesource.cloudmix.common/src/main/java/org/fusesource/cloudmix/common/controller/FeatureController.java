@@ -24,6 +24,7 @@ import org.fusesource.cloudmix.common.controller.constraints.agent.AgentProfileC
 import org.fusesource.cloudmix.common.controller.constraints.agent.IAgentConstraintChecker;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.DependencyStatus;
 
 /**
  * @version $Revision: 63441 $
@@ -161,5 +162,11 @@ public class FeatureController {
 
     public FeatureDetails getDetails() {
         return details;
-    }    
+    }
+
+    public DependencyStatus getStatus(String profileId) {
+        DependencyStatus answer = new DependencyStatus(getId());
+        answer.setProvisioned(hasAtLeastMinimumInstances(profileId));
+        return answer;
+    }
 }

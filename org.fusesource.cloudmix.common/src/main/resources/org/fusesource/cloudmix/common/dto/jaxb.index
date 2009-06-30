@@ -17,6 +17,7 @@
 AgentDetails
 AgentDetailsList
 Dependency
+DependencyStatus
 Feature
 FeatureDetails
 FeatureDetailsList
@@ -24,6 +25,7 @@ Process
 ProcessList
 ProfileDetails
 ProfileDetailsList
+ProfileStatus
 ProvisioningAction
 ProvisioningHistory
 StringList

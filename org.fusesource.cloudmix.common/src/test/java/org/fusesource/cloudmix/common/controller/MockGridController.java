@@ -18,6 +18,7 @@ import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
 
 class MockGridController implements GridController {
 
@@ -62,4 +63,8 @@ class MockGridController implements GridController {
     public void removeFeature(String featureId) { }
     public void removeProfile(String profileId) { }
     public void updateAgentDetails(String agentId, AgentDetails agentDetails) { }
+
+    public ProfileStatus getProfileStatus(String profileId) {
+        return null;
+    }
 }

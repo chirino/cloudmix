@@ -21,6 +21,8 @@ import org.fusesource.cloudmix.common.controller.constraints.feature.IFeatureCon
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
+import org.fusesource.cloudmix.common.dto.DependencyStatus;
 
 public class ProfileController {
     
@@ -57,6 +59,17 @@ public class ProfileController {
 
     public boolean hasChanged() {
         return hasChanged;
+    }
+
+    public ProfileStatus getStatus() {
+        String profileId = getDetails().getId();
+        ProfileStatus answer = new ProfileStatus(profileId);
+        List<FeatureController> features = getDeployableFeatures();
+        for (FeatureController feature : features) {
+            DependencyStatus featureStatus = feature.getStatus(profileId);
+            answer.getFeatures().add(featureStatus);
+        }
+        return answer;
     }
 
     public List<FeatureController> getDeployableFeatures() {

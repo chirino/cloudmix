@@ -53,7 +53,7 @@ public abstract class TestController {
      */
     public static final String DEFAULT_CONTROLLER_URL = "http://localhost:8080/";
 
-    protected long startupTimeout = 30 * 1000;
+    protected long startupTimeout = 60 * 1000;
     protected String controllerUrl = DEFAULT_CONTROLLER_URL;
 
     protected List<FeatureDetails> features = new CopyOnWriteArrayList<FeatureDetails>();
@@ -61,6 +61,7 @@ public abstract class TestController {
     protected ProfileDetails profile;
     protected String profileId;
     protected boolean provisioned;
+    protected boolean destroyProfileAfter = false;
 
     /**
      * Registers any features which are required for this system test
@@ -93,7 +94,7 @@ public abstract class TestController {
         for (FeatureDetails feature : features) {
             // associate the feature with the profile, so that when the profile is deleted, so is the feature
             feature.setOwnedByProfileId(profileId);
-            
+
             // lets ensure the feature ID is unique (though the code could be smart enough to deduce it!)
             String featureId = feature.getId();
             if (!featureId.startsWith(profileId)) {
@@ -130,12 +131,14 @@ public abstract class TestController {
 
     @After
     public void tearDown() throws Exception {
-        if (gridClient != null) {
-            if (profile != null) {
-                gridClient.removeProfile(profile);
+        if (destroyProfileAfter) {
+            if (gridClient != null) {
+                if (profile != null) {
+                    gridClient.removeProfile(profile);
+                }
             }
+            provisioned = false;
         }
-        provisioned = false;
     }
 
     public GridClient getGridClient() throws URISyntaxException {

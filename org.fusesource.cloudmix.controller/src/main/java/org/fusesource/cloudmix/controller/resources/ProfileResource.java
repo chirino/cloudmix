@@ -10,6 +10,8 @@ package org.fusesource.cloudmix.controller.resources;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
@@ -22,7 +24,12 @@ public class ProfileResource extends ResourceSupport {
         controller = ctrl;
         profileId = id;
     }
-    
+
+    @Path("status")
+    public ProfileStatusResource getStatus() {
+        return new ProfileStatusResource(this);
+    }
+
     @GET
     public ProfileDetails getProfileDetails() {
         return controller.getProfileDetails(profileId);
@@ -37,5 +44,13 @@ public class ProfileResource extends ResourceSupport {
     @DELETE
     public void delete() {
         controller.removeProfile(profileId);
+    }
+
+    public GridController getController() {
+        return controller;
+    }
+
+    public String getProfileId() {
+        return profileId;
     }
 }
