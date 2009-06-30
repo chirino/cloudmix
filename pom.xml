@@ -248,9 +248,10 @@
     <module>org.fusesource.cloudmix.controller</module>
     <module>org.fusesource.cloudmix.jersey.osgi</module>
     <module>org.fusesource.cloudmix.jersey.webapp</module>
-    <module>bundles</module>
-    <module>assembly</module>
     <module>org.fusesource.cloudmix.testing</module>
+    <module>bundles</module>
+    <module>cloudtests</module>
+    <module>assembly</module>
     <!--module>systests</module-->
   </modules>
 
