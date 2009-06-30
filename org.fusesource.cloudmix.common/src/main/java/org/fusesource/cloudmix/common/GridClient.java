@@ -52,4 +52,9 @@ public interface GridClient {
     List<String> getAgentsAssignedToFeature(String id) throws URISyntaxException;
     
     void addProfile(ProfileDetails profile) throws URISyntaxException;
+
+    /**
+     * Typically only used in testing where we create and destroy a profile per integration test
+     */
+    void removeProfile(ProfileDetails profile) throws URISyntaxException;
 }

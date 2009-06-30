@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.ControllerDataProvider;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.fusesource.cloudmix.common.controller.AgentController;
 import org.fusesource.cloudmix.common.controller.FeatureController;
 import org.fusesource.cloudmix.common.controller.ProfileController;
@@ -272,6 +273,12 @@ public class DefaultGridController implements GridController, GridClient {
     
     public void addProfile(ProfileDetails profileDetails) {
         dataProvider.addProfile(profileDetails.getId(), new ProfileController(this, profileDetails));
+    }
+
+    public void removeProfile(ProfileDetails profile) throws URISyntaxException {
+        String id = profile.getId();
+        ObjectHelper.notNull(id, "profile.id");
+        removeProfile(id);
     }
 
     public void removeProfile(String profileId) {

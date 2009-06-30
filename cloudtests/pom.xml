@@ -19,6 +19,9 @@
     <module>org.fusesource.cloudmix.testing.samples</module>
   </modules>
 
+  <properties>
+    <cloudmix.url>http://localhost:8080/</cloudmix.url>
+  </properties>
 
   <build>
     <plugins>
@@ -40,6 +43,12 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <skipTests>false</skipTests>
+              <systemProperties>
+                <property>
+                  <name>cloudmix.url</name>
+                  <value>${cloudmix.url}</value>
+                </property>
+              </systemProperties>
             </configuration>
           </plugin>
         </plugins>

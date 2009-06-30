@@ -23,7 +23,10 @@ public class RestClientSupport {
     private Client client;
     private URI rootUri;
     private RestTemplate template = new RestTemplate();
-    
+
+    public RestClientSupport() {
+    }
+
     public Client getClient(String credentials) {
         if (client == null) {
             client = Client.create();

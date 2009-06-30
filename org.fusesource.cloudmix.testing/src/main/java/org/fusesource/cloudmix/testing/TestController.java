@@ -7,20 +7,22 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.testing;
 
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.controller.FeatureController;
-import org.fusesource.cloudmix.common.controller.ProfileController;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.controller.provisioning.DefaultGridController;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Before;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,11 +35,29 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version $Revision: 1.1 $
  */
 public abstract class TestController {
-    protected GridController gridController;
-    protected long startupTimeout = 30 * 1000;
-    protected List<FeatureDetails> features = new CopyOnWriteArrayList<FeatureDetails>();
+    private static final transient Log LOG = LogFactory.getLog(TestController.class);
 
-    protected ProfileController profileController;
+    /**
+     * The name of the file which all the newly created profile IDs are written on each test run.
+     * You can then clean up your test cloud by deleting all of the profiles in this file
+     */
+    public static final String PROFILE_ID_FILENAME = ".cloudmix.profiles";
+
+    /**
+     * The system property of the URL of the controller
+     */
+    public static final String CLOUDMIX_URL_PROPERTY = "cloudmix.url";
+
+    /**
+     * The default value of the {@link #CLOUDMIX_URL_PROPERTY} system property
+     */
+    public static final String DEFAULT_CONTROLLER_URL = "http://localhost:8080/";
+
+    protected long startupTimeout = 30 * 1000;
+    protected String controllerUrl = DEFAULT_CONTROLLER_URL;
+
+    protected List<FeatureDetails> features = new CopyOnWriteArrayList<FeatureDetails>();
+    protected GridClient gridClient;
     protected ProfileDetails profile;
     protected String profileId;
     protected boolean provisioned;
@@ -48,38 +68,44 @@ public abstract class TestController {
     protected abstract void installFeatures();
 
     @Before
-    public void checkProvisioned() {
+    public void checkProvisioned() throws URISyntaxException, IOException {
         if (provisioned) {
             return;
         }
 
+        // lets get the default URL for cloudmix
+        String controllerUrl = System.getProperty(CLOUDMIX_URL_PROPERTY, DEFAULT_CONTROLLER_URL);
+        System.out.println("Using controller URL: " + controllerUrl);
+
         // lets register the features
-        GridController controller = getGridController();
+        GridClient controller = getGridClient();
 
         if (profileId == null) {
             profileId = UUID.randomUUID().toString();
         }
+
+        // lets append the profileId to the file!
+        onProfileIdCreated(profileId);
         profile = new ProfileDetails(profileId);
-        profileController = new ProfileController(controller, profile);
 
         installFeatures();
 
-
         for (FeatureDetails feature : features) {
+            // TODO associate the feature with the profile ID!
 
-            // TODO should we explicity force each featureDetails ID to be unique so we can zap them later
-            // and feature details don't overwrite each other?
             String featureId = feature.getId();
-            if (!featureId.startsWith(profileId)){
-                feature.setId(profileId + ":" + featureId);
+            if (!featureId.startsWith(profileId)) {
+                featureId = profileId + ":" + featureId;
+                feature.setId(featureId);
             }
-            profileController.getGridController().addFeature(feature);
+            profile.getFeatures().add(new Dependency(featureId));
 
-            Map<String, String> config = new TreeMap<String, String>();
-            profile.addFeature(feature.getId(), config);
+            System.out.println("Adding feature: " + feature.getId());
+            controller.addFeature(feature);
         }
 
-        profileController.getGridController().addProfile(profile);
+        controller.addProfile(profile);
+
 
         // now lets start the remote grid
         assertProvisioned();
@@ -88,22 +114,49 @@ public abstract class TestController {
         System.out.println("All features provisioned!!");
     }
 
-    public GridController getGridController() {
-        if (gridController == null) {
-            gridController = createGridController();
+    protected void onProfileIdCreated(String profileId) throws IOException {
+        String fileName = PROFILE_ID_FILENAME;
+        try {
+            FileWriter writer = new FileWriter(fileName, true);
+            writer.append(profileId);
+            writer.append("\n");
+            writer.close();
+        } catch (IOException e) {
+            LOG.error("Failed to write profileId to file: " + fileName);
         }
-        return gridController;
     }
 
-    public void setGridController(GridController gridController) {
-        this.gridController = gridController;
+    @After
+    public void tearDown() throws Exception {
+        if (gridClient != null) {
+            if (profile != null) {
+                gridClient.removeProfile(profile);
+            }
+
+            for (FeatureDetails feature : features) {
+                System.out.println("Removing feature: " + feature.getId());
+                gridClient.removeFeature(feature);
+            }
+        }
+        provisioned = false;
+    }
+
+    public GridClient getGridClient() throws URISyntaxException {
+        if (gridClient == null) {
+            gridClient = createGridController();
+        }
+        return gridClient;
+    }
+
+    public void setGridClient(GridClient gridClient) {
+        this.gridClient = gridClient;
     }
 
     /**
      * Returns a newly created client. Factory method
      */
-    protected GridController createGridController() {
-        return new DefaultGridController();
+    protected GridClient createGridController() throws URISyntaxException {
+        return new RestGridClient(controllerUrl);
     }
 
 
@@ -145,14 +198,17 @@ public abstract class TestController {
         while (true) {
             failedFeatures = new TreeSet<String>();
             long now = System.currentTimeMillis();
+            failedFeatures.add("foo");
+/*
             List<FeatureController> features = profileController.getDeployableFeatures();
             for (FeatureController feature : features) {
                 if (!feature.hasAtLeastMinimumInstances(profileId)) {
                     failedFeatures.add(feature.getId() + "=" + feature.getResource());
                 }
             }
+*/
 
-            if (features.isEmpty()) {
+            if (failedFeatures.isEmpty()) {
                 return;
             } else {
                 long delta = now - start;
