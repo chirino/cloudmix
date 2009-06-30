@@ -63,9 +63,15 @@ public class DefaultGridControllerTest extends TestCase {
     public void testRemoveProfile() throws Exception {
         ControllerDataProvider dp = EasyMock.createMock(ControllerDataProvider.class);
         DefaultGridController gc = new DefaultGridController();
+
         EasyMock.expect(dp.removeProfile("production")).andReturn(
                 new ProfileController(gc, new ProfileDetails("production")));
+
         dp.setGrid(gc);
+
+        // TODO bit of a hack but the default implementation invokes getFeatures by default
+        EasyMock.expect(dp.getFeatures()).andReturn(Collections.EMPTY_LIST);
+
         EasyMock.replay(dp);
         
         gc.setDataProvider(dp);
