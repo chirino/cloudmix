@@ -91,8 +91,10 @@ public abstract class TestController {
         installFeatures();
 
         for (FeatureDetails feature : features) {
-            // TODO associate the feature with the profile ID!
-
+            // associate the feature with the profile, so that when the profile is deleted, so is the feature
+            feature.setOwnedByProfileId(profileId);
+            
+            // lets ensure the feature ID is unique (though the code could be smart enough to deduce it!)
             String featureId = feature.getId();
             if (!featureId.startsWith(profileId)) {
                 featureId = profileId + ":" + featureId;
@@ -131,11 +133,6 @@ public abstract class TestController {
         if (gridClient != null) {
             if (profile != null) {
                 gridClient.removeProfile(profile);
-            }
-
-            for (FeatureDetails feature : features) {
-                System.out.println("Removing feature: " + feature.getId());
-                gridClient.removeFeature(feature);
             }
         }
         provisioned = false;

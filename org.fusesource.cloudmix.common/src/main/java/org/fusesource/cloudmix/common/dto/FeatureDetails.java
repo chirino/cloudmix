@@ -38,6 +38,8 @@ public class FeatureDetails extends IdentifiedType {
     private Set<String> preferredMachines = new HashSet<String>();
     @XmlAttribute
     private String [] packageTypes;
+    @XmlAttribute(required = false)
+    private String ownedByProfileId;
 
     public FeatureDetails() {
     }
@@ -197,5 +199,23 @@ public class FeatureDetails extends IdentifiedType {
     public void setPackageTypes(String[] packageTypes) {
         this.packageTypes = packageTypes;
     }
-    
+
+    public String getOwnedByProfileId() {
+        return ownedByProfileId;
+    }
+
+    /**
+     * Sets the profile which is the exclusive owner of this feature (for features which are local only to a single
+     * profile) otherwise leave null so that the feature can be used in any profile.
+     *
+     * If a feature is associated with a single profile, then deleting a profile should also delete the associated
+     * features. This is used when integration testing, where a profile is created temporarily, a number of features
+     * added for that profile - then the profile is deleted.
+     *
+     *
+     * @param ownedByProfileId the profile which should own this feature; or null to imply the feature is used for any profile
+     */
+    public void setOwnedByProfileId(String ownedByProfileId) {
+        this.ownedByProfileId = ownedByProfileId;
+    }
 }

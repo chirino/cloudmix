@@ -286,6 +286,25 @@ public class DefaultGridController implements GridController, GridClient {
         if (remove == null) {
             throw new NotFoundException("Profile '" + profileId + "' does not exist");
         }
+
+        // lets delete any features associated with this profile!
+        deleteFeaturesForProfile(profileId);
+    }
+
+    /**
+     * Deletes the features for a given profile.
+     *
+     * An implementation might have a more optimal way of implementing this than brute force
+     * iterating through all features.
+     */
+    protected void deleteFeaturesForProfile(String profileId) {
+        Collection<FeatureDetails> features = getFeatureDetails();
+        for (FeatureDetails feature : features) {
+            String ownerId = feature.getOwnedByProfileId();
+            if (ownerId != null && ownerId.equals(profileId)) {
+                removeFeature(feature.getId());
+            }
+        }
     }
 
     public Collection<ProfileDetails> getProfileDetails() {
