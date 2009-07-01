@@ -37,7 +37,7 @@ public class ProfilesResource extends ResourceSupport {
         return new ProfileDetailsList(controller.getProfileDetails());
     }
     
-    @Path("{id:.*}")
+    @Path("{id}")
     public ProfileResource getProfile(@PathParam("id") String id) {
         return new ProfileResource(controller, id);
     }    
