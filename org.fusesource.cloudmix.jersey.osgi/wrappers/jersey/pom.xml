@@ -67,7 +67,7 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>${wrapped.groupId}</groupId>
+      <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-spring</artifactId>
       <version>${wrapped.version}</version>
       <optional>true</optional>

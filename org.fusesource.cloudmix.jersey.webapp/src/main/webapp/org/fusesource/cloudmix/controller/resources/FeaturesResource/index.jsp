@@ -18,15 +18,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Profiles</title>
+        <title>Features</title>
     </head>
     <body>
 
-    <h2>Profiles</h2>
+    <h2>Features</h2>
 
     <ul>
-        <c:forEach var="i" items="${it.profiles}">
-            <li><a href="profiles/${i.profileId}">${i.profileId}</a>
+        <c:forEach var="i" items="${it.features}">
+            <li><a href="features/${i.id}">${i.id}</a>
         </c:forEach>
     </ul>
 

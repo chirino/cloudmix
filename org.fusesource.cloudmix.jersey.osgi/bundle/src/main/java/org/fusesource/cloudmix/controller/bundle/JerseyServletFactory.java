@@ -17,8 +17,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-//import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import org.fusesource.cloudmix.common.spring.SpringServlet;
+import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+//import org.fusesource.cloudmix.common.spring.SpringServlet;
 
 @SuppressWarnings("unused")
 public class JerseyServletFactory implements ApplicationContextAware, InitializingBean {
@@ -83,8 +83,8 @@ public class JerseyServletFactory implements ApplicationContextAware, Initializi
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             // TODO is there another way to do this now using the standard Jersey stuff?
-            SpringServlet jerseyServlet = new SpringServlet(applicationContext, authenticator);
-            //SpringServlet jerseyServlet = new SpringServlet();
+            //SpringServlet jerseyServlet = new SpringServlet(applicationContext, authenticator);
+            SpringServlet jerseyServlet = new SpringServlet();
             httpService.registerServlet(rootContext, jerseyServlet, initParams, null);
             LOG.info("Registered servlet at: " + rootContext);
             LOG.info("With initialization  : " + initParams);

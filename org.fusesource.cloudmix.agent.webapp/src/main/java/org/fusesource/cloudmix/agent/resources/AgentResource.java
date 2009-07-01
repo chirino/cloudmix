@@ -38,13 +38,16 @@ import org.fusesource.cloudmix.agent.webapp.GridAgentWebapp;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.sun.jersey.spi.inject.Inject;
 
 @Path("/agent")
 @Singleton
 public class AgentResource implements LifecycleObserver {
     private static final transient Log LOG = LogFactory.getLog(AgentResource.class);
 
+    @Inject
     private GridAgentWebapp webapp;
+    @Inject
     private EndpointRegistry endpointRegistry;
     
     @Context

@@ -21,6 +21,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.dto.StringList;
+import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
 import java.net.URI;
@@ -206,9 +207,31 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     public List<String> getAgentsAssignedToFeature(String id) throws URISyntaxException {
         ObjectHelper.notNull(id, "feature.id");
         WebResource.Builder resource =
-                resource(append(getFeaturesUri(), "/", id, "/agents")).type("application/xml");
+                resource(append(getFeaturesUri(), "/", id, "/agents")).accept("application/xml");
         StringList answer = getTemplate().get(resource, StringList.class);
+        if (answer == null) {
+            // TODO just return empty list?
+            return new ArrayList<String>();
+        }
         return answer.getValues();
+    }
+
+    public ProfileDetails getProfile(String id) throws URISyntaxException {
+        WebResource.Builder resource =
+                resource(append(getProfilesUri(), "/", id)).accept("application/xml");
+        return getTemplate().get(resource, ProfileDetails.class);
+    }
+
+    public List<ProfileDetails> getProfiles() throws URISyntaxException {
+        WebResource.Builder resource = resource(getProfilesUri()).accept("application/xml");
+
+        ProfileDetailsList answer = getTemplate().get(resource, ProfileDetailsList.class);
+        if (answer == null) {
+            // TODO just return empty list?
+            return new ArrayList<ProfileDetails>();
+        } else {
+            return answer.getProfiles();
+        }
     }
 
     public void addProfile(ProfileDetails profile) throws URISyntaxException {
@@ -254,10 +277,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return profilesUri;
     }
 
-
     private WebResource resource(URI uri) {
         return getClient(getCredentials()).resource(uri);
     }
-
 
 }

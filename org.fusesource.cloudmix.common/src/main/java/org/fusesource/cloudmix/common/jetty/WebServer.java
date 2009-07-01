@@ -59,7 +59,7 @@ public final class WebServer {
                 webAppDir = defaultWebAppDir;
             }
             else {
-                webAppDir = "org.fusesource.cloudmix.runtime/" + defaultWebAppDir;
+                webAppDir = "org.fusesource.cloudmix.controller/" + defaultWebAppDir;
             }
             System.out.println("Defauling the web app dir to: " + webAppDir);
         }
@@ -76,7 +76,7 @@ public final class WebServer {
 
         System.out.println();
         System.out.println("==============================================================================");
-        System.out.println("Started the CloudMix Runtime: point your web browser at http://localhost:" + port + "/");
+        System.out.println("Started the CloudMix Controller: point your web browser at http://localhost:" + port + "/");
         System.out.println("==============================================================================");
 
         System.out.println();

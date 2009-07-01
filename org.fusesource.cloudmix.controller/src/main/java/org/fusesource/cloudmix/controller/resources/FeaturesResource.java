@@ -7,17 +7,20 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
+import com.sun.jersey.spi.inject.Inject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
+import java.util.List;
 
 /**
  * @version $Revision: 1.1 $
@@ -28,15 +31,20 @@ public class FeaturesResource extends ResourceSupport {
 
     @Context
     private UriInfo uriInfo;
+    @Inject
     private GridController controller;
 
     public void setController(GridController controller) {
         this.controller = controller;
     }
 
+    public List<FeatureDetails> getFeatures() {
+        return getFeaturesList().getFeatures();
+    }
+    
     @GET
     @Produces({"application/xml", "application/json" })
-    public FeatureDetailsList getFeatures() {
+    public FeatureDetailsList getFeaturesList() {
         LOG.debug("getFeatures() with controller: " + controller);
         return new FeatureDetailsList(controller.getFeatureDetails());
     }

@@ -8,6 +8,8 @@
 package org.fusesource.cloudmix.controller;
 
 import java.util.List;
+import java.util.Collection;
+import java.net.URISyntaxException;
 
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.GridClient;
@@ -29,6 +31,8 @@ public class FeaturesTest extends RuntimeTestSupport {
         adminClient.addFeature(new FeatureDetails("camelRouter-1.3.2.0"));
         assertFeatureSize(2, adminClient.getFeatures());
 
+        logAgents();
+
         List<String> agentsAssignedToFeature = adminClient.getAgentsAssignedToFeature("camelRouter-1.3.2.0");
         assertEquals(0, agentsAssignedToFeature.size());
         
@@ -38,12 +42,18 @@ public class FeaturesTest extends RuntimeTestSupport {
         
         adminClient.addAgentToFeature("camelRouter-1.3.2.0", agent1.getId(), null);
         
+        logAgents();
+
         agentsAssignedToFeature = adminClient.getAgentsAssignedToFeature("camelRouter-1.3.2.0");
         assertEquals(1, agentsAssignedToFeature.size());
 
         adminClient.removeFeature("activemqBroker-5.0.0.9");
         adminClient.removeFeature("camelRouter-1.3.2.0");
         assertFeatureSize(0, adminClient.getFeatures());
+    }
+
+    protected void logAgents() throws URISyntaxException {
+        System.out.println("Agents: " + adminClient.getAllAgentDetails());
     }
 
     protected void assertFeatureSize(int expectedSize, List<FeatureDetails> list) {

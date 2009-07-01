@@ -7,29 +7,37 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
+import com.sun.jersey.spi.inject.Inject;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
+import java.util.List;
 
 @Path("/profiles")
 public class ProfilesResource extends ResourceSupport {
+    @Inject
     GridController controller;
-    
+
     public void setController(GridController c) {
         controller = c;
+    }
+
+    public List<ProfileDetails> getProfiles() {
+        return getProfileList().getProfiles();
     }
     
     @GET
     @Produces("application/xml")
-    public ProfileDetailsList getProfiles() {
+    public ProfileDetailsList getProfileList() {
         return new ProfileDetailsList(controller.getProfileDetails());
     }
     
-    @Path("{id}")
+    @Path("{id:.*}")
     public ProfileResource getProfile(@PathParam("id") String id) {
         return new ProfileResource(controller, id);
     }    

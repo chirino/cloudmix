@@ -28,12 +28,12 @@ public class ProfilesResourceTest extends TestCase {
         Path ann = cls.getAnnotation(Path.class);
         assertEquals("/profiles", ann.value());
         
-        Method getProfiles = cls.getDeclaredMethod("getProfiles");
+        Method getProfiles = cls.getDeclaredMethod("getProfileList");
         assertNotNull(getProfiles.getAnnotation(GET.class));
         assertEquals("application/xml", getProfiles.getAnnotation(Produces.class).value()[0]);
         
         Method getProfile = cls.getDeclaredMethod("getProfile", String.class);
-        assertEquals("{id}", getProfile.getAnnotation(Path.class).value());
+        assertTrue(getProfile.getAnnotation(Path.class).value().startsWith("{id"));
         Annotation[][] parameterAnnotations = getProfile.getParameterAnnotations();
         PathParam pp = (PathParam) parameterAnnotations[0][0];
         assertEquals("id", pp.value());

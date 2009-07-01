@@ -26,10 +26,7 @@
   </listener>
   <servlet>
     <servlet-name>Jersey Spring</servlet-name>
-    <!-- TODO switch to standard Jersey Spring Sevlet
     <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-    -->
-    <servlet-class>org.fusesource.cloudmix.agent.spring.SpringServlet</servlet-class>
     <init-param>
       <param-name>com.sun.jersey.config.feature.Redirect</param-name>
       <param-value>true</param-value>

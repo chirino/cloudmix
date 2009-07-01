@@ -7,8 +7,12 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.sun.jersey.spi.inject.Inject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,12 +23,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.common.dto.AgentDetailsList;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @version $Revision: 1.1 $
@@ -35,6 +35,7 @@ public class AgentsResource extends ResourceSupport {
 
     @Context
     private UriInfo uriInfo;
+    @Inject
     private GridController controller;
 
     public void setController(GridController controller) {

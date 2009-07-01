@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.impl.container.config.AnnotatedClassScanner;
+import com.sun.jersey.server.impl.container.config.AnnotatedClassScanner;
 
 public class OSGiResourceConfig extends DefaultResourceConfig {
     public static final String CLASS_NAMES = "jersey_osgi.classnames";

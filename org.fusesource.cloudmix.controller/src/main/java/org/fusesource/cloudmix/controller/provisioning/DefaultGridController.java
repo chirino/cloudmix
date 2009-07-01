@@ -308,6 +308,16 @@ public class DefaultGridController implements GridController, GridClient {
         }
     }
 
+    // TODO note the difference in APIs between this and getProfileDetails
+    public ProfileDetails getProfile(String id) throws URISyntaxException {
+        return getProfileDetails(id);
+    }
+
+    // TODO note the difference in APIs between this and getProfileDetails
+    public List<ProfileDetails> getProfiles() throws URISyntaxException {
+        return new ArrayList<ProfileDetails>(getProfileDetails());
+    }
+
     public Collection<ProfileDetails> getProfileDetails() {
         List<ProfileDetails> answer = new ArrayList<ProfileDetails>();        
         Collection<ProfileController> profileControllers = dataProvider.getProfiles();
@@ -334,8 +344,12 @@ public class DefaultGridController implements GridController, GridClient {
     }
 
     protected ProfileController getProfileController(String profileId) {
-        String encodedId = UrlEncoded.encodeString(profileId);
-        return dataProvider.getProfile(encodedId);
+        ProfileController answer = dataProvider.getProfile(profileId);
+        if (answer == null) {
+            String encodedId = UrlEncoded.encodeString(profileId);
+            answer = dataProvider.getProfile(encodedId);
+        }
+        return answer;
     }
 
     public FeatureController getFeatureController(String featureId) {

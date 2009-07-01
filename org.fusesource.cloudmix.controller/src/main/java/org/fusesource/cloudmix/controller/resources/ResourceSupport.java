@@ -7,11 +7,14 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
+import com.sun.jersey.api.view.ImplicitProduces;
+
 
 /**
  * A base class of helper methods
  *
  * @version $Revision: 1.1 $
  */
+@ImplicitProduces("text/html;qs=5")
 public class ResourceSupport {
 }
