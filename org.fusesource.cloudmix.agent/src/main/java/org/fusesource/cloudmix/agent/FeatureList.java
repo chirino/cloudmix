@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +29,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import org.xml.sax.SAXException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class FeatureList implements Serializable {
-    
+    private static final transient Log LOG = LogFactory.getLog(FeatureList.class);
     private static final long serialVersionUID = -563410326809040533L;
 
     private Map<String, Feature> features;
@@ -40,8 +43,14 @@ public class FeatureList implements Serializable {
     }
 
     public FeatureList(String url, String credentials) throws IOException {
-        
-        load(new URL(url), credentials);
+        URL urlObject = null;
+        try {
+            urlObject = new URL(url);
+        } catch (MalformedURLException e) {
+            LOG.warn("Could not create URL for: " + url + ". Reason: " + e);
+            throw e;
+        }
+        load(urlObject, credentials);
     }
     
     // Based on SMX4 org.apache.servicemix.gshell.features.internal.RepositoryImpl.load()        

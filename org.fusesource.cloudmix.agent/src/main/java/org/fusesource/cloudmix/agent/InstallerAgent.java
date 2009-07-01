@@ -512,16 +512,22 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                         if (getClient() instanceof RestGridClient) {
                             credentials = ((RestGridClient) getClient()).getCredentials();
                         }
-                        FeatureList features = new FeatureList(action.getResource(), credentials);
-                        Feature feature = features.getFeature(action.getFeature());
-                        if (feature != null) {
-                            // Uninstall old version of feature if it still exists.
-                            Feature f = agentState.getAgentFeatures().get(feature.getName());
-                            if (f != null) {
-                                uninstallFeature(f);    
+                        String resource = action.getResource();
+                        if (resource == null) {
+                            LOGGER.debug("Action has no resource! " + action);
+                        }
+                        else {
+                            FeatureList features = new FeatureList(resource, credentials);
+                            Feature feature = features.getFeature(action.getFeature());
+                            if (feature != null) {
+                                // Uninstall old version of feature if it still exists.
+                                Feature f = agentState.getAgentFeatures().get(feature.getName());
+                                if (f != null) {
+                                    uninstallFeature(f);
+                                }
+
+                                installFeature(feature, action.getCfgUpdates());
                             }
-                            
-                            installFeature(feature, action.getCfgUpdates());
                         }
                     }
                 } catch (Exception e) {
