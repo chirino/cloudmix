@@ -119,6 +119,7 @@ public class WebappTest extends TestCase {
         String uri = BASE_URI + "/endpoint/" + encodedId;
         HttpURLConnection httpConnection = getHttpConnection(uri, true);
         httpConnection.setRequestMethod("PUT");
+        httpConnection.setRequestProperty("Content-Type", "application/xml");
         httpConnection.connect();
 
         OutputStream os = httpConnection.getOutputStream();

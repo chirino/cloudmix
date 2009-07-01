@@ -19,7 +19,7 @@ import javax.xml.bind.JAXBException;
  */
 @Provider
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {
-    private static final String JAXB_PACKAGES = "org.fusesource.cloudmix.common.dto";
+    private static final String JAXB_PACKAGES = "org.fusesource.cloudmix.common.dto:javax.xml.ws.wsaddressing";
 
     private final String packages = JAXB_PACKAGES;
     private final JAXBContext context;

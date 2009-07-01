@@ -50,12 +50,6 @@
     </dependency>
     
 
-<!--
-    <dependency>
-      <groupId>jersey-debug</groupId>
-      <artifactId>jersey</artifactId>
-    </dependency>
--->
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>jsr250-api</artifactId>
@@ -196,8 +190,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <!-- TODO no idea why these now fail! -->
-            <exclude>**/*Test.*</exclude>
             <!--<exclude>**/RuntimeFailingTest.java</exclude>-->
           </excludes>
         </configuration>

@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -165,9 +166,7 @@ public class AgentResource implements LifecycleObserver {
         this.config = config;
     }
 
-    /**
-     * Work-around @PostConstruct annotation seemingly not being honoured.
-     */
+    @PostConstruct
     public void init() {
         try {
             webapp.init(config);

@@ -45,7 +45,7 @@
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.fusesource.cloudmix.agent.resources;org.fusesource.cloudmix.common.jaxrs</param-value>
+      <param-value>org.fusesource.cloudmix.agent.resources</param-value>
     </init-param>
 
     <load-on-startup>1</load-on-startup>
