@@ -255,9 +255,10 @@
     <module>org.fusesource.cloudmix.jersey.webapp</module>
     <module>org.fusesource.cloudmix.testing</module>
     <module>bundles</module>
+    <module>features</module>
     <module>cloudtests</module>
     <module>assembly</module>
-    <!--module>systests</module-->
+    <module>systests</module>
   </modules>
 
   <dependencyManagement>

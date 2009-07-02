@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features>
+  <feature name='cloudmix.agent' version='${pom.version}'>
+    <feature version='${pom.version}'>jersey.wrapper</feature>
+    <bundle>mvn:javax.ws.rs/jsr311-api/1.0</bundle>
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.smx4/${pom.version}</bundle>
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${pom.version}</bundle>
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.common/${pom.version}</bundle>
+  </feature>
+  <feature name='jersey.wrapper' version='${pom.version}'>
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle>
+    <bundle>mvn:org.apache.geronimo.specs/geronimo-javamail_1.4_spec/1.3</bundle>
+    <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.1/1.1.0.0-fuse</bundle>
+    <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.0.2</bundle>
+  </feature>
+</features>

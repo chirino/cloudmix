@@ -18,6 +18,8 @@
         org.mortbay.jetty*;resolution:=optional,
         org.springframework.web*;resolution:=optional,
         javax.ws.rs.*;version=0.0,
+        javax.servlet.*;resolution:=optional,
+        javax.servlet.http.*;resolution:=optional,
         *
     </cloudmix.osgi.import>
   </properties>

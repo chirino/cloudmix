@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -14,20 +15,20 @@
   <description>CloudMix Agent Bundle</description>
 
   <properties>
-      <cloudmix.osgi.import.pkg>
-        com.sun.jersey.impl,
-        com.sun.jersey.impl.container,
-        com.sun.jersey.impl.container.httpserver,
-        com.sun.jersey.impl.model.method.dispatch,
-        com.sun.jersey.impl.provider,
-        com.sun.jersey.impl.provider.entity,
-        com.sun.jersey.impl.provider.header,
-        com.sun.jersey.impl.template,
-        com.sun.jersey.impl.uri,
-        org.fusesource.cloudmix.agent.security,
-        javax.ws.rs.*;version=0.0,
-        *
-      </cloudmix.osgi.import.pkg>
+    <cloudmix.osgi.import.pkg>
+      com.sun.jersey.impl,
+      com.sun.jersey.impl.container,
+      com.sun.jersey.impl.container.httpserver,
+      com.sun.jersey.impl.model.method.dispatch,
+      com.sun.jersey.impl.provider,
+      com.sun.jersey.impl.provider.entity,
+      com.sun.jersey.impl.provider.header,
+      com.sun.jersey.impl.template,
+      com.sun.jersey.impl.uri,
+      org.fusesource.cloudmix.agent.security,
+      javax.ws.rs.*;version=0.0,
+      *
+    </cloudmix.osgi.import.pkg>
   </properties>
 
   <dependencies>
@@ -55,29 +56,29 @@
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
     </dependency>
-<!--
+    <!--
+        <dependency>
+          <groupId>jersey-debug</groupId>
+          <artifactId>jersey</artifactId>
+          <version>${jersey-version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>asm</groupId>
+              <artifactId>asm</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+    -->
     <dependency>
-      <groupId>jersey-debug</groupId>
-      <artifactId>jersey</artifactId>
-      <version>${jersey-version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>provided</scope>
     </dependency>
--->
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging-api</artifactId>
-        <scope>provided</scope>
-      </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.osgi</groupId>
       <artifactId>spring-osgi-core</artifactId>
@@ -106,63 +107,64 @@
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>2.3</version>
-      <scope>test</scope>   
+      <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
-      <resources>
-          <resource>
-              <directory>${pom.basedir}/src/main/resources</directory>
-              <filtering>false</filtering>
-              <includes>
-                  <include>**/*</include>
-              </includes>
-          </resource>
-          <resource>
-              <directory>${pom.basedir}/src/main/filtered-resources</directory>
-              <filtering>true</filtering>
-              <includes>
-                  <include>**/*</include>
-              </includes>
-          </resource>
-      </resources>
+    <resources>
+      <resource>
+        <directory>${pom.basedir}/src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${pom.basedir}/src/main/filtered-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>filter</id>
-                    <phase>generate-resources</phase>
-                    <goals>
-                        <goal>resources</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>attach-artifacts</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>attach-artifact</goal>
-                    </goals>
-                    <configuration>
-                        <artifacts>
-                            <artifact>
-                                <file>target/classes/features.xml</file>
-                                <type>xml</type>
-                                <classifier>features</classifier>
-                            </artifact>
-                        </artifacts>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>filter</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/classes/features.xml</file>
+                  <type>xml</type>
+                  <classifier>features</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
