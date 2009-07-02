@@ -16,6 +16,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
 
 /**
  * @version $Revision$
@@ -61,4 +62,6 @@ public interface GridClient {
      */
     void removeProfile(ProfileDetails profile) throws URISyntaxException;
     void removeProfile(String profileId) throws URISyntaxException;
+
+    ProfileStatus getProfileStatus(String id) throws URISyntaxException;
 }

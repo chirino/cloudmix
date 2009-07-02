@@ -22,6 +22,7 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
 import java.net.URI;
@@ -220,6 +221,12 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         WebResource.Builder resource =
                 resource(append(getProfilesUri(), "/", id)).accept("application/xml");
         return getTemplate().get(resource, ProfileDetails.class);
+    }
+
+    public ProfileStatus getProfileStatus(String id) throws URISyntaxException {
+        WebResource.Builder resource =
+                resource(append(getProfilesUri(), "/", id, "/status")).accept("application/xml");
+        return getTemplate().get(resource, ProfileStatus.class);
     }
 
     public List<ProfileDetails> getProfiles() throws URISyntaxException {

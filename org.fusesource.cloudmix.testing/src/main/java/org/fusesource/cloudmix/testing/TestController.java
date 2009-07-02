@@ -12,8 +12,10 @@ import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -194,32 +196,43 @@ public abstract class TestController {
     protected void assertProvisioned() {
         long start = System.currentTimeMillis();
 
+        Set<String> provisionedFeatures = new TreeSet<String>();
         Set<String> failedFeatures = null;
         while (true) {
             failedFeatures = new TreeSet<String>();
             long now = System.currentTimeMillis();
-            failedFeatures.add("foo");
-/*
-            List<FeatureController> features = profileController.getDeployableFeatures();
-            for (FeatureController feature : features) {
-                if (!feature.hasAtLeastMinimumInstances(profileId)) {
-                    failedFeatures.add(feature.getId() + "=" + feature.getResource());
-                }
-            }
-*/
 
-            if (failedFeatures.isEmpty()) {
-                return;
-            } else {
-                long delta = now - start;
-                if (delta > startupTimeout) {
-                    Assert.fail("Provision failure. Not enough instances of features: " + failedFeatures + " after waiting " + (startupTimeout / 1000) + " seconds");
-                } else {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        // ignore
+            try {
+                ProfileStatus profileStatus = getGridClient().getProfileStatus(profileId);
+                if (profileStatus != null) {
+                    List<DependencyStatus> dependencyStatus = profileStatus.getFeatures();
+                    for (DependencyStatus status : dependencyStatus) {
+                        String featureId = status.getFeatureId();
+                        if (status.isProvisioned()) {
+                            if (provisionedFeatures.add(featureId)) {
+                                LOG.info("Provisioned feature: " + featureId);
+                            }
+                        }
+                        else {
+                            failedFeatures.add(featureId);
+                        }
                     }
+                }
+                if (failedFeatures.isEmpty()) {
+                    return;
+                }
+            } catch (URISyntaxException e) {
+                LOG.warn("Failed to poll profile status: " + e, e);
+            }
+
+            long delta = now - start;
+            if (delta > startupTimeout) {
+                Assert.fail("Provision failure. Not enough instances of features: " + failedFeatures + " after waiting " + (startupTimeout / 1000) + " seconds");
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // ignore
                 }
             }
         }
