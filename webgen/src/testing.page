@@ -11,14 +11,14 @@ Creating your own Test Cloud to run distributed test cases
 
 One of the main aims of Cloudmix is to make it easy to spin up your own clouds to provision software inside.
 
-The following instructions walk you through running a distributed test case from the [source code](../source.html).
+The following instructions walk you through running a distributed test case from the [source code](source.html).
 
 ## Running your first distributed test
 
 ### Building
 
-* first you need to get the [source code](../source.html)
-* now [build it](../building)
+* first you need to get the [source code](source.html)
+* now [build it](building.html)
 
 ### Run the Test Cloud Controller
 
