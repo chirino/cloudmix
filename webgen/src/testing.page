@@ -52,10 +52,15 @@ you should see, after about a minute, an error that the broker feature could not
 
 ### Adding agents to the Test Cloud
 
-You need some agents (or slaves) in the Test Cloud to actually run the various features used in your test. To do this the simplest way is to boot up a number of Karaf servers and add the cloudmix agent to them, connecting to your Test Cloud Controller.
+You need some agents (or slaves) in the Test Cloud to actually run the various features used in your test. 
 
-TODO...
+To do this the simplest way is to boot up a number of Karaf servers and add the cloudmix agent to them, connecting to your Test Cloud Controller.
 
+To do this get a build or distro of [Apache Karaf](http://felix.apache.org/site/karaf-users-guide.html)
 
+Then you need to install the cloudmix agent feature.
 
+    bin/karaf
+    features/addUrl mvn:org.fusesource.cloudmix/features/1.3-SNAPSHOT/xml/features
+    features/install cloudmix.agent 
 
