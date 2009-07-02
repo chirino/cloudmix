@@ -22,6 +22,15 @@
     
   </properties>
 
+  <repositories>
+    <!-- For the JNA dependency -->
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Maven  Repository </name>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>
@@ -43,6 +52,13 @@
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.1.0</version>
+      <optional>true</optional>
+    </dependency>
+                    
     <!-- 
        CM-2
     <dependency>

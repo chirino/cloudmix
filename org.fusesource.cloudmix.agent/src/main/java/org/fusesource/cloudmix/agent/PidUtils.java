@@ -7,9 +7,14 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.fusesource.cloudmix.agent.win32.Kernel32;
+
+import com.sun.jna.Pointer;
 
 public final class PidUtils {
     private static final String [] UNIX_COMMAND = {"sh", "-c", "echo $PPID"};
@@ -21,12 +26,37 @@ public final class PidUtils {
         return PID;
     }
     
+    public static void killPid(int pid, int signal, int exitCode) throws IOException {
+        Kernel32 kernel32 = Kernel32.Factory.get();
+        if( kernel32!=null ) {
+        	Pointer process = kernel32.OpenProcess(Kernel32.PROCESS_TERMINATE, 0, pid);
+        	if( process==null ) {
+        		throw new IOException("Could not open process pid "+pid+": "+Kernel32.Factory.getLastErrorAsString());
+        	}
+        	try {
+        		if( kernel32.TerminateProcess(process, exitCode) == 0 ) {
+            		throw new IOException("Could not terminate process pid "+pid+": "+Kernel32.Factory.getLastErrorAsString());
+        		}
+            	return;
+        	} finally {
+        		kernel32.CloseHandle(process);
+        	}
+        }
+        throw new UnsupportedOperationException("killPid is not yet supported on this operating system.");
+    }
+
+    
     private static int getPidInternal() {
+        Kernel32 kernel32 = Kernel32.Factory.get();
+        if( kernel32!=null ) {
+        	return kernel32.GetCurrentProcessId();
+        }
+
         int id = getMXBeanPid();
         if (id != -1) {
             return id;
         }
-        
+                
         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             // if we're on Windows, we out of luck now
             return -1; 

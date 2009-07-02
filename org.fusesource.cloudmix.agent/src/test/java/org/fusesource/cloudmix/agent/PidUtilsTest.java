@@ -7,6 +7,8 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
 public class PidUtilsTest extends TestCase {
@@ -14,5 +16,10 @@ public class PidUtilsTest extends TestCase {
         int pid = PidUtils.getPid();
         assertTrue("Pid Utils should return a meaningful pid", pid > 0);
         assertEquals("The pid should remain the same", pid, PidUtils.getPid());
+    }
+    
+    public void testKillPid() throws IOException {
+    	// Need to figure out a good way to start a process get it's pid and then kill it.
+//    	PidUtils.killPid(1972, 0, 1);
     }
 }
