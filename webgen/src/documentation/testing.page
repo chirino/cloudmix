@@ -1,0 +1,61 @@
+---
+title: Testing
+in_menu: true
+sort_info: 10
+--- name:overview
+# Testing
+
+Creating your own Test Cloud to run distributed test cases
+
+--- name:content
+
+One of the main aims of Cloudmix is to make it easy to spin up your own clouds to provision software inside.
+
+The following instructions walk you through running a distributed test case from the [source code](../source.html).
+
+## Running your first distributed test
+
+### Building
+
+* first you need to get the [source code](../source.html)
+* now [build it](../building)
+
+### Run the Test Cloud Controller
+
+Now we need to run the Test Cloud on a machine somewhere. For now lets run it on your local machine
+
+    cd org.fusesource.cloudmix.jersey.webapp
+    mvn jetty:run
+    
+You should be able to see the currently active profiles (i.e. distributed tests running) by pointing your web browser at
+
+* [http://localhost:8080/profiles](http://localhost:8080/profiles)
+
+### Run a distributed test case
+
+Now lets try one of the examples which comes with cloudmix.
+
+    cd cloudtests/org.fusesource.cloudmix.testing.samples
+    mvn test -Dtest=ActiveMQTest -Pit    
+    
+Or you can run them all via
+
+    mvn test -Pit
+    
+The integration tests are associated with the *it* profile; so that the tests can be build and ran without needing a whole test cloud.
+
+**Note that this test should fail as there are no agents in the cloud!** If you type this
+
+    more target/surefire-reports/org.fusesource.cloudmix.testing.samples.ActiveMQTest.txt 
+    
+you should see, after about a minute, an error that the broker feature could not be provisioned.
+
+### Adding agents to the Test Cloud
+
+You need some agents (or slaves) in the Test Cloud to actually run the various features used in your test. To do this the simplest way is to boot up a number of Karaf servers and add the cloudmix agent to them, connecting to your Test Cloud Controller.
+
+TODO...
+
+
+
+
