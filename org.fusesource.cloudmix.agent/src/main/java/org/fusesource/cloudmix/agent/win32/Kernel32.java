@@ -24,7 +24,7 @@ public interface Kernel32 extends StdCallLibrary {
 			try {
 				return (Kernel32) Native
 						.loadLibrary("kernel32", Kernel32.class);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return null;
 			}
 		}
