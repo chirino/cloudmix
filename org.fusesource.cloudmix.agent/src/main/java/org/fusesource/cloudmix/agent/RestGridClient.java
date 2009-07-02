@@ -34,8 +34,8 @@ import java.util.Map;
  * @version $Revision: 61256 $
  */
 public class RestGridClient extends RestClientSupport implements GridClient {
-
     private static final transient Log LOG = LogFactory.getLog(RestGridClient.class);
+
 
     private URI agentsUri;
     private URI featuresUri;

@@ -24,13 +24,16 @@ import org.fusesource.cloudmix.controller.RuntimeTestSupport;
  * @version $Revision: 1.1 $
  */
 public class ProvisioningTestSupport extends RuntimeTestSupport {
-    protected GridControllerClient gridController = new GridControllerClient();
-    protected AgentCluster agentCluster = new AgentCluster();
+    protected GridControllerClient gridController;
+    protected AgentCluster agentCluster;
 
     @Override
     protected void setUp() throws Exception {
-        agentCluster.afterPropertiesSet();
         super.setUp();
+
+        gridController = new GridControllerClient();
+        agentCluster = new AgentCluster();
+        agentCluster.afterPropertiesSet();
     }
 
     @Override

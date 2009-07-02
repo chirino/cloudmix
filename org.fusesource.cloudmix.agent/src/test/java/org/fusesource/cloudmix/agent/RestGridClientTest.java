@@ -16,12 +16,14 @@ import junit.framework.TestCase;
 import org.easymock.IAnswer;
 import org.easymock.classextension.EasyMock;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.CloudmixHelper;
 
 public class RestGridClientTest extends TestCase {
-    
+    protected String rootUrl = CloudmixHelper.getDefaultRootUrl();
+
     public void testGetAgentsUri1() throws Exception {
         RestGridClient rgc = new RestGridClient();
-        assertEquals("http://localhost:9091/agents", rgc.getAgentsUri().toString());
+        assertEquals(rootUrl + "agents", rgc.getAgentsUri().toString());
     }
 
     public void testGetAgentsUri2() throws Exception {
@@ -38,7 +40,7 @@ public class RestGridClientTest extends TestCase {
     
     public void testGetFeaturesUri1() throws Exception {
         RestGridClient rgc = new RestGridClient();
-        assertEquals("http://localhost:9091/features", rgc.getFeaturesUri().toString());
+        assertEquals(rootUrl + "features", rgc.getFeaturesUri().toString());
     }
 
     public void testGetFeaturesUri2() throws Exception {
@@ -55,8 +57,8 @@ public class RestGridClientTest extends TestCase {
     
     public void testProfilesUri() throws Exception {
         RestGridClient rgc = new RestGridClient();
-        rgc.setRootUri(new URI("http://localhost:9090/"));
-        assertEquals("http://localhost:9090/profiles", rgc.getProfilesUri().toString());
+        rgc.setRootUri(new URI(rootUrl));
+        assertEquals(rootUrl + "profiles", rgc.getProfilesUri().toString());
     }
     
     public void testUpdateAgentDetails() throws Exception {
@@ -73,7 +75,7 @@ public class RestGridClientTest extends TestCase {
         
         RestGridClient rgc = new RestGridClient();
         rgc.setTemplate(rt);
-        rgc.setRootUri(new URI("http://localhost:9090/"));
+        rgc.setRootUri(new URI(rootUrl));
         rgc.updateAgentDetails("a1", ad);
         EasyMock.verify(rt);
     }

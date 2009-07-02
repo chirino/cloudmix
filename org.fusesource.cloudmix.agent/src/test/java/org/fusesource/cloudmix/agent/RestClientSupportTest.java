@@ -7,25 +7,29 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import junit.framework.TestCase;
+
 import java.net.URI;
 
-import junit.framework.TestCase;
+import org.fusesource.cloudmix.common.CloudmixHelper;
 
 public class RestClientSupportTest extends TestCase {
     public void testRootURI() throws Exception {
         RestClientSupport rcs = new RestClientSupport();
-        assertEquals("http://localhost:9091/", rcs.getRootUri().toString());
-        
-        rcs.setRootUri(new URI("http://localhost:9091/controller"));
-        assertEquals("http://localhost:9091/controller/", rcs.getRootUri().toString());
-        
-        rcs.setRootUri(new URI("http://localhost:9091"));
-        assertEquals("http://localhost:9091/", rcs.getRootUri().toString());
+        String rootUrl = CloudmixHelper.getDefaultRootUrl();
 
-        rcs.setRootUri(new URI("http://localhost:9091/"));
-        assertEquals("http://localhost:9091/", rcs.getRootUri().toString());
+        assertEquals(rootUrl, rcs.getRootUri().toString());
 
-        rcs.setRootUri(new URI("http://localhost:9091/controller/"));
-        assertEquals("http://localhost:9091/controller/", rcs.getRootUri().toString());
+        rcs.setRootUri(new URI(rootUrl + "controller"));
+        assertEquals(rootUrl + "controller/", rcs.getRootUri().toString());
+
+        rcs.setRootUri(new URI(rootUrl.substring(0, rootUrl.length() - 1)));
+        assertEquals(rootUrl, rcs.getRootUri().toString());
+
+        rcs.setRootUri(new URI(rootUrl));
+        assertEquals(rootUrl, rcs.getRootUri().toString());
+
+        rcs.setRootUri(new URI(rootUrl + "controller/"));
+        assertEquals(rootUrl + "controller/", rcs.getRootUri().toString());
     }
 }

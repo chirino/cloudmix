@@ -24,7 +24,7 @@ public class MachineKeepAliveTest extends RuntimeTestSupport {
 
     public void testGetMachines() throws Exception {
         WebResource.Builder agentsResource =
-            client.resource("http://localhost:9091/agents").accept("application/xml");
+            client.resource(getRootUrl() + "agents").accept("application/xml");
         ClientResponse response = agentsResource.get(ClientResponse.class);
 
         System.out.println("Response: " + response);
@@ -40,7 +40,7 @@ public class MachineKeepAliveTest extends RuntimeTestSupport {
 
     public void testKeepingMachineAlive() throws Exception {
         WebResource.Builder agentsResource =
-            client.resource("http://localhost:9091/agents").type("application/xml");
+            client.resource(getRootUrl() + "agents").type("application/xml");
 
         AgentDetails details = new AgentDetails();
         ClientResponse response = agentsResource.post(ClientResponse.class, details);

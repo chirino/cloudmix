@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -18,12 +19,12 @@
       <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.fusesource.cloudmix.common</artifactId>
     </dependency>
-<!--
-    <dependency>
-      <groupId>jersey-debug</groupId>
-      <artifactId>jersey</artifactId>
-    </dependency>
--->
+    <!--
+        <dependency>
+          <groupId>jersey-debug</groupId>
+          <artifactId>jersey</artifactId>
+        </dependency>
+    -->
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>jsr250-api</artifactId>
@@ -106,7 +107,7 @@
       <artifactId>hamcrest-all</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
@@ -155,14 +156,14 @@
             <!-- enable easy connection to JConsole -->
             <systemProperty>
               <name>com.sun.management.jmxremote</name>
-              <value />
+              <value/>
             </systemProperty>
           </systemProperties>
           <scanIntervalSeconds>2</scanIntervalSeconds>
         </configuration>
       </plugin>
 
-              <plugin>
+      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>

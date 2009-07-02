@@ -7,11 +7,14 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import com.sun.jersey.api.client.Client;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.CloudmixHelper;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-
-import com.sun.jersey.api.client.Client;
 
 /**
  * A useful base class for any RESTful client facacde.
@@ -19,6 +22,8 @@ import com.sun.jersey.api.client.Client;
  * @version $Revision: 1.1 $
  */
 public class RestClientSupport {
+
+    private static final transient Log LOG = LogFactory.getLog(RestClientSupport.class);
 
     private Client client;
     private URI rootUri;
@@ -31,7 +36,7 @@ public class RestClientSupport {
         if (client == null) {
             client = Client.create();
             if (credentials != null) {
-            	client.addFilter(new AuthClientFilter(credentials));
+                client.addFilter(new AuthClientFilter(credentials));
             }
         }
         return client;
@@ -40,7 +45,7 @@ public class RestClientSupport {
     public void setClient(Client client) {
         this.client = client;
     }
-    
+
     public RestTemplate getTemplate() {
         return template;
     }
@@ -51,7 +56,7 @@ public class RestClientSupport {
 
     public URI getRootUri() throws URISyntaxException {
         if (rootUri == null) {
-            setRootUri(new URI("http://localhost:9091"));
+            setRootUri(new URI(CloudmixHelper.getDefaultRootUrl()));
         }
         return rootUri;
     }
@@ -67,20 +72,19 @@ public class RestClientSupport {
     protected URI append(URI uri, String... s) throws URISyntaxException {
         StringBuffer buffer = new StringBuffer(uri.toString());
         for (String s1 : s) {
-            if(s1.contains("/")) {
-                buffer.append(s1);    
+            if (s1.contains("/")) {
+                buffer.append(s1);
             } else {
                 try {
-                String urlEnString = URLEncoder.encode(s1, "UTF-8");
-                buffer.append(urlEnString);
+                    String urlEnString = URLEncoder.encode(s1, "UTF-8");
+                    buffer.append(urlEnString);
                 } catch (Exception e) {
-                   throw new URISyntaxException(s1, e.toString());
+                    throw new URISyntaxException(s1, e.toString());
                 }
             }
-            
-            
+
+
         }
         return new URI(buffer.toString());
     }
-
 }

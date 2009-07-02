@@ -23,13 +23,16 @@ import junit.framework.TestCase;
 
 import org.fusesource.cloudmix.agent.common.EndpointRefBuilder;
 import org.fusesource.cloudmix.common.jetty.WebServer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Test the webapp agent in a deployed state. 
  */
 public class WebappTest extends TestCase {
+    private static final transient Log LOG = LogFactory.getLog(WebappTest.class);
     
-    private static final String BASE_URI = "http://localhost:9091/service-grid/agent";
+    protected String baseURL = "http://localhost:9091/service-grid/agent";
     private static final String BASE_URN = "urn:%7Bhttp:%2F%2Fcxf.apache.org%7D";
 
     private static final String[] EXPECTED_STATUS_REGEXP = 
@@ -67,7 +70,7 @@ public class WebappTest extends TestCase {
         "^</body>$",
         "^</html>$"};
 
-    protected WebServer webServer = new WebServer();
+    protected WebServer webServer = new WebServer("org.fusesource.cloudmix.agent.webapp");
 
     @Override
     protected void setUp() throws Exception {
@@ -75,6 +78,8 @@ public class WebappTest extends TestCase {
         super.setUp();
         webServer.setWebAppContext("/service-grid");
         webServer.start();
+
+        baseURL = webServer.getRootUrl() + "service-grid/agent";
     }
 
     @Override
@@ -83,7 +88,7 @@ public class WebappTest extends TestCase {
     }
 
     public void testGetStatus() throws Exception {
-        String uri = BASE_URI + "/status";
+        String uri = baseURL + "/status";
         HttpURLConnection httpConnection = getHttpConnection(uri);
         httpConnection.connect();
 
@@ -116,7 +121,7 @@ public class WebappTest extends TestCase {
 
     public void doTestAddEndpoint(String encodedId, String address)
         throws Exception {
-        String uri = BASE_URI + "/endpoint/" + encodedId;
+        String uri = baseURL + "/endpoint/" + encodedId;
         HttpURLConnection httpConnection = getHttpConnection(uri, true);
         httpConnection.setRequestMethod("PUT");
         httpConnection.setRequestProperty("Content-Type", "application/xml");
@@ -149,7 +154,7 @@ public class WebappTest extends TestCase {
     public void doTestRemoveEndpoint(String encodedId,
                                      int expectedCode,
                                      String expectedMessage) throws Exception {
-        String uri = BASE_URI + "/endpoint/" + encodedId;
+        String uri = baseURL + "/endpoint/" + encodedId;
 
         HttpURLConnection httpConnection = getHttpConnection(uri);
         httpConnection.setRequestMethod("DELETE");
@@ -161,6 +166,7 @@ public class WebappTest extends TestCase {
     
     protected HttpURLConnection getHttpConnection(String target)
         throws Exception {
+        LOG.debug("About to connect to (" + target + ")");
         return getHttpConnection(target, false);
     }
 

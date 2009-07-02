@@ -14,6 +14,9 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.CloudmixHelper;
 
 /**
  * A simple bootstrap class for starting Jetty in your IDE using the local web
@@ -22,17 +25,24 @@ import org.mortbay.jetty.webapp.WebAppContext;
  * @version $Revision: 565003 $
  */
 public final class WebServer {
+    private static final transient Log LOG = LogFactory.getLog(WebServer.class);
 
     protected static final String defaultWebAppDir = "src/main/webapp";
 
     private Server server = new Server();
-    private int port = 9091;
+    private int port = 0;
+    private int localPort;
 
     private String webAppDir;
 
     private String webAppContext = "/";
+    protected String defaultDirectory = "org.fusesource.cloudmix.controller";
 
     public WebServer() {
+    }
+
+    public WebServer(String defaultDirectory) {
+        this.defaultDirectory = defaultDirectory;
     }
 
     public static void main(String[] args) throws Exception {
@@ -46,7 +56,7 @@ public final class WebServer {
     }
 
     public void start() throws Exception {
-        System.out.println("Starting Web Server on port: " + port);
+        LOG.info("Starting Web Server on port: " + port);
         SelectChannelConnector connector = new SelectChannelConnector();
         connector.setPort(port);
         connector.setServer(server);
@@ -59,9 +69,9 @@ public final class WebServer {
                 webAppDir = defaultWebAppDir;
             }
             else {
-                webAppDir = "org.fusesource.cloudmix.controller/" + defaultWebAppDir;
+                webAppDir = defaultDirectory + "/" + defaultWebAppDir;
             }
-            System.out.println("Defauling the web app dir to: " + webAppDir);
+            LOG.info("Defauling the web app dir to: " + webAppDir);
         }
         context.setResourceBase(webAppDir);
         context.setContextPath(webAppContext);
@@ -70,16 +80,20 @@ public final class WebServer {
             context
         });
         server.setConnectors(new Connector[] {
-            connector
+                connector
         });
         server.start();
 
-        System.out.println();
-        System.out.println("==============================================================================");
-        System.out.println("Started the CloudMix Controller: point your web browser at http://localhost:" + port + "/");
-        System.out.println("==============================================================================");
+        localPort = connector.getLocalPort();
 
-        System.out.println();
+        // lets register the root URL
+        String rootUrl = getRootUrl();
+        System.setProperty(CloudmixHelper.ROOT_URL_PROPERTY, rootUrl);
+        CloudmixHelper.setDefaultRootUrl(rootUrl);
+
+        LOG.info("==============================================================================");
+        LOG.info("Started the CloudMix Controller: point your web browser at " + rootUrl);
+        LOG.info("==============================================================================");
     }
 
     public void stop() throws Exception {
@@ -88,6 +102,14 @@ public final class WebServer {
 
     // Properties
     //-------------------------------------------------------------------------
+
+    public String getRootUrl() {
+        return "http://localhost:" + getLocalPort() + "/";
+    }
+
+    public int getLocalPort() {
+        return localPort;
+    }
 
     public int getPort() {
         return port;
