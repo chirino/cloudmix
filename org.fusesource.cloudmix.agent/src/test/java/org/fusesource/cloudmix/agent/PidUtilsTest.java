@@ -7,9 +7,22 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import junit.framework.TestCase;
+
+import com.sun.jna.Platform;
 
 public class PidUtilsTest extends TestCase {
     public void testGetPid() {
@@ -18,8 +31,93 @@ public class PidUtilsTest extends TestCase {
         assertEquals("The pid should remain the same", pid, PidUtils.getPid());
     }
     
-    public void testKillPid() throws IOException {
-    	// Need to figure out a good way to start a process get it's pid and then kill it.
-//    	PidUtils.killPid(1972, 0, 1);
+    public void testKillPid() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    	// Launch the PidUtilsTestMain class as a child process. 
+    	String cp = getClassPathOf( PidUtilsTestMain.class );
+    	final Process exec = Runtime.getRuntime().exec(new String[]{
+    		"java", "-cp", cp, PidUtilsTestMain.class.getName()	
+    	});
+
+    	// Setup a thread to wait for the child's exit code.
+    	FutureTask<Integer> exitCode = new FutureTask<Integer>(new Callable<Integer>() {
+			public Integer call() throws Exception {
+				return exec.waitFor();
+			}
+		});
+    	new Thread(exitCode).start();
+    	
+    	// The child will let us know it's pid.
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+    	String line = reader.readLine();
+    	int childPid = Integer.parseInt(line);
+    	assertTrue(childPid > 0 );
+    	
+    	assertTrue(PidUtils.isPidRunning(childPid));
+    	
+    	// Kill it..
+    	PidUtils.killPid(childPid, 9, 5);
+    	
+    	int rc = exitCode.get(3, TimeUnit.SECONDS);
+    	if( Platform.isWindows() ) {
+    		// On windows we can actually say what the exit code should be.
+    		assert(rc == 5);
+    	} else {
+    		assertTrue( rc != 0 );
+    	}
+    	
+    	assertFalse(PidUtils.isPidRunning(childPid));
+
+    	
+    	    	
     }
+
+    /**
+     * Gives you back the classpath that you can use to load up the 
+     * specified Class.
+     * 
+     * @param clazz
+     * @return
+     */
+	private String getClassPathOf(Class<? extends Object> clazz) {
+		ArrayList<String> path = new ArrayList<String>();
+		buildClassPath(path, clazz.getClassLoader());
+		StringBuilder rc = new StringBuilder();
+		boolean first=true;
+		for (String file : path) {
+			if( !first ) {
+				rc.append(File.pathSeparator);
+			}
+			rc.append(file);
+			first=false;
+		}
+		return rc.toString();
+	}
+
+	/**
+	 * Adds all the file paths in the provided ClassLoader into the provided ArrayList.
+	 *  
+	 * @param path
+	 * @param classLoader
+	 */
+	private void buildClassPath(ArrayList<String> path, ClassLoader classLoader) {
+		if( classLoader.getParent() !=null ) {
+			buildClassPath(path, classLoader.getParent());
+		}
+		if( classLoader instanceof URLClassLoader ) {
+			URLClassLoader ulc = (URLClassLoader) classLoader;
+			URL[] urls = ulc.getURLs();
+			if( urls == null ) {
+				return;
+			}
+			for (URL url : urls) {
+				if( "file".equals(url.getProtocol()) ) {
+					path.add(url.getPath());
+				} else {
+					System.out.println("Unknown url: "+url);
+				}
+			}
+		} else {
+			System.out.println("Unknown cl: "+classLoader);
+		}
+	}
 }

@@ -12,8 +12,10 @@ import java.lang.management.ManagementFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.fusesource.cloudmix.agent.unix.Posix;
 import org.fusesource.cloudmix.agent.win32.Kernel32;
 
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
 public final class PidUtils {
@@ -26,6 +28,39 @@ public final class PidUtils {
         return PID;
     }
     
+    /**
+     * @param pid
+     * @return true if the provided pid is running.
+     * @throws IOException
+     */
+    public static boolean isPidRunning(int pid) throws IOException {
+        Kernel32 kernel32 = Kernel32.Factory.get();
+        if( kernel32!=null ) {
+        	Pointer process = kernel32.OpenProcess(Kernel32.PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
+        	if( process!=null ) {
+        		kernel32.CloseHandle(process);
+        		return true;
+        	}
+        	return false;
+        }
+        
+        Posix posix = Posix.Factory.get();
+        if( posix!=null ) {
+        	return posix.kill(pid, 0) == 0;
+        }
+        throw new UnsupportedOperationException("isPidRunning is not yet supported on this operating system.");
+    }
+    
+    /**
+     * Kills a running PID.
+     *   If your on a Unix system, it kills it with the given signal, but if your on Windows,
+     *   you terminate the process with the provided exitCode.
+     *  
+     * @param pid
+     * @param signal
+     * @param exitCode
+     * @throws IOException
+     */
     public static void killPid(int pid, int signal, int exitCode) throws IOException {
         Kernel32 kernel32 = Kernel32.Factory.get();
         if( kernel32!=null ) {
@@ -42,26 +77,40 @@ public final class PidUtils {
         		kernel32.CloseHandle(process);
         	}
         }
+        
+        Posix posix = Posix.Factory.get();
+        if( posix!=null ) {
+        	if( posix.kill(pid, signal) != 0 ) {
+        		throw new IOException("Could not kill process pid "+pid+": "+posix.strerror(Native.getLastError()));
+        	}
+        	return;
+        }
+        
         throw new UnsupportedOperationException("killPid is not yet supported on this operating system.");
     }
 
     
     private static int getPidInternal() {
-        Kernel32 kernel32 = Kernel32.Factory.get();
+        
+    	// Try to do a native system call call...
+    	Kernel32 kernel32 = Kernel32.Factory.get();
         if( kernel32!=null ) {
         	return kernel32.GetCurrentProcessId();
         }
-
+        
+    	// Try to do a native system call call...
+        Posix posix = Posix.Factory.get();
+        if( posix!=null ) {
+        	return posix.getpid();
+        }
+        
+        // Fall back to some JVM hacks..
         int id = getMXBeanPid();
         if (id != -1) {
             return id;
         }
-                
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-            // if we're on Windows, we out of luck now
-            return -1; 
-        }
-        
+
+        // Fall back to using some shell hacks..
         // on other platforms, try this
         return getPidFromShell();
     }
