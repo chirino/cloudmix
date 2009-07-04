@@ -10,7 +10,9 @@ package org.fusesource.cloudmix.agent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -37,6 +39,19 @@ public class PidUtilsTest extends TestCase {
     	final Process exec = Runtime.getRuntime().exec(new String[]{
     		"java", "-cp", cp, PidUtilsTestMain.class.getName()	
     	});
+    	new Thread() {
+    		public void run() {
+    			try {
+					InputStream is = exec.getErrorStream();
+					int c;
+					while( (c=is.read()) >= 0 ) {
+						System.err.write(c);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}.start();
 
     	// Setup a thread to wait for the child's exit code.
     	FutureTask<Integer> exitCode = new FutureTask<Integer>(new Callable<Integer>() {
@@ -45,6 +60,13 @@ public class PidUtilsTest extends TestCase {
 			}
 		});
     	new Thread(exitCode).start();
+		try {
+			exitCode.get(500, TimeUnit.MILLISECONDS);
+			System.out.println("Cannot run the rest of the test.. could not execute the child process properly.");
+			return;
+		} catch (TimeoutException expected) {
+		}
+
     	
     	// The child will let us know it's pid.
     	BufferedReader reader = new BufferedReader(new InputStreamReader(exec.getInputStream()));
@@ -64,7 +86,6 @@ public class PidUtilsTest extends TestCase {
     	} else {
     		assertTrue( rc != 0 );
     	}
-    	
     	assertFalse(PidUtils.isPidRunning(childPid));
 
     	
@@ -111,7 +132,15 @@ public class PidUtilsTest extends TestCase {
 			}
 			for (URL url : urls) {
 				if( "file".equals(url.getProtocol()) ) {
-					path.add(url.getPath());
+					
+					File f;
+					try {
+					  f = new File(url.toURI());
+					} catch(URISyntaxException e) {
+					  f = new File(url.getPath());
+					}
+					
+					path.add( f.getAbsolutePath() );
 				} else {
 					System.out.println("Unknown url: "+url);
 				}

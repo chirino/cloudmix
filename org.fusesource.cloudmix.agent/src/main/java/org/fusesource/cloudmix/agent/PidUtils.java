@@ -36,10 +36,10 @@ public final class PidUtils {
     public static boolean isPidRunning(int pid) throws IOException {
         Kernel32 kernel32 = Kernel32.Factory.get();
         if( kernel32!=null ) {
-        	Pointer process = kernel32.OpenProcess(Kernel32.PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
+        	Pointer process = kernel32.OpenProcess(Kernel32.SYNCHRONIZE, 0, pid);
         	if( process!=null ) {
-        		kernel32.CloseHandle(process);
-        		return true;
+        		int x = kernel32.WaitForSingleObject(process, 0);
+        		return x != Kernel32.WAIT_OBJECT_0;
         	}
         	return false;
         }
