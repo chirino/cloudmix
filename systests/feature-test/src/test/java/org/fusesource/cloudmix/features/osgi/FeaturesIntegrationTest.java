@@ -28,7 +28,7 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
  * @version $Revision: 1.1 $
  */
 @RunWith(JUnit4TestRunner.class)
-public class OsgiIntegrationTest extends TestCase {
+public class FeaturesIntegrationTest extends TestCase {
 
     @Inject
     protected BundleContext bundleContext;
@@ -55,9 +55,10 @@ public class OsgiIntegrationTest extends TestCase {
             // using the features to install the features
             scanFeatures(mavenBundle().groupId("org.fusesource.cloudmix").
                          artifactId("features").versionAsInProject().type("xml/features"),
-                          "cloudmix.agent"),
+                          "jersey.wrapper", "cloudmix.agent"),
 
-            knopflerfish(), felix(), equinox());
+            //knopflerfish(), felix(), equinox());
+            felix(), equinox(), knopflerfish());
 
         return options;
     }

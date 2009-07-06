@@ -27,7 +27,7 @@
   <description>CloudMix System Tests</description>
 
   <modules>
-    <!--<module>feature-test</module>-->
+    <module>feature-test</module>
     
     <!--<module>osgi</module>-->
   </modules>
