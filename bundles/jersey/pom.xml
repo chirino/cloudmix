@@ -65,6 +65,12 @@
     </dependency>
        <dependency>
         <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-framework</artifactId>
+        <version>1.9.8</version>
+        <optional>true</optional>
+    </dependency>
+       <dependency>
+        <groupId>com.sun.grizzly</groupId>
         <artifactId>grizzly-http</artifactId>
         <version>1.9.8</version>
         <optional>true</optional>
@@ -96,6 +102,7 @@
                   <include>com.sun.jersey.contribs:jersey-spring</include>
                   <include>com.sun.grizzly:grizzly-http</include>
                   <include>com.sun.grizzly:grizzly-utils</include>
+                  <include>com.sun.grizzly:grizzly-framework</include>
                 </includes>
               </artifactSet>
               <filters>
@@ -113,6 +120,12 @@
                 </filter>
                 <filter>
                   <artifact>${pkgGroupId}:jersey-server</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.grizzly:grizzly-framework</artifact>
                   <excludes>
                     <exclude>**</exclude>
                   </excludes>
