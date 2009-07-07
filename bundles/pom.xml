@@ -14,6 +14,7 @@
   <description>CloudMix Bundles</description>
 
   <modules>
+    <module>jersey</module>
     <module>org.apache.activemq.broker.multicast</module>
     <module>org.apache.activemq.producer</module>
     <module>org.apache.activemq.consumer</module>

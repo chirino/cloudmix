@@ -12,12 +12,16 @@
   </feature>
 
   <feature name='jersey.wrapper' version='${pom.version}'>
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.bundles.jetty-bundle/${pom.version}</bundle>
+    <!--
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle>
-    
+  -->
     <bundle>mvn:org.mortbay.jetty/servlet-api/${servlet-api-2.5-version}</bundle>
     
     <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo-jta-spec-version}</bundle>
-    <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix-specs-version}</bundle>
+    <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/${geronimo-activation-spec-version}</bundle>
+
+    <!--<bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix-specs-version}</bundle>-->
     <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.javamail-api-1.4/${servicemix-specs-version}</bundle>
     <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-2.1/${servicemix-specs-version}</bundle>
     <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.1/${servicemix-specs-version}</bundle>

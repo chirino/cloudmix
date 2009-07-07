@@ -1,0 +1,142 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+<!--
+  <parent>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix</artifactId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+-->
+
+<!-- TODO monster HACK!!-->
+<parent>
+  <groupId>org.apache.servicemix.bundles</groupId>
+  <artifactId>bundles-pom</artifactId>
+  <version>3</version>
+</parent>
+    
+  <groupId>org.fusesource.cloudmix</groupId>
+  <version>1.3-SNAPSHOT</version>
+
+  <artifactId>org.fusesource.cloudmix.bundles.jetty-bundle</artifactId>
+  <packaging>bundle</packaging>
+
+  <name>CloudMix Bundles: ${pkgArtifactId}-${artifactVersion}</name>
+  <description>
+    This bundle simply wraps ${pkgArtifactId}-${artifactVersion}.jar.
+  </description>
+
+  <properties>
+    <!-- TODO monster HACK!!-->
+    <jersey-version>1.1.0-ea</jersey-version>
+    
+    
+    <pkgGroupId>com.sun.jersey</pkgGroupId>
+    <pkgArtifactId>jersey-osgi-bundle</pkgArtifactId>
+    <pkgVersion>${jersey-version}</pkgVersion>
+    <artifactVersion>${jersey-version}</artifactVersion>
+    <servicemix.osgi.export.pkg>com.sun</servicemix.osgi.export.pkg>
+    <servicemix.osgi.import.pkg>
+      *
+    </servicemix.osgi.import.pkg>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+       <dependency>
+        <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-http</artifactId>
+        <version>1.9.8</version>
+        <optional>true</optional>
+    </dependency>
+       <dependency>
+        <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-utils</artifactId>
+        <version>1.9.8</version>
+        <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>${pkgGroupId}:jersey-server</include>
+                  <include>${pkgGroupId}:jersey-client</include>
+                  <include>com.sun.jersey.contribs:jersey-spring</include>
+                  <include>com.sun.grizzly:grizzly-http</include>
+                  <include>com.sun.grizzly:grizzly-utils</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>${pkgGroupId}:jersey-client</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.jersey.contribs:jersey-spring</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>${pkgGroupId}:jersey-server</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.grizzly:grizzly-http</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.grizzly:grizzly-utils</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
