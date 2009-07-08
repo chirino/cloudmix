@@ -55,7 +55,7 @@ public class FeaturesIntegrationTest extends TestCase {
             // using the features to install the features
             scanFeatures(mavenBundle().groupId("org.fusesource.cloudmix").
                          artifactId("features").versionAsInProject().type("xml/features"),
-                          "jersey.wrapper", "cloudmix.agent"),
+                          "cloudmix.agent"),
 
             //knopflerfish(), felix(), equinox());
             felix(), equinox(), knopflerfish());
