@@ -53,7 +53,7 @@ public abstract class TestController {
     /**
      * The default value of the {@link #CLOUDMIX_URL_PROPERTY} system property
      */
-    public static final String DEFAULT_CONTROLLER_URL = "http://localhost:8080/";
+    public static final String DEFAULT_CONTROLLER_URL = "http://localhost:8181/";
 
     protected long startupTimeout = 60 * 1000;
     protected String controllerUrl = DEFAULT_CONTROLLER_URL;
