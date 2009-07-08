@@ -18,7 +18,8 @@
     <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
     <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
     <bundle>wrap:mvn:com.sun.jersey/jersey-client/${jersey-version}</bundle>
-    
+    <bundle>wrap:mvn:com.sun.jna/jna/3.0.5</bundle>
+
     <bundle>mvn:org.mortbay.jetty/servlet-api/${servlet-api-2.5-version}</bundle>
 
     <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo-jta-spec-version}</bundle>
