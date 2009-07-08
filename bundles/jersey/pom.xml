@@ -37,7 +37,7 @@
     <pkgArtifactId>jersey-osgi-bundle</pkgArtifactId>
     <pkgVersion>${jersey-version}</pkgVersion>
     <artifactVersion>${jersey-version}</artifactVersion>
-    <servicemix.osgi.export.pkg>com.sun</servicemix.osgi.export.pkg>
+    <servicemix.osgi.export.pkg>com.sun.*</servicemix.osgi.export.pkg>
     <servicemix.osgi.import.pkg>
       *
     </servicemix.osgi.import.pkg>
@@ -63,6 +63,8 @@
       <version>${jersey-version}</version>
       <optional>true</optional>
     </dependency>
+
+    <!-- TODO do we need all of this grizzly?? -->
        <dependency>
         <groupId>com.sun.grizzly</groupId>
         <artifactId>grizzly-framework</artifactId>
