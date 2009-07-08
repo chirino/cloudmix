@@ -46,6 +46,8 @@
       com.sun.jersey.server.impl.model.method.dispatch,
       com.sun.jersey.server.impl.template,
       com.sun.jersey.server.impl.uri,
+      com.sun.ws.rs.ext,
+      com.sun.grizzly.tcp,
       org.fusesource.cloudmix.agent.security,
 
 
