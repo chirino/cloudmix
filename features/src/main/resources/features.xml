@@ -12,12 +12,10 @@
   </feature>
 
   <feature name='jersey.wrapper' version='${pom.version}'>
-    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.bundles.jetty-bundle/${pom.version}</bundle>
-    <!--
-    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle>
-  -->
+    <!--<bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.bundles.jersey-bundle/${pom.version}</bundle>-->
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle> 
     <bundle>mvn:org.mortbay.jetty/servlet-api/${servlet-api-2.5-version}</bundle>
-    
+
     <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo-jta-spec-version}</bundle>
     <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/${geronimo-activation-spec-version}</bundle>
 

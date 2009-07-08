@@ -13,10 +13,21 @@
     <wrapped.artifactId>jersey-bundle</wrapped.artifactId>
     <wrapped.version>${jersey-version}</wrapped.version>
 
+    <cloudmix.osgi.export.pkg>
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.container.httpserver,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.uri,
+    </cloudmix.osgi.export.pkg>
+
     <!-- Import a load of stuff from the JRE, as Jersey needs quite a bit of it
-         Note that these need also be specified on the 
-             org.osgi.framework.system.packages 
-         property. -->
+   Note that these need also be specified on the
+       org.osgi.framework.system.packages
+   property. -->
     <cloudmix.osgi.import>javax.servlet,
       javax.servlet.http,
       javax.activation,

@@ -17,15 +17,6 @@
     <cloudmix.osgi.import.pkg>!org.mortbay.jetty.nio,
                           !org.mortbay.jetty.context,
                           !org.mortbay.jetty.webapp,
-                          com.sun.jersey.impl,
-                          com.sun.jersey.impl.container,
-                          com.sun.jersey.impl.container.httpserver,
-                          com.sun.jersey.impl.model.method.dispatch,
-                          com.sun.jersey.impl.provider,
-                          com.sun.jersey.impl.provider.entity,
-                          com.sun.jersey.impl.provider.header,
-                          com.sun.jersey.impl.template,
-                          com.sun.jersey.impl.uri,
                           javax.servlet,
                           javax.servlet.http,
                           javax.ws.rs.*;version=0.0,
@@ -67,6 +58,20 @@
     <cloudmix.osgi.embed.dependency>*;scope=compile;inline=false;artifactId=org.fusesource.cloudmix.controller</cloudmix.osgi.embed.dependency>
     <cloudmix.osgi.embed.directory>lib</cloudmix.osgi.embed.directory>
   </properties>
+
+  <!-- TODO OLD STUFF!!! Replace with new stuff!!!
+
+                          com.sun.jersey.impl,
+                          com.sun.jersey.impl.container,
+                          com.sun.jersey.impl.container.httpserver,
+                          com.sun.jersey.impl.model.method.dispatch,
+                          com.sun.jersey.impl.provider,
+                          com.sun.jersey.impl.provider.entity,
+                          com.sun.jersey.impl.provider.header,
+                          com.sun.jersey.impl.template,
+                          com.sun.jersey.impl.uri,
+
+  -->
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.fusesource.cloudmix.controller.bundle</artifactId>

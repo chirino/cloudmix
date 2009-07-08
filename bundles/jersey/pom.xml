@@ -20,7 +20,7 @@
   <groupId>org.fusesource.cloudmix</groupId>
   <version>1.3-SNAPSHOT</version>
 
-  <artifactId>org.fusesource.cloudmix.bundles.jetty-bundle</artifactId>
+  <artifactId>org.fusesource.cloudmix.bundles.jersey-bundle</artifactId>
   <packaging>bundle</packaging>
 
   <name>CloudMix Bundles: ${pkgArtifactId}-${artifactVersion}</name>
@@ -37,7 +37,16 @@
     <pkgArtifactId>jersey-osgi-bundle</pkgArtifactId>
     <pkgVersion>${jersey-version}</pkgVersion>
     <artifactVersion>${jersey-version}</artifactVersion>
-    <servicemix.osgi.export.pkg>com.sun.*</servicemix.osgi.export.pkg>
+    <servicemix.osgi.export.pkg>
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.container.httpserver,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.uri,
+    </servicemix.osgi.export.pkg>
     <servicemix.osgi.import.pkg>
       *
     </servicemix.osgi.import.pkg>

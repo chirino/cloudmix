@@ -16,13 +16,12 @@
 
   <properties>
     <cloudmix.osgi.import.pkg>
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.core.impl.provider.header,
       com.sun.jersey.server.impl,
       com.sun.jersey.server.impl.container,
       com.sun.jersey.server.impl.container.httpserver,
       com.sun.jersey.server.impl.model.method.dispatch,
-      com.sun.jersey.server.impl.provider,
-      com.sun.jersey.core.impl.provider.entity,
-      com.sun.jersey.core.impl.provider.header,
       com.sun.jersey.server.impl.template,
       com.sun.jersey.server.impl.uri,
       org.fusesource.cloudmix.agent.security,
@@ -31,6 +30,14 @@
     </cloudmix.osgi.import.pkg>
   </properties>
 
+  <!--
+  old stuff
+
+      com.sun.grizzly.tcp,
+      com.sun.jersey.impl.provider.entity,
+      com.sun.jersey.server.impl.provider,
+  
+  -->
   <dependencies>
     <dependency>
       <groupId>org.apache.felix.karaf.gshell</groupId>
@@ -100,6 +107,11 @@
           <artifactId>javax.servlet</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.0.5</version>
     </dependency>
 
     <!-- Test dependencies -->
