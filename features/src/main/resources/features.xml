@@ -2,8 +2,12 @@
 <features>
   <feature name='cloudmix.agent' version='${pom.version}'>
     <config name="org.fusesource.cloudmix.agent">
-        controllerRootUri = http://localhost:8181/controller
+        controllerRootUri = http://localhost:8181/
     </config>
+    <!-- old value replaced to use the default "mvn jetty:run" in the controller directory.
+        controllerRootUri = http://localhost:8181/controller
+    -->
+
     <feature version='${pom.version}'>jersey.wrapper</feature>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.smx4/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${pom.version}</bundle>

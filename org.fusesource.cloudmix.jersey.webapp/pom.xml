@@ -12,7 +12,7 @@
   <name>CloudMix :: Jersey - WebApp version</name>
   
   <properties>
-    <jetty.port>8080</jetty.port>
+    <jetty.port>8181</jetty.port>
   </properties>
 
   <dependencies>

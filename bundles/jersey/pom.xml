@@ -38,6 +38,48 @@
     <pkgVersion>${jersey-version}</pkgVersion>
     <artifactVersion>${jersey-version}</artifactVersion>
     <servicemix.osgi.export.pkg>
+      com.sun.jersey.core.impl.provider.header; version=0.0.0,
+      com.sun.jersey.core.impl.provider.entity; version=0.0.0,
+      com.sun.jersey.server.impl; version=0.0.0,
+      com.sun.jersey.server.impl.template; version=0.0.0,
+      com.sun.jersey.server.impl.container; version=0.0.0,
+      com.sun.jersey.server.impl.model.method.dispatch; version=0.0.0,
+      com.sun.jersey.server.impl.uri; version=0.0.0,
+      com.sun.jersey.server.impl.container.httpserver; version=0.0.0,
+    </servicemix.osgi.export.pkg>
+    <servicemix.osgi.import.pkg>javax.servlet,
+      javax.servlet.http,
+      javax.activation,
+      javax.xml.bind,
+      javax.xml.bind.annotation,
+      javax.xml.bind.annotation.adapters,
+      javax.xml.bind.attachment,
+      javax.xml.bind.helpers,
+      javax.xml.bind.util,
+      javax.mail,
+      javax.mail.event,
+      javax.mail.internet,
+      javax.mail.search,
+      javax.mail.util,
+      javax.xml.stream,
+      javax.xml.stream.events,
+      javax.xml.stream.util,
+      org.objectweb.asm,
+      org.objectweb.asm.attrs,
+      org.objectweb.asm.commons,
+      org.objectweb.asm.signature,
+      org.objectweb.asm.tree,
+      org.objectweb.asm.tree.analysis,
+      org.objectweb.asm.util,
+      org.objectweb.asm.util.attrs,
+      org.objectweb.asm.xml,
+      org.springframework.web.context.support;resolution:=optional,
+      org.springframework.web.context;resolution:=optional,
+      ${org.osgi.framework.system.packages},
+      !*</servicemix.osgi.import.pkg>
+  </properties>
+
+  <!-- OLD
       com.sun.jersey.core.impl.provider.entity,
       com.sun.jersey.core.impl.provider.header,
       com.sun.jersey.server.impl,
@@ -46,12 +88,8 @@
       com.sun.jersey.server.impl.model.method.dispatch,
       com.sun.jersey.server.impl.template,
       com.sun.jersey.server.impl.uri,
-    </servicemix.osgi.export.pkg>
-    <servicemix.osgi.import.pkg>
-      *
-    </servicemix.osgi.import.pkg>
-  </properties>
 
+  -->
   <dependencies>
 
     <dependency>
