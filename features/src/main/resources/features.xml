@@ -39,6 +39,7 @@
 
     <bundle>wrap:mvn:com.sun.jna/jna/3.0.5</bundle>
 
+    <bundle>wrap:mvn:com.sun.jersey/jersey-core/${jersey-version}</bundle>
     <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
     <bundle>wrap:mvn:com.sun.jersey.contribs/jersey-spring/${jersey-version}</bundle>
     <bundle>wrap:mvn:com.sun.jersey/jersey-client/${jersey-version}</bundle>
