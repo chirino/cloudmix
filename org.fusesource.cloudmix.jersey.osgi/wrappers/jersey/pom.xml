@@ -168,10 +168,5 @@
       <id>ibiblio</id>
       <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
     </repository>
-    
-    <repository>
-      <id>jboss</id>
-      <url>http://repository.jboss.com/maven2/</url>
-    </repository>
   </repositories>
 </project>

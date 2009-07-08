@@ -152,6 +152,13 @@
       <url>https://maven-repository.dev.java.net/nonav/repository</url>
       <layout>legacy</layout>
     </repository>
+
+    <!-- for com.sun.jna -->
+
+    <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.com/maven2/</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
