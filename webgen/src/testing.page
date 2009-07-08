@@ -29,7 +29,7 @@ Now we need to run the Test Cloud on a machine somewhere. For now lets run it on
     
 You should be able to see the currently active profiles (i.e. distributed tests running) by pointing your web browser at
 
-* [http://localhost:8080/profiles](http://localhost:8080/profiles)
+* [http://localhost:8181/profiles](http://localhost:8080/profiles)
 
 ### Run a distributed test case
 
