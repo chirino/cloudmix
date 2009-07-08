@@ -5,7 +5,6 @@
         controllerRootUri = http://localhost:8181/controller
     </config>
     <feature version='${pom.version}'>jersey.wrapper</feature>
-    <bundle>mvn:javax.ws.rs/jsr311-api/1.0</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.smx4/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.common/${pom.version}</bundle>
@@ -14,12 +13,7 @@
   <feature name='jersey.wrapper' version='${pom.version}'>
     <!--<bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.bundles.jersey-bundle/${pom.version}</bundle>-->
     <!--<bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle> -->
-    <bundle>wrap:mvn:com.sun.jersey.contribs/jersey-spring/${jersey-version}</bundle>
-    <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
-    <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
-    <bundle>wrap:mvn:com.sun.jersey/jersey-client/${jersey-version}</bundle>
-    <bundle>wrap:mvn:com.sun.jna/jna/3.0.5</bundle>
-
+    <bundle>mvn:javax.ws.rs/jsr311-api/1.0</bundle>
     <bundle>mvn:org.mortbay.jetty/servlet-api/${servlet-api-2.5-version}</bundle>
 
     <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo-jta-spec-version}</bundle>
@@ -42,5 +36,11 @@
     <bundle>mvn:org.springframework/spring-core/${spring-version}</bundle>
     <bundle>mvn:org.springframework/spring-context/${spring-version}</bundle>
     <bundle>mvn:org.springframework/spring-tx/${spring-version}</bundle>
+
+    <bundle>wrap:mvn:com.sun.jna/jna/3.0.5</bundle>
+
+    <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
+    <bundle>wrap:mvn:com.sun.jersey.contribs/jersey-spring/${jersey-version}</bundle>
+    <bundle>wrap:mvn:com.sun.jersey/jersey-client/${jersey-version}</bundle>
   </feature>
 </features>
