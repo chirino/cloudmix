@@ -13,7 +13,12 @@
 
   <feature name='jersey.wrapper' version='${pom.version}'>
     <!--<bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.bundles.jersey-bundle/${pom.version}</bundle>-->
-    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle> 
+    <!--<bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.jersey.wrapper/${pom.version}</bundle> -->
+    <bundle>wrap:mvn:com.sun.jersey.contribs/jersey-spring/${jersey-version}</bundle>
+    <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
+    <bundle>wrap:mvn:com.sun.jersey/jersey-server/${jersey-version}</bundle>
+    <bundle>wrap:mvn:com.sun.jersey/jersey-client/${jersey-version}</bundle>
+    
     <bundle>mvn:org.mortbay.jetty/servlet-api/${servlet-api-2.5-version}</bundle>
 
     <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo-jta-spec-version}</bundle>
