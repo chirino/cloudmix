@@ -16,15 +16,15 @@
 
   <properties>
     <cloudmix.osgi.import.pkg>
-      com.sun.jersey.impl,
-      com.sun.jersey.impl.container,
-      com.sun.jersey.impl.container.httpserver,
-      com.sun.jersey.impl.model.method.dispatch,
-      com.sun.jersey.impl.provider,
-      com.sun.jersey.impl.provider.entity,
-      com.sun.jersey.impl.provider.header,
-      com.sun.jersey.impl.template,
-      com.sun.jersey.impl.uri,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.container.httpserver,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.provider,
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.uri,
       org.fusesource.cloudmix.agent.security,
       javax.ws.rs.*;version=0.0,
       *
@@ -33,9 +33,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicemix.kernel.gshell</groupId>
-      <artifactId>org.apache.servicemix.kernel.gshell.features</artifactId>
-      <version>${smx4-version}</version>
+      <groupId>org.apache.felix.karaf.gshell</groupId>
+      <artifactId>org.apache.felix.karaf.gshell.features</artifactId>
+      <version>${karaf-version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -107,6 +107,12 @@
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
 

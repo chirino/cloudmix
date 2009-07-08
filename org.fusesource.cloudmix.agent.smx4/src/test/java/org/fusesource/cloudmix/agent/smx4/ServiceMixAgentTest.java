@@ -19,8 +19,8 @@ import org.w3c.dom.Element;
 
 import junit.framework.TestCase;
 
-import org.apache.servicemix.gshell.features.FeaturesService;
-import org.apache.servicemix.gshell.features.Repository;
+import org.apache.felix.karaf.gshell.features.FeaturesService;
+import org.apache.felix.karaf.gshell.features.Repository;
 import org.easymock.EasyMock;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.FeatureList;
@@ -103,6 +103,14 @@ public class ServiceMixAgentTest extends TestCase {
             // TODO - more work needed in uninstallFeature to get this working
             //assertFalse(bundles.contains(url));            
         }
+
+		public void installFeature(String name, String version) throws Exception {
+			fail("NOT IMPLEMENTED");			
+		}
+
+		public void uninstallFeature(String name, String version) throws Exception {
+			fail("NOT IMPLEMENTED");			
+		}
 
     }
 
