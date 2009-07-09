@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @version $Revision: 35898 $
  */
-@XmlRootElement
+@XmlRootElement(name = "agentDetails")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AgentDetailsList {
     @XmlElement(name = "agents")

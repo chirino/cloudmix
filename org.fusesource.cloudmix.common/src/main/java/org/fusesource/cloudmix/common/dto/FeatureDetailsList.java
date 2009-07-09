@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @version $Revision: 1.1 $
  */
-@XmlRootElement
+@XmlRootElement(name="featureDetails")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FeatureDetailsList {
     @XmlElement(name = "features")
