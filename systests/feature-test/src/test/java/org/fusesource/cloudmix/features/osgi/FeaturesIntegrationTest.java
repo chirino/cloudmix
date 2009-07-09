@@ -16,8 +16,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.scanFeatures;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.BundleContext;
 import org.junit.Test;
@@ -45,6 +44,9 @@ public class FeaturesIntegrationTest extends TestCase {
     @Configuration
     public static Option[] configure() {
         Option[] options = options(
+            // lets zap the caches first to ensure we're using the latest/greatest
+            cleanCaches(),
+
             // install log service using pax runners profile abstraction (there are more profiles, like DS)
             logProfile().version("1.3.0"),
             // install the spring dm profile
