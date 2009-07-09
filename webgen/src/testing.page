@@ -61,6 +61,6 @@ To do this get a build or distro of [Apache Karaf](http://felix.apache.org/site/
 Then you need to install the cloudmix agent feature.
 
     bin/karaf
-    features/addUrl mvn:org.fusesource.cloudmix/features/1.3-SNAPSHOT/xml/features
-    features/install cloudmix.agent 
+    features:addUrl mvn:org.fusesource.cloudmix/features/1.3-SNAPSHOT/xml/features
+    features:install cloudmix.agent 
 
