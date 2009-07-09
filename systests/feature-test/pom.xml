@@ -90,12 +90,14 @@
       <version>${pax-exam-version}</version>
       <scope>test</scope>
     </dependency>
+<!--
     <dependency>
       <groupId>org.ops4j.pax.runner.profiles</groupId>
       <artifactId>log</artifactId>
       <version>1.3.0</version>
       <scope>test</scope>
     </dependency>
+-->
 
     <dependency>
       <groupId>org.osgi</groupId>
