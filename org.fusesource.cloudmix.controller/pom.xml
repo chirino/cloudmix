@@ -14,6 +14,10 @@
   <name>CloudMix :: Controller</name>
   <description>CloudMix Controller</description>
 
+  <properties>
+    <jetty.port>8181</jetty.port>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>

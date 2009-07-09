@@ -19,24 +19,12 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Profile View</title>
+  <title>Feature View</title>
 </head>
 <body>
 
-<h2>Profile: ${it.profileId}</h2>
+<h2>Feature: ${it.featureDetails.resource}</h2>
 
-<table>
-  <tr>
-    <th>Feature</th>
-    <th>Provisioned?</th>
-  </tr>
-  <c:forEach var="i" items="${it.status.status.features}">
-    <tr>
-      <td><a href="/features/${i.featureId}">${i.featureId}</a></td>
-      <td>${i.provisioned}</td>
-    </tr>
-  </c:forEach>
-</table>
 
 </body>
 </html>

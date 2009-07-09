@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 
 /**
  * @version $Revision: 1.1 $
@@ -42,6 +43,11 @@ public class AgentsResource extends ResourceSupport {
         this.controller = controller;
     }
 
+    public Collection<AgentDetails> getAgents() {
+        return controller.getAllAgentDetails();
+    }
+
+
     @POST
     @Consumes("application/xml")
     public Response post(AgentDetails agentDetails) throws URISyntaxException {
@@ -53,9 +59,9 @@ public class AgentsResource extends ResourceSupport {
     }
 
     @GET
-    public AgentDetailsList get() {
+    public AgentDetailsList getAgentDetailsList() {
         LOG.debug("getMachines() with controller: " + controller);
-        return new AgentDetailsList(controller.getAllAgentDetails());
+        return new AgentDetailsList(getAgents());
     }
 
     /**

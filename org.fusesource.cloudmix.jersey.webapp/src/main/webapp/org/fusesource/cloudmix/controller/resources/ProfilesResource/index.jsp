@@ -27,6 +27,7 @@
     <ul>
         <c:forEach var="i" items="${it.profiles}">
             <li><a href="profiles/${i.id}">${i.id}</a>
+            </li>
         </c:forEach>
     </ul>
 

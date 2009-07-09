@@ -16,15 +16,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Service Grid</title>
+        <title>CloudMix</title>
     </head>
     <body>
 
-    <h2>Service Grid</h2>
+    <h2>CloudMix</h2>
 
     <ul>
         <li><a href="agents">Agents</a>
         <li><a href="agentView">Agent View</a>
+        <li><a href="profiles">Profiles</a>
+        <li><a href="features">Features</a>
     </ul>
 
     </body>
