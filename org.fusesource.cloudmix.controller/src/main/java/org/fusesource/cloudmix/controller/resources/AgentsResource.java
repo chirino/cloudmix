@@ -53,7 +53,6 @@ public class AgentsResource extends ResourceSupport {
     }
 
     @GET
-    @Produces({"text/html", "application/xml", "application/json" })
     public AgentDetailsList get() {
         LOG.debug("getMachines() with controller: " + controller);
         return new AgentDetailsList(controller.getAllAgentDetails());

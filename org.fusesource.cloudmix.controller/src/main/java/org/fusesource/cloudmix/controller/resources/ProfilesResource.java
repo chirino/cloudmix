@@ -32,7 +32,6 @@ public class ProfilesResource extends ResourceSupport {
     }
     
     @GET
-    @Produces("application/xml")
     public ProfileDetailsList getProfileList() {
         return new ProfileDetailsList(controller.getProfileDetails());
     }

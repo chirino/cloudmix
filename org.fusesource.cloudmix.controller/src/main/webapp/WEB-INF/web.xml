@@ -19,11 +19,12 @@
   </description>
   <display-name>CloudMix</display-name>
 
-
   <listener>
     <description>Spring listener that initializes the ApplicationContext in ServletContext</description>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+
+  <!--
   <servlet>
     <servlet-name>Jersey Spring</servlet-name>
     <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
@@ -36,9 +37,6 @@
       <param-value>true</param-value>
     </init-param>
 
-
-    <!-- TODO this is a hack to work inside jetty:run but must be disabled for JSP views of resources to work
-    -->
     <init-param>
       <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
       <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
@@ -53,7 +51,38 @@
   <servlet-mapping>
     <servlet-name>Jersey Spring</servlet-name>
     <url-pattern>/</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping>-->
+
+  <filter>
+    <filter-name>Jersey Filter</filter-name>
+    <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+      <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.fusesource.cloudmix.controller.resources;org.fusesource.cloudmix.common.jaxrs</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.Redirect</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.ImplicitViewables</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+            <param-value>/(|index.*|(images|css|js|classpath|styles)/.*)</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Jersey Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
 
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>

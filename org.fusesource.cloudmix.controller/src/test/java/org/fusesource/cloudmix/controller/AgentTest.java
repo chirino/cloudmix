@@ -13,13 +13,14 @@ import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
+import com.sun.jersey.api.client.Client;
 
 /**
  * @version $Revision: 1.1 $
  */
 public class AgentTest extends RuntimeTestSupport {
     protected InstallerAgent agent = new InstallerAgent();
-    protected GridClient adminClient = new RestGridClient();
+    protected RestGridClient adminClient = new RestGridClient();
 
     public void testMachineKeepAlive() throws Exception {
         agent.call();
@@ -31,6 +32,11 @@ public class AgentTest extends RuntimeTestSupport {
         Collection<AgentDetails> list = adminClient.getAllAgentDetails();
         int size = list.size();
         assertTrue("Should not be empty!", size > 0);
+
+
+        Client client = new Client();
+        String xml = client.resource(adminClient.getAgentsUri()).accept("text/xml").get(String.class);
+        System.out.println("XMl: " + xml);
 
         String hostname = agent.getAgentDetails().getHostname();
 

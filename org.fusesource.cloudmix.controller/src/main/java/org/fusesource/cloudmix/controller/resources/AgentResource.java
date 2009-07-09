@@ -36,7 +36,6 @@ public class AgentResource extends ResourceSupport {
     }
 
     @GET
-    @Produces({"application/xml", "application/json" })
     public AgentDetails get() {
         return controller.getAgentDetails(agentId);
     }
@@ -53,7 +52,6 @@ public class AgentResource extends ResourceSupport {
 
     
     @GET @Path("history")
-    @Produces({"application/xml", "application/json" })
     public Response history(@Context Request request) {
         ProvisioningHistory answer = getHistory();
         

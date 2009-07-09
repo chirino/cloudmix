@@ -11,8 +11,8 @@ import com.sun.jersey.spi.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -41,16 +41,15 @@ public class FeaturesResource extends ResourceSupport {
     public List<FeatureDetails> getFeatures() {
         return getFeaturesList().getFeatures();
     }
-    
+
     @GET
-    @Produces({"application/xml", "application/json" })
     public FeatureDetailsList getFeaturesList() {
         LOG.debug("getFeatures() with controller: " + controller);
         return new FeatureDetailsList(controller.getFeatureDetails());
     }
 
     @Path("{featureId}")
-    public FeatureResource feature(@PathParam("featureId")String featureId) {
+    public FeatureResource feature(@PathParam("featureId") String featureId) {
         return new FeatureResource(controller, featureId);
     }
 }

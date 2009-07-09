@@ -11,11 +11,12 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
 
 /**
  * @version $Revision: 1.1 $
  */
-public class ProfileStatusResource {
+public class ProfileStatusResource extends ResourceSupport{
     private ProfileResource profileResource;
 
     public ProfileStatusResource(ProfileResource profileResource) {

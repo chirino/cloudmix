@@ -47,7 +47,6 @@ public class FeatureResource extends ResourceSupport {
     }
     
     @GET @Path("agents")
-    @Produces({"application/xml", "application/json" })
     public StringList getAgents(@PathParam("featureId")String aFeatureId) {
         return new StringList(controller.getAgentsAssignedToFeature(aFeatureId));
     }

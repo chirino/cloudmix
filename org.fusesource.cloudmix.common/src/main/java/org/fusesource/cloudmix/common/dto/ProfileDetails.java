@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProfileDetails extends IdentifiedType {    
-    @XmlElement(name = "features")
+    @XmlElement(name = "dependency")
     private List<Dependency> features = new ArrayList<Dependency>();
     
     public ProfileDetails() { }

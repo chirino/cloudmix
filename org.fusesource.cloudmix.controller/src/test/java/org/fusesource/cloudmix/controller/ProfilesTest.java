@@ -14,11 +14,13 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import java.util.List;
 import java.net.URISyntaxException;
 
+import com.sun.jersey.api.client.Client;
+
 /**
  * @version $Revision: 1.1 $
  */
 public class ProfilesTest extends RuntimeTestSupport {
-    protected GridClient adminClient = new RestGridClient();
+    protected RestGridClient adminClient = new RestGridClient();
     private static final String PROFILE_ID1 = "d654017c-dcfe-43fc-be92-074457472660";
     private static final String PROFILE_ID2 = "b9903abc-8c57-4ebd-9aad-d9bda8bd1242";
 
@@ -34,6 +36,10 @@ public class ProfilesTest extends RuntimeTestSupport {
         assertProfileExists(PROFILE_ID2);
 
         System.out.println("Profiles: " + adminClient.getProfiles());
+
+        Client client = new Client();
+        String xml = client.resource(adminClient.getProfilesUri()).accept("text/xml").get(String.class);
+        System.out.println("XML: " + xml);
 
 
         adminClient.removeProfile(PROFILE_ID1);

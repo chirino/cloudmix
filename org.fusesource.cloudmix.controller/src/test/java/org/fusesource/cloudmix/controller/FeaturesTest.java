@@ -15,12 +15,13 @@ import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import com.sun.jersey.api.client.Client;
 
 /**
  * @version $Revision: 1.1 $
  */
 public class FeaturesTest extends RuntimeTestSupport {
-    protected GridClient adminClient = new RestGridClient();
+    protected RestGridClient adminClient = new RestGridClient();
 
     public void testAddingAndRemovingFeatures() throws Exception {
         assertFeatureSize(0, adminClient.getFeatures());
@@ -32,6 +33,11 @@ public class FeaturesTest extends RuntimeTestSupport {
         assertFeatureSize(2, adminClient.getFeatures());
 
         logAgents();
+
+
+        Client client = new Client();
+        String xml = client.resource(adminClient.getFeaturesUri()).accept("text/xml").get(String.class);
+        System.out.println("XMl: " + xml);
 
         List<String> agentsAssignedToFeature = adminClient.getAgentsAssignedToFeature("camelRouter-1.3.2.0");
         assertEquals(0, agentsAssignedToFeature.size());

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="profiles")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProfileDetailsList {
-    @XmlElement(name = "profiles")
+    @XmlElement(name = "profile")
     List<ProfileDetails> profiles;
 
     public ProfileDetailsList() {

@@ -9,6 +9,8 @@ package org.fusesource.cloudmix.controller.resources;
 
 import com.sun.jersey.api.view.ImplicitProduces;
 
+import javax.ws.rs.Produces;
+
 
 /**
  * A base class of helper methods
@@ -16,5 +18,6 @@ import com.sun.jersey.api.view.ImplicitProduces;
  * @version $Revision: 1.1 $
  */
 @ImplicitProduces("text/html;qs=5")
+@Produces({"application/xml", "application/json", "text/xml", "text/json"})
 public class ResourceSupport {
 }
