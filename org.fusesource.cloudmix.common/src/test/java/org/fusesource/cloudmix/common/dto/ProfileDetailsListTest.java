@@ -19,18 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import junit.framework.TestCase;
 
 public class ProfileDetailsListTest extends TestCase {
-    public void testAnnotations() throws Exception {
-        Class<ProfileDetailsList> cls = ProfileDetailsList.class;
-        
-        assertNotNull(cls.getAnnotation(XmlRootElement.class));
-        
-        XmlAccessorType accType = cls.getAnnotation(XmlAccessorType.class);
-        assertEquals(XmlAccessType.FIELD, accType.value());
-        
-        Field profilesField = cls.getDeclaredField("profiles");
-        XmlElement xmlElem = profilesField.getAnnotation(XmlElement.class);
-        assertEquals("profiles", xmlElem.name());
-    }
     
     public void testConstructor() {
         ProfileDetailsList pdl = new ProfileDetailsList();
