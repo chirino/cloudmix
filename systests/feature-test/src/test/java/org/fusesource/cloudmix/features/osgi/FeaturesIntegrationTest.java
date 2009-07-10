@@ -10,8 +10,6 @@ package org.fusesource.cloudmix.features.osgi;
 import static org.ops4j.pax.exam.CoreOptions.*;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 
-import javax.print.attribute.standard.MediaSize.Other;
-
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -56,6 +54,8 @@ public class FeaturesIntegrationTest extends TestCase {
         		
             // lets zap the caches first to ensure we're using the latest/greatest
             cleanCaches(),
+            
+            rawPaxRunnerOption("startLevel", "100"),
 
             // install log service using pax runners profile abstraction (there are more profiles, like DS)
             logProfile().version("1.3.0"),
