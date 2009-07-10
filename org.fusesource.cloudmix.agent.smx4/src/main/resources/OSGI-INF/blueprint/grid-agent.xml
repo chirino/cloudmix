@@ -12,7 +12,7 @@
     </ext:default-properties>
   </ext:property-placeholder>
 
-  <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller">
+  <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller" init-method="start">
     <property name="installerAgent" ref="smxAgent"/>
     <property name="initialPollingDelay" value="${initialPollingDelay}"/>
     <property name="pollingPeriod" value="${pollingPeriod}"/>
