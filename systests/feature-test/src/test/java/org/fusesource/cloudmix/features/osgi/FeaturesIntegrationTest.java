@@ -34,18 +34,16 @@ public class FeaturesIntegrationTest extends TestCase {
     public void testFeatureRunsInOsgi() throws Exception {
         System.out.println("Started up!");
 
-        boolean allActive = true;
-        
         for(Bundle b: bundleContext.getBundles()) {
         	System.out.println(b.getBundleId() + "\t" + b.getSymbolicName() + "\t" + state2String(b.getState()));
         	if (b.getState() != Bundle.ACTIVE) {
-        		allActive = false;
+                fail("Not active bundle "+ b.getBundleId() + "\t" + b.getSymbolicName() + "\t" + state2String(b.getState()));
         	}
         }
-        Thread.sleep(1000);
 
-        assertTrue(allActive);
-        //System.out.println("Worked!!!");
+        Thread.sleep(30 * 1000);
+
+        System.out.println("Worked!!!");
     }
               
     @Configuration
