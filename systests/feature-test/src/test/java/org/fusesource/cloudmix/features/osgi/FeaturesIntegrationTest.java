@@ -7,12 +7,7 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.features.osgi;
 
-import static org.ops4j.pax.exam.CoreOptions.felix;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.knopflerfish;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.*;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 
 import junit.framework.TestCase;
@@ -46,25 +41,14 @@ public class FeaturesIntegrationTest extends TestCase {
     @Configuration
     public static Option[] configure() {
         Option[] options = options(
+        		
             // lets zap the caches first to ensure we're using the latest/greatest
             cleanCaches(),
 
             // install log service using pax runners profile abstraction (there are more profiles, like DS)
             logProfile().version("1.3.0"),
-            // install the spring dm profile
-            //profile("spring.dm").version("1.2.0"),
-            // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+            profile("karaf.gogo", "1.2.0"),
             
-            mavenBundle().groupId("org.apache.felix.karaf.deployer").artifactId("org.apache.felix.karaf.deployer.filemonitor").version("1.2.0-SNAPSHOT"),
-            mavenBundle().groupId("org.apache.geronimo").artifactId("blueprint-bundle").version("1.0.0-SNAPSHOT"),
-            mavenBundle().groupId("org.apache.servicemix.bundles").artifactId("org.apache.servicemix.bundles.jline").version("0.9.94_1"),
-            mavenBundle().groupId("org.apache.felix.gogo").artifactId("org.apache.felix.gogo.runtime").version("0.9.0-SNAPSHOT"),
-            mavenBundle().groupId("org.apache.felix.gogo").artifactId("org.apache.felix.gogo.commands").version("0.9.0-SNAPSHOT"),
-            mavenBundle().groupId("org.apache.felix.karaf.gshell").artifactId("org.apache.felix.karaf.gshell.console").version("1.2.0-SNAPSHOT"),
-            mavenBundle().groupId("org.apache.felix.karaf.gshell").artifactId("org.apache.felix.karaf.gshell.features").version("1.2.0-SNAPSHOT"),
-            mavenBundle().groupId("org.apache.felix.karaf.deployer").artifactId("org.apache.felix.karaf.deployer.blueprint").version("1.2.0-SNAPSHOT"),
-        
             // using the features to install the features
             scanFeatures(mavenBundle().groupId("org.fusesource.cloudmix").
                          artifactId("features").versionAsInProject().type("xml/features"),
@@ -72,8 +56,13 @@ public class FeaturesIntegrationTest extends TestCase {
             
             cleanCaches(),
 
-            //knopflerfish(), felix(), equinox());
-            felix(), equinox(), knopflerfish()
+            systemProperty("karaf.home").value(System.getProperty("user.dir")),
+            systemProperty("karaf.name").value("root"),
+            systemProperty("karaf.startLocalConsole").value("false"),
+            systemProperty("karaf.startRemoteConsole").value("false"),
+            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+            
+            felix() //, equinox(), knopflerfish()
           );
 
         return options;
