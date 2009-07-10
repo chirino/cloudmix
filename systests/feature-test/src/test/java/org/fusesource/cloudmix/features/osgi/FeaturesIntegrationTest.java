@@ -10,6 +10,8 @@ package org.fusesource.cloudmix.features.osgi;
 import static org.ops4j.pax.exam.CoreOptions.*;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -18,6 +20,7 @@ import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -32,11 +35,20 @@ public class FeaturesIntegrationTest extends TestCase {
     @Test
     public void testFeatureRunsInOsgi() throws Exception {
         System.out.println("Started up!");
+
+        boolean allActive = true;
+        
+        for(Bundle b: bundleContext.getBundles()) {
+        	System.out.println(b.getBundleId() + "\t" + b.getSymbolicName() + "\t" + state2String(b.getState()));
+        	if (b.getState() != Bundle.ACTIVE) {
+        		allActive = false;
+        	}
+        }
         Thread.sleep(1000);
 
-        System.out.println("Worked!!!");
+        assertTrue(allActive);
+        //System.out.println("Worked!!!");
     }
-
               
     @Configuration
     public static Option[] configure() {
@@ -66,5 +78,17 @@ public class FeaturesIntegrationTest extends TestCase {
           );
 
         return options;
+    }
+    
+    private String state2String(final int state) {
+    	switch(state) {
+    		case Bundle.ACTIVE    : return "Active";
+    		case Bundle.INSTALLED : return "Installed";
+    		case Bundle.RESOLVED  : return "Resolved";
+    		case Bundle.STARTING  : return "Starting";
+    		case Bundle.STOPPING  : return "Stopping";
+    		case Bundle.UNINSTALLED : return "Uninstalled";
+    		default : return "Unknown";
+    	}
     }
 }
