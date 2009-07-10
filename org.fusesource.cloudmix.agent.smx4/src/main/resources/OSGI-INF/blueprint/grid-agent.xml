@@ -30,7 +30,7 @@
     <property name="passwordFile" value="${karaf.home}/etc/agent.password"/>
   </bean>
 
-  <bean id="smxAgent" class="org.fusesource.cloudmix.agent.smx4.ServiceMixAgent">
+  <bean id="smxAgent" class="org.fusesource.cloudmix.agent.smx4.ServiceMixAgent" init-method="init">
     <property name="client" ref="restGridClient"/>
     <property name="featuresService" ref="featuresService"/>
     <property name="maxFeatures" value="${maxFeatures}"/>
