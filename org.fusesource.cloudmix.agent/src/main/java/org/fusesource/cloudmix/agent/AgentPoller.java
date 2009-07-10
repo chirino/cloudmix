@@ -98,4 +98,10 @@ public class AgentPoller implements InitializingBean, DisposableBean {
     public void setAgent(Callable<Object> agent) {
         this.agent = agent;
     }
+
+    public void setInstallerAgent(InstallerAgent agent) {
+        setAgent(agent);
+    }
+
+
 }
