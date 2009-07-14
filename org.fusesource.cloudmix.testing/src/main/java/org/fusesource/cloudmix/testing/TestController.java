@@ -70,6 +70,16 @@ public abstract class TestController {
      */
     protected abstract void installFeatures();
 
+
+    /**
+     * Factory method to create a new feature which is unique to the current test's profile
+     */
+    protected FeatureDetails createFeatureDetails(String featureId, String uri) {
+        FeatureDetails answer = new FeatureDetails(featureId, uri);
+        ensureFeatureIdLocalToProfile(answer);
+        return answer;
+    }
+
     @Before
     public void checkProvisioned() throws URISyntaxException, IOException {
         if (provisioned) {
@@ -94,16 +104,9 @@ public abstract class TestController {
         installFeatures();
 
         for (FeatureDetails feature : features) {
-            // associate the feature with the profile, so that when the profile is deleted, so is the feature
-            feature.setOwnedByProfileId(profileId);
+            ensureFeatureIdLocalToProfile(feature);
 
-            // lets ensure the feature ID is unique (though the code could be smart enough to deduce it!)
-            String featureId = feature.getId();
-            if (!featureId.startsWith(profileId)) {
-                featureId = profileId + ":" + featureId;
-                feature.setId(featureId);
-            }
-            profile.getFeatures().add(new Dependency(featureId));
+            profile.getFeatures().add(new Dependency(feature.getId()));
 
             System.out.println("Adding feature: " + feature.getId());
             controller.addFeature(feature);
@@ -117,6 +120,21 @@ public abstract class TestController {
         provisioned = true;
 
         System.out.println("All features provisioned!!");
+    }
+
+    /**
+     * associate the feature with the profile, so that when the profile is deleted, so is the feature
+     */
+    protected void ensureFeatureIdLocalToProfile(FeatureDetails feature) {
+        Assert.assertNotNull("profile ID should be defined!", profileId);
+        
+        // lets ensure the feature ID is unique (though the code could be smart enough to deduce it!)
+        String featureId = feature.getId();
+        if (!featureId.startsWith(profileId)) {
+            featureId = profileId + ":" + featureId;
+            feature.setId(featureId);
+        }
+        feature.setOwnedByProfileId(profileId);
     }
 
     protected void onProfileIdCreated(String profileId) throws IOException {
@@ -237,6 +255,5 @@ public abstract class TestController {
             }
         }
     }
-
 
 }

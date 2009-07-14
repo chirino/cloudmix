@@ -24,14 +24,15 @@ public class ActiveMQTest extends TestController {
 
 
     protected void installFeatures() {
-        FeatureDetails broker = new FeatureDetails("org.apache.activemq.broker.multicast",
+        FeatureDetails broker = createFeatureDetails("org.apache.activemq.broker.multicast",
                 "mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/1.0-SNAPSHOT/xml/feature").ownsMachine().maximumInstances("1");
 
-        FeatureDetails producer = new FeatureDetails("org.apache.activemq.producer",
+        FeatureDetails producer = createFeatureDetails("org.apache.activemq.producer",
                 "mvn:org.fusesource.cloudmix/org.apache.activemq.producer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("2");
-        FeatureDetails consumer = new FeatureDetails("org.apache.activemq.consumer",
+        FeatureDetails consumer = createFeatureDetails("org.apache.activemq.consumer",
                 "mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
     }
+
 }
