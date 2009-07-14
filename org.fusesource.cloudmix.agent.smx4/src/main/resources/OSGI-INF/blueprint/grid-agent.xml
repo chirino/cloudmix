@@ -7,7 +7,7 @@
       <ext:property name="initialPollingDelay" value="1000"/>
       <ext:property name="maxFeatures" value="25"/>
       <ext:property name="pollingPeriod" value="500"/>
-      <ext:property name="profile" value="default"/>
+      <ext:property name="profile" value="*"/>
       <ext:property name="controllerRootUri" value="http://localhost:8181/"/>
     </ext:default-properties>
   </ext:property-placeholder>

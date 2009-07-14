@@ -38,7 +38,8 @@ public class AgentProfileChecker implements IAgentConstraintChecker {
         
         List<AgentController> acceptedCandidates = new ArrayList<AgentController>();
         for (AgentController ac : someCandidates) {
-            if (profileId.equals(ac.getDetails().getProfile())) {
+            String agentProfile = ac.getDetails().getProfile();
+            if ("*".equals(agentProfile) || profileId.equals(agentProfile)) {
                 acceptedCandidates.add(ac);
             }
         }

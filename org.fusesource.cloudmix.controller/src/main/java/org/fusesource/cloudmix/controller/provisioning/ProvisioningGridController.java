@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
@@ -97,18 +98,20 @@ public class ProvisioningGridController extends DefaultGridController implements
                 }
                 profile.setChanged(false);
             }
-            
-            for (FeatureController fc : profile.getDeployableFeatures()) {
+
+            List<FeatureController> deployableFeatures = profile.getDeployableFeatures();
+            for (FeatureController fc : deployableFeatures) {
                 String featureId = decodeURL(fc.getId());
-                AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers());
+                Collection<AgentController> agentTrackers = agentTrackers();
+                AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers);
                 
                 
                 if (agent == null) {
-                    LOG.info("No Agent Selected.");
+                    LOG.info("No Agent Selected from possible agents " + agentTrackers.size());
 
                 } else {
                     LOG.info("ProvisioningGridController, found adequate agent: "
-                              + agent.getDetails().getName());
+                              + agent.getDetails());
                     
                     Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile,
                                                                                              featureId);

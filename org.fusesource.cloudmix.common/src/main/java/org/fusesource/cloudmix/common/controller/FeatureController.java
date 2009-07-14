@@ -57,7 +57,7 @@ public class FeatureController {
         
         for (IAgentConstraintChecker checker : CHECKERS) {
             candidates = checker.applyConstraint(profileID, this, candidates);
-            LOG.debug("nb of candidates after running checker "
+            LOG.debug("Number of candidates after running checker "
                       + checker.getClass().getSimpleName()
                       + ": "
                       + candidates.size());
