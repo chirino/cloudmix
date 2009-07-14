@@ -36,6 +36,14 @@
     </cloudmix.osgi.import.pkg>
   </properties>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>scm.ops4j.org</id>
+      <name>ops4j scm repo</name>
+      <url>https://scm.ops4j.org/repos/ops4j/projects/pax/runner-repository</url>
+      <releases/>
+    </pluginRepository>
+  </pluginRepositories>
   <!--
       com.sun.ws.rs.ex; version=0.0.0,
 
@@ -205,6 +213,20 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!--
+        lets the feature to be booted up using
+        mvn pax:run
+      -->
+      <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>1.4</version>
+        <configuration>
+          <framework>felix</framework>
+          <profiles>karaf.gogo/1.2.0</profiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>
