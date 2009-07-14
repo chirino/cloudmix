@@ -8,9 +8,12 @@
 package org.fusesource.cloudmix.agent;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.config.ClientConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +37,11 @@ public class RestClientSupport {
 
     public Client getClient(String credentials) {
         if (client == null) {
-            client = Client.create();
+            DefaultClientConfig config = new DefaultClientConfig();
+            config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, Boolean.FALSE);
+            config.getClasses().add(JAXBContextResolver.class);
+
+            client = Client.create(config);
             if (credentials != null) {
                 client.addFilter(new AuthClientFilter(credentials));
             }
