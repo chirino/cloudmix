@@ -9,6 +9,7 @@ package org.fusesource.cloudmix.agent.smx4;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import org.fusesource.cloudmix.agent.FeatureList;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
 
 public class ServiceMixAgent extends InstallerAgent {
@@ -67,6 +69,23 @@ public class ServiceMixAgent extends InstallerAgent {
     @Override
     protected boolean validateAgent() {   
         return featuresService != null && getWorkDirectory() != null;
+    }
+
+    @Override
+    protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
+        if (resource.startsWith("scan-features:")) {
+            resource = resource.substring("scan-features:".length());
+        }
+        int idx = resource.indexOf("!/");
+        if (idx > 1) {
+            String repo = resource.substring(0, idx);
+            String feature = resource.substring(idx + 2);
+            URI repoUri = new URI(repo);
+            LOGGER.info("Adding feature repository " + repoUri);
+            featuresService.addRepository(repoUri);
+            LOGGER.info("Adding feature: " + feature);
+            featuresService.installFeature(feature);
+        }
     }
 
     @Override

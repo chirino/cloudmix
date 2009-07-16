@@ -11,6 +11,9 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.testing.TestController;
 import org.junit.Test;
 
+import java.util.Properties;
+import java.util.Map;
+
 /**
  * @version $Revision: 1.1 $
  */
@@ -24,13 +27,20 @@ public class ActiveMQTest extends TestController {
 
 
     protected void installFeatures() {
+        // TODO get this from system properties?
+        Properties properties = System.getProperties();
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            System.out.println(" " + entry.getKey() + " = " + entry.getValue());
+        }
+        String version = "1.3-SNAPSHOT";
+
         FeatureDetails broker = createFeatureDetails("org.apache.activemq.broker.multicast",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/1.0-SNAPSHOT/xml/feature!/org.apache.activemq.broker.multicast").ownsMachine().maximumInstances("1");
+                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/" + version + "/xml/feature!/org.apache.activemq.broker.multicast").ownsMachine().maximumInstances("1");
 
         FeatureDetails producer = createFeatureDetails("org.apache.activemq.producer",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.producer/1.0-SNAPSHOT/xml/feature!/org.apache.activemq.producer").depends(broker).maximumInstances("2");
+                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.producer/" + version + "/xml/feature!/org.apache.activemq.producer").depends(broker).maximumInstances("2");
         FeatureDetails consumer = createFeatureDetails("org.apache.activemq.consumer",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/1.0-SNAPSHOT/xml/feature!/org.apache.activemq.consumer").depends(broker).maximumInstances("3");
+                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/" + version + "/xml/feature!/org.apache.activemq.consumer").depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
     }

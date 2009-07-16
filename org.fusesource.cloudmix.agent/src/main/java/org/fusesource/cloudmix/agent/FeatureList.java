@@ -61,6 +61,7 @@ public class FeatureList implements Serializable {
             if (credentials != null) {
                 conn.addRequestProperty("Authorization", credentials);
             }
+            System.out.println("URL is: " + url);
             InputStream is = conn.getInputStream();
             features = new HashMap<String, Feature>();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -517,17 +518,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                             LOGGER.debug("Action has no resource! " + action);
                         }
                         else {
-                            FeatureList features = new FeatureList(resource, credentials);
-                            Feature feature = features.getFeature(action.getFeature());
-                            if (feature != null) {
-                                // Uninstall old version of feature if it still exists.
-                                Feature f = agentState.getAgentFeatures().get(feature.getName());
-                                if (f != null) {
-                                    uninstallFeature(f);
-                                }
-
-                                installFeature(feature, action.getCfgUpdates());
-                            }
+                            installFeatures(action, credentials, resource);
                         }
                     }
                 } catch (Exception e) {
@@ -549,6 +540,19 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         
     }
 
+    protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
+        FeatureList features = new FeatureList(resource, credentials);
+        Feature feature = features.getFeature(action.getFeature());
+        if (feature != null) {
+            // Uninstall old version of feature if it still exists.
+            Feature f = agentState.getAgentFeatures().get(feature.getName());
+            if (f != null) {
+                uninstallFeature(f);
+            }
+
+            installFeature(feature, action.getCfgUpdates());
+        }
+    }
 
 
     protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
