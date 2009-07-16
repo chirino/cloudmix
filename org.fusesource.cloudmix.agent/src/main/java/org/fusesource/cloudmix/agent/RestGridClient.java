@@ -19,10 +19,10 @@ import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
 import java.net.URI;
@@ -45,6 +45,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     private String username;
     private PasswordProvider passwordProvider;
     private String credentials;
+    private boolean loggedNoPassword;
 
     public RestGridClient() {
     }
@@ -83,17 +84,23 @@ public class RestGridClient extends RestClientSupport implements GridClient {
             if (username == null) {
                 return null;
             }
-            LOG.info("Getting credentials for user " + username);
+            LOG.debug("Getting credentials for user " + username);
             if (passwordProvider == null) {
-                LOG.warn("cannot provide credentials for user \"" + username
-                        + "\", no password provider");
+                if (!loggedNoPassword) {
+                    loggedNoPassword = true;
+                    LOG.warn("cannot provide credentials for user \"" + username
+                            + "\", no password provider");
+                }
+
                 return null;
             }
             char[] password = passwordProvider.getPassword();
-
             if (password == null) {
-                LOG.warn("cannot provide credentials for user \"" + username
-                        + "\", no password provided");
+                if (!loggedNoPassword) {
+                    loggedNoPassword = true;
+                    LOG.warn("cannot provide credentials for user \"" + username
+                            + "\", no password provided");
+                }
                 return null;
             }
             credentials = SecurityUtils.toBasicAuth(username, password);
