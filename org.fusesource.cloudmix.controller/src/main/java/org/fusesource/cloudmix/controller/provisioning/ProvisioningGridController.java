@@ -7,15 +7,6 @@
  */
 package org.fusesource.cloudmix.controller.provisioning;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.AgentPoller;
@@ -24,22 +15,33 @@ import org.fusesource.cloudmix.common.controller.FeatureController;
 import org.fusesource.cloudmix.common.controller.ProfileController;
 import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
+import org.fusesource.cloudmix.common.dto.Constants;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * @version $Revision: 1.1 $
  */
 public class ProvisioningGridController extends DefaultGridController implements InitializingBean,
-                                                                                 DisposableBean,
-                                                                                 Callable<Object> {
+        DisposableBean,
+        Callable<Object> {
 
     private static final transient Log LOG = LogFactory.getLog(ProvisioningGridController.class);
 
-    AgentPoller poller;    
+    AgentPoller poller;
     private long startupProvisioningDelay = 5000L;
 
     public void afterPropertiesSet() throws Exception {
@@ -59,7 +61,7 @@ public class ProvisioningGridController extends DefaultGridController implements
      */
     public Object call() throws Exception {
         List<ProvisioningAction> answer = new ArrayList<ProvisioningAction>();
-        
+
         // cleaning up all features from de-activated agents 
         for (AgentController ac : agentTrackers()) {
             if (ac.isDeActivated() && (ac.getFeatures() != null) && (ac.getFeatures().size() > 0)) {
@@ -68,22 +70,22 @@ public class ProvisioningGridController extends DefaultGridController implements
                     removeAgentFromFeature(fid, agentId);
                     ProvisioningHistory history = ac.getHistory();
                     history.addCfgUpdate(new AgentCfgUpdate(AgentCfgUpdate.PROPERTY_AGENT_FORCE_REGISTER,
-                                                            "true"));
+                            "true"));
                 }
             }
         }
-        
+
         for (ProfileController profile : profileControllers()) {
             String profileID = decodeURL(profile.getDetails().getId());
-            
+
             // the profile was modified so re-deploy everything
             // TODO maybe something less drastic would do, like only uninstalling the features for which the
             // cfg overrides were modified
             if (profile.hasChanged()) {
                 LOG.info("profile '"
-                         + profile.getDetails().getId()
-                         + "' was updated: initiating redeploy...");
-                
+                        + profile.getDetails().getId()
+                        + "' was updated: initiating redeploy...");
+
                 List<String> toRemove = new ArrayList<String>();
                 for (Dependency dep : profile.getDetails().getFeatures()) {
                     if (dep.hasChanged()) {
@@ -104,83 +106,113 @@ public class ProvisioningGridController extends DefaultGridController implements
                 String featureId = decodeURL(fc.getId());
                 Collection<AgentController> agentTrackers = agentTrackers();
                 AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers);
-                
-                
+
+
                 if (agent == null) {
                     LOG.info("No Agent Selected from possible agents " + agentTrackers.size());
 
                 } else {
                     LOG.info("ProvisioningGridController, found adequate agent: "
-                              + agent.getDetails());
-                    
+                            + agent.getDetails());
+
                     Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile,
-                                                                                             featureId);
+                            featureId);
                     List<ProvisioningAction> list = addAgentToFeature(agent, fc.getId(), cfgOverridesProps);
                     answer.addAll(list);
                 }
-                
+
             }
 
             // cleaning up redundant features from agents that still have a profile assigned
             // (either because we switched profile or because the profile was updated)
-            List <String> featureIds = new ArrayList<String>();
-                     
+            List<String> featureIds = new ArrayList<String>();
+
             for (Dependency featureDependency : profile.getDetails().getFeatures()) {
                 featureIds.add(featureDependency.getFeatureId());
             }
-            
+
             for (AgentController ac : agentTrackers(profileID)) {
                 Set<String> featuresToRemove = new HashSet<String>(ac.getFeatures());
                 featuresToRemove.removeAll(featureIds);
-                
+
                 for (String fid : featuresToRemove) {
                     removeAgentFromFeature(fid, ac.getDetails().getId());
                 }
             }
         }
-        
+
         // cleaning up all features from agents that that do not have a profile assigned anymore 
         // (... or only an unpublished one...) or
         for (AgentController ac : agentTrackers()) {
             String assignedProfile = ac.getDetails().getProfile();
-            
-            if (ac.getFeatures() != null 
-                && ac.getFeatures().size() > 0
-                && (assignedProfile == null || getProfileController(assignedProfile) == null)) {
-                
+            boolean agentProfileGone = assignedProfile == null || hasProfileGone(assignedProfile) && !assignedProfile.equals(Constants.WILDCARD_PROFILE_NAME);
+
+            if (ac.getFeatures() != null && !ac.getFeatures().isEmpty()) {
                 String agentId = ac.getDetails().getId();
-                for (String fid : ac.getFeatures().toArray(new String[ac.getFeatures().size()])) {
-                    removeAgentFromFeature(fid, agentId);
+                String[] featuresCopy = ac.getFeatures().toArray(new String[ac.getFeatures().size()]);
+                if (agentProfileGone) {
+                    for (String fid : featuresCopy) {
+                        removeAgentFromFeature(fid, agentId);
+                    }
+                }
+                else {
+                    for (String fid : featuresCopy) {
+                        FeatureController featureController = getFeatureController(fid);
+                        // if the feature controller has gone, then the feature has gone
+                        // either by being deleted itself, or due to the profile going
+                        boolean deleteFeature = true;
+                        if (featureController != null) {
+                            deleteFeature = false;
+                            FeatureDetails details = featureController.getDetails();
+                            if (details != null) {
+                                String ownerProfileId = details.getOwnedByProfileId();
+                                if (ownerProfileId != null && hasProfileGone(ownerProfileId)) {
+                                    deleteFeature = true;
+                                }
+                            }
+                        }
+                        if (deleteFeature) {
+                            removeAgentFromFeature(fid, agentId);
+                        }
+                    }
+
                 }
             }
         }
-        
+
         return answer;
+    }
+
+    /**
+     * Returns true if the given profile ID has been destroyed
+     */
+    protected boolean hasProfileGone(String assignedProfile) {
+        return getProfileController(assignedProfile) == null;
     }
 
     private Map<String, String> getFeatureConfigurationOverrides(ProfileController profile,
                                                                  String featureId) {
         Map<String, String> cfgOverridesProps = null;
-        
+
         LOG.info("getFeatureConfigurationOverrides, relevant feature id: " + featureId);
         LOG.info("getFeatureConfigurationOverrides, features: " + profile.getDetails().getFeatures().size());
-        
+
         for (Dependency dep : profile.getDetails().getFeatures()) {
             LOG.info("getFeatureConfigurationOverrides, dep id: " + dep.getFeatureId());
             LOG.info("getFeatureConfigurationOverrides, dep overrides: "
-                     + (dep.getCfgUpdates() == null ? 0  : dep.getCfgUpdates().size()));
-            
+                    + (dep.getCfgUpdates() == null ? 0 : dep.getCfgUpdates().size()));
+
             if (featureId.equals(decodeURL(dep.getFeatureId())) && dep.getCfgUpdates() != null) {
-                
+
                 cfgOverridesProps = new HashMap<String, String>(dep.getCfgUpdates().size());
-                for (ConfigurationUpdate  cfgUpdate : dep.getCfgUpdates()) {
+                for (ConfigurationUpdate cfgUpdate : dep.getCfgUpdates()) {
                     cfgOverridesProps.put(cfgUpdate.getProperty(), cfgUpdate.getValue());
                 }
             }
         }
         return cfgOverridesProps;
     }
-    
+
     // Properties
     //-------------------------------------------------------------------------
 

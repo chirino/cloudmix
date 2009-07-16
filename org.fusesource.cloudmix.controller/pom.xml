@@ -15,7 +15,6 @@
   <description>CloudMix Controller</description>
 
   <properties>
-    <jetty.port>8181</jetty.port>
   </properties>
   
   <dependencies>

@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.controller.AgentController;
 import org.fusesource.cloudmix.common.controller.FeatureController;
+import org.fusesource.cloudmix.common.dto.Constants;
 
 /**
  * filters an agent list based their assigned feature
@@ -39,7 +40,7 @@ public class AgentProfileChecker implements IAgentConstraintChecker {
         List<AgentController> acceptedCandidates = new ArrayList<AgentController>();
         for (AgentController ac : someCandidates) {
             String agentProfile = ac.getDetails().getProfile();
-            if ("*".equals(agentProfile) || profileId.equals(agentProfile)) {
+            if (Constants.WILDCARD_PROFILE_NAME.equals(agentProfile) || profileId.equals(agentProfile)) {
                 acceptedCandidates.add(ac);
             }
         }

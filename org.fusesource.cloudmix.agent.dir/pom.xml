@@ -54,4 +54,27 @@
 
   </dependencies>
 
+   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent</mainClass>
+          <classpathScope>test</classpathScope>
+          <arguments>
+            <argument>http://localhost:${jetty.port}</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -63,7 +63,7 @@ public abstract class TestController {
     protected ProfileDetails profile;
     protected String profileId;
     protected boolean provisioned;
-    protected boolean destroyProfileAfter = false;
+    protected boolean destroyProfileAfter = true;
 
     /**
      * Registers any features which are required for this system test

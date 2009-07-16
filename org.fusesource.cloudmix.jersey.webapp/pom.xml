@@ -12,7 +12,6 @@
   <name>CloudMix :: Jersey - WebApp version</name>
   
   <properties>
-    <jetty.port>8181</jetty.port>
   </properties>
 
   <dependencies>
