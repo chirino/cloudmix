@@ -223,15 +223,20 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     //Commmunication Object:
     private TRJMSCommunicator m_controlCom;
 
+    private String controlUrl;
+
     //ProcessHandlers:
     private Hashtable m_procHandlers;
 
     //ProcessAcceptor: optional acceptor for a port for process object output
-    private int m_port;
+    private int m_port = -1;
     private ProcessAcceptor m_processAcceptor;
 
     //ProcessMonitor: Periodically tries to clean up abandoned processes:
     private ProcessMonitor m_processMonitor;
+
+    //Thread listening for launch requests.
+    private Thread m_thread;
 
     //Temp file cleanup thread.
     private TempFileCleanupThread m_tempFileCleanupThread;
@@ -242,46 +247,249 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     //Properties file info
     private String m_propFileName;
 
-    //Stores properties from the ini file:
-    private Properties m_iniFileProps;
+    private Properties properties = new Properties();
 
     private String m_currentMaster = null;
 
     private String m_agentID; //The unique identifier for this agent (specified in ini file);
 
-    /*
-     * public static void main()
-     * 
-     * Defines the entry point into this app.
-     */
-    public static void main(String[] argv) {
-        System.out.println("\n\n" + org.fusesource.testrunner.Version.getVersionString() + "\n");
+    private boolean started = false;
 
-        String jv = System.getProperty("java.version").substring(0, 3);
-        if (jv.compareTo("1.4") < 0) {
-            System.err.println("The TestRunner agent requires jdk 1.4 or higher to run, the current java version is " + System.getProperty("java.version"));
-            System.exit(-1);
+    /*
+     * public TestRunnerControl
+     * 
+     * Constructor
+     */
+    public TRAgent() {
+        m_pidCount = 0;
+    }
+
+    /**
+     * Sets the name of the properties that holds configuration information for
+     * this agent.
+     * 
+     * When set the prop file will be read each time a launch is requested to
+     * allow updates to it on the fly.
+     * 
+     * @param propFile
+     *            The name of the properties that holds configuration
+     *            information for this agent.
+     */
+    public void setPropFileName(String propFile) {
+        m_propFileName = propFile;
+    }
+
+    /**
+     * Sets the connect url for the control broker to which this agent should
+     * connect.
+     * 
+     * @param url
+     *            The connect url for the control broker to which this agent
+     *            should connect.
+     */
+    public void setControlUrl(String url) {
+        controlUrl = url;
+    }
+
+    /**
+     * Sets the name of the agent id. Once set it cannot be changed.
+     * 
+     * @param id
+     *            the name of the agent id.
+     */
+    public void setAgentId(String id) {
+        if (m_agentID == null) {
+            m_agentID = id;
+        }
+    }
+
+    /**
+     * When java processes are launced and set to use Object input, this port is
+     * set to listen for the launched processes object output.
+     * 
+     * @param port
+     *            The port to listen on.
+     */
+    public void setProcessListenPort(int port) {
+        m_port = port;
+    }
+
+    /**
+     * @return This agent's id.
+     */
+    public String getAgentId() {
+        return m_agentID;
+    }
+
+    public synchronized void start() {
+        if (started) {
             return;
         }
-        /*
-         * System.out.println("\n\nSonicMQ v" +
-         * progress.message.zclient.Version.MAJOR_VERSION + "."
-         * progress.message.zclient.Version.MINOR_VERSION + " build " +
-         * progress.message.zclient.Version.BUILD_NUMBER;
-         */
-        if (argv.length != 1) {
-            printUsage();
-            System.exit(-1);
-        }
-        new TRAgent(argv[0]);
 
+        started = true;
+
+        if (m_agentID == null) {
+
+            try {
+                m_agentID = java.net.InetAddress.getLocalHost().getHostName();
+            } catch (java.net.UnknownHostException uhe) {
+                System.out.println("Error determining hostname. Edit " + m_propFileName + " to set TRA_NAME explicitly.");
+                uhe.printStackTrace();
+                m_agentID = "UNDEFINED";
+            }
+        }
+
+        m_tempFileCleanupThread = new TempFileCleanupThread();
+        m_procHandlers = new Hashtable();
+        m_processMonitor = new ProcessMonitor();
+
+        readPropFile();
+
+        if (m_port >= 0) {
+            try {
+                m_processAcceptor = new ProcessAcceptor(m_port);
+                System.out.println(m_agentID + ": Created acceptor for port " + m_port);
+            } catch (IOException ioe) {
+                System.out.println("ERROR: Creating acceptor for port " + m_port + " - " + ioe);
+                ioe.printStackTrace();
+                stop();
+            }
+        }
+
+        try {
+            m_controlCom = new TRJMSCommunicator(controlUrl, //TestRunner Server
+                    m_agentID, //clientID (null = not specified)
+                    (ITRBindListener) this, //specifiecs that this Communicator is bindable
+                    (ITRAsyncMessageHandler) this); //specifies that we will process asyncronous messages
+        } catch (javax.jms.JMSSecurityException jmsse) {
+            System.out.println("ERROR: Security error connecting to server: " + controlUrl);
+            jmsse.printStackTrace();
+            stop();
+        } catch (javax.jms.JMSException jmse) {
+            System.out.println("ERROR: connecting to server: " + controlUrl);
+            jmse.printStackTrace();
+            stop();
+        } catch (Exception e) {
+            System.out.println("ERROR: connecting to server: " + controlUrl);
+            e.printStackTrace();
+            stop();
+        }
+
+        m_thread = new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    //Start handling async Messages:
+                    while (started) {
+                        try {
+                            handleMessage(m_controlCom.getMessage(1000));
+                        } catch (InterruptedException e) {
+                            System.out.println(getAgentId() + ": Stopping...");
+                            break;
+                        } catch (Exception e) {
+                            if (e.getCause() instanceof InterruptedException) {
+                                System.out.println(getAgentId() + ": Stopping...");
+                                break;
+                            }
+                            System.out.println("ERROR: reading message.");
+                            e.printStackTrace();
+                        }
+                    }
+                } finally {
+                    synchronized (TRAgent.this) {
+                        TRAgent.this.notifyAll();
+                    }
+                }
+            }
+
+        }, "TRAgent-" + getAgentId());
+        m_thread.setDaemon(false);
+        m_thread.start();
+    }
+
+    public synchronized void stop() {
+        if (!started) {
+            return;
+        }
+
+        started = false;
+
+        //Stop the process monitor:
+        m_processMonitor.shutdown();
+
+        //Kill all processes:
+        Iterator procHandlers = m_procHandlers.values().iterator();
+        while (procHandlers.hasNext()) {
+            ProcessHandler handler = (ProcessHandler) procHandlers.next();
+            handler.kill(true, new Integer(-1));
+            handler.sendMessageToLauncher(new TRMsg(PROCESS_DONE));
+        }
+        m_procHandlers.clear();
+
+        //Close the process acceptor:
+        if (m_processAcceptor != null) {
+            m_processAcceptor.close();
+            m_processAcceptor = null;
+        }
+
+        //Close the control comm:
+        try {
+            m_controlCom.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        //Stop our processing thread:
+        m_thread.interrupt();
+        try {
+            if (m_thread.isAlive()) {
+                wait();
+            }
+        } catch (InterruptedException e1) {
+            Thread.currentThread().interrupt();
+        }
+
+        //Issue a final cleanup:
+        m_tempFileCleanupThread.cleanup();
+        m_tempFileCleanupThread.shutdown();
+    }
+
+    private void readPropFile() {
+        if (m_propFileName != null) {
+            properties = new Properties();
+
+            try {
+                properties.load(new FileInputStream(m_propFileName));
+            } catch (java.io.IOException ioe) {
+                System.out.println("ERROR: reading " + m_propFileName + ".");
+            }
+
+            if (m_agentID != null) {
+                m_agentID = properties.getProperty("TRA_NAME");
+                if (m_agentID != null) {
+                    m_agentID = m_agentID.trim();
+                }
+
+            }
+
+            // if a port is specified, create a server socket and acceptor thread
+            m_port = -1;
+            String portString = properties.getProperty("TRA_PORT");
+            if (portString != null)
+                try {
+                    m_port = Integer.parseInt(portString);
+                } catch (NumberFormatException e) {
+                }
+
+            controlUrl = properties.getProperty("TR_SERVER_URL", "");
+        }
     }
 
     /*
      * private boolean recursiveFileCopy (String dir) recursively copies files
      * from one directory into another:
      */
-
     private static void recursiveFileCopy(String srcDir, String destDir) throws Exception {
         String srcFileName = "";
         String destFileName = "";
@@ -404,87 +612,6 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         in.close();
         out.close();
     }//public void copyFile (File currentFile, File newFile)
-
-    /*
-     * public TestRunnerControl
-     * 
-     * Constructor
-     */
-    public TRAgent(String iniFileName) {
-        String serverURL;
-        m_pidCount = 0;
-        m_tempFileCleanupThread = new TempFileCleanupThread();
-        m_procHandlers = new Hashtable();
-        m_processMonitor = new ProcessMonitor();
-
-        //load the INI File:
-        //FYI (The file is reloaded by each process handler so that the
-        //ini file can be changed without restarting the agent.
-        m_propFileName = iniFileName;
-        m_iniFileProps = new Properties();
-
-        try {
-            m_iniFileProps.load(new FileInputStream(m_propFileName));
-        } catch (java.io.IOException ioe) {
-            System.out.println("ERROR: reading " + m_propFileName + ".");
-        }
-
-        try {
-            m_agentID = m_iniFileProps.getProperty("TRA_NAME", java.net.InetAddress.getLocalHost().getHostName()).trim();
-        } catch (java.net.UnknownHostException uhe) {
-            System.out.println("Error determining hostname. Edit " + m_propFileName + " to set TRA_NAME explicitly.");
-            uhe.printStackTrace();
-        }
-
-        // if a port is specified, create a server socket and acceptor thread
-        m_port = -1;
-        String portString = m_iniFileProps.getProperty("TRA_PORT");
-        if (portString != null)
-            try {
-                m_port = Integer.parseInt(portString);
-            } catch (NumberFormatException e) {
-            }
-        if (m_port > 0)
-            try {
-                m_processAcceptor = new ProcessAcceptor(m_port);
-                System.out.println(m_agentID + ": Created acceptor for port " + m_port);
-            } catch (IOException ioe) {
-                System.out.println("ERROR: Creating acceptor for port " + m_port + " - " + ioe);
-                ioe.printStackTrace();
-                close();
-            }
-
-        serverURL = m_iniFileProps.getProperty("TR_SERVER_URL", "");
-
-        try {
-            m_controlCom = new TRJMSCommunicator(serverURL, //TestRunner Server
-                    m_agentID, //clientID (null = not specified)
-                    (ITRBindListener) this, //specifiecs that this Communicator is bindable
-                    (ITRAsyncMessageHandler) this); //specifies that we will process asyncronous messages
-        } catch (javax.jms.JMSSecurityException jmsse) {
-            System.out.println("ERROR: Security error connecting to server: " + serverURL);
-            jmsse.printStackTrace();
-            close();
-        } catch (javax.jms.JMSException jmse) {
-            System.out.println("ERROR: connecting to server: " + serverURL);
-            jmse.printStackTrace();
-            close();
-        } catch (Exception e) {
-            System.out.println("ERROR: connecting to server: " + serverURL);
-            e.printStackTrace();
-            close();
-        }
-
-        //Start handling async Messages:
-        while (true) {
-            try {
-                handleMessage(m_controlCom.getMessage(60000));
-            } catch (Exception e) {
-                System.out.println("ERROR: reading message.");
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * Called when this agent's TRJMSCommunicator accepts a bind release
@@ -652,10 +779,6 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         Runtime.getRuntime().freeMemory();
     }
 
-    private void close() {
-        System.exit(-1);
-    }
-
     private static void printUsage() {
         System.out.println("Usage:");
         System.out.println("Arguments: iniFileName");
@@ -706,15 +829,8 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             m_tempDir = new File("." + File.separator + "temp" + File.separator + m_pid);
             m_tempDir.mkdirs();
 
-            //Load the properties file:
-            try {
-                m_iniFileProps.clear();
-                m_iniFileProps.load(new FileInputStream(m_propFileName));
-            } catch (java.io.IOException ioe) {
-                sendMessageToLauncher(new TRErrorMsg("ERROR: reading " + m_propFileName + ".", ioe));
-                System.out.println("ERROR: reading " + m_propFileName + ".");
-                ioe.printStackTrace();
-            }
+            readPropFile();
+
             m_killLock = new Object();
             m_sendLock = new Object();
             m_thread = new Thread(this, "TR Process Handler for pid " + m_pid);
@@ -771,7 +887,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 }
 
                 String jvmArgs = ld.getJVMArgs();
-                if (m_port > 0) {
+                if (m_port >= 0) {
                     String portArgs = "-D" + PORT_PROPERTY + "=" + m_port + " -D" + PID_PROPERTY + "=" + m_pid;
                     if (jvmArgs == null)
                         jvmArgs = portArgs;
@@ -784,7 +900,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 javaExe += " " + generateJVMArgs(ld.getJVMArgTags(), jvmArgs);
                 classPath += generateClassPath(ld.getClassPathTags(), ld.getClassPaths());
                 exposedClassPath += generateClassPath(ld.getExposedCPTags(), ld.getExposedCP());
-                classPath = " -cp " + exposedClassPath + classPath + " ";
+                classPath = " -cp \"" + exposedClassPath + classPath + "\" ";
             }
 
             boolean isObjectStream = (ld.getOutputType() == TRLaunchDescr.OBJECT_OUTPUT);
@@ -957,6 +1073,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 ret += getTag(tag) + File.pathSeparator;
             }
             return ret;
+            //return "\"" + ret + "\"";
         }
 
         /**
@@ -980,11 +1097,11 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 throw new Exception("Tag (" + tag + ") not found in: " + m_propFileName);
             }
 
-            if (m_iniFileProps.getProperty(tag) != null) {
-                return m_iniFileProps.getProperty(tag).trim();
+            if (properties.getProperty(tag) != null) {
+                return properties.getProperty(tag).trim();
             } else //Check for a wildcard match:
             {
-                Enumeration tags = m_iniFileProps.keys();
+                Enumeration tags = properties.keys();
                 while (tags.hasMoreElements()) {
                     String tagName = ((String) tags.nextElement()).trim();
                     int wildIndex = tagName.indexOf('*');
@@ -997,7 +1114,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                         if (DEBUG)
                             System.out.println("Matched.");
                         String replaceString = tag.substring(wildIndex, tag.length() - tagName.substring(wildIndex + 1).length());
-                        String value = m_iniFileProps.getProperty(tagName).trim();
+                        String value = properties.getProperty(tagName).trim();
                         //Replace every occurence of the wildcard with replaceString
                         String ret = "";
                         int lastIndex = -1;
@@ -1056,6 +1173,9 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
             StringTokenizer stok = new StringTokenizer(path, File.pathSeparator);
 
+            if (true)
+                return path;
+
             while (stok.hasMoreElements()) {
                 File file = new File(stok.nextToken());
 
@@ -1064,17 +1184,19 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
                 if (!file.exists()) {
                     throw new FileNotFoundException(file.getAbsolutePath());
-                } else if (file.isFile()) //If a file copy to dir/lib
+                }
+                //else if (file.)
+                else if (file.isFile()) //If a file copy to dir/lib
                 {
                     copyFile(file, new File(m_tempDir.getAbsolutePath() + File.separator + "lib" + File.separator + file.getName()));
                     classPath += m_tempDir.getAbsolutePath() + File.separator + "lib" + File.separator + file.getName() + File.pathSeparator;
                 }
                 //If a directory recursively copy to dir/classes
                 else if (file.isDirectory()) {
-                    recursiveFileCopy(file.getAbsolutePath(), m_tempDir.getAbsolutePath() + File.separator + "classes");
-                    classPath += m_tempDir.getAbsolutePath() + File.separator + "classes" + File.pathSeparator;
+                    String target = m_tempDir.getAbsolutePath() + File.separator + "classes" + File.separator + file.getName();
+                    recursiveFileCopy(file.getAbsolutePath(), target);
+                    classPath += target + File.pathSeparator;
                 }
-                //If a directory recursively copy to dir/classes
             }
             if (DEBUG)
                 System.out.println("Local cp: " + classPath);
@@ -1303,10 +1425,18 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 if (m_thread != null) {
                     if (DEBUG)
                         System.out.print("Stopping process handler for" + m_process + " [pid = " + m_pid + "]");
+
+                    try {
+                        m_thread.join(500);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+
                     m_thread.interrupt();
                     try {
                         m_thread.join();
                     } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
                     }
                     ;
                     if (DEBUG)
@@ -1608,9 +1738,19 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
                 checkForRogueProcesses(15000);
 
-                System.runFinalization();
-                System.gc();
-                Runtime.getRuntime().freeMemory();
+                //System.runFinalization();
+                //System.gc();
+                //Runtime.getRuntime().freeMemory();
+            }
+        }
+
+        public void shutdown() {
+            m_thread.interrupt();
+            try {
+                m_thread.join();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
 
@@ -1663,7 +1803,15 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
         public void run() {
             while (true) {
-                cleanup();
+                synchronized(this)
+                {
+                    try {
+                        wait();
+                    } catch (java.lang.InterruptedException ie) {
+                        return;
+                    }
+                    cleanup();
+                }
             }
         }
 
@@ -1683,11 +1831,41 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                     }
                 }
             }
+        }
+
+        public void shutdown() {
+            m_thread.interrupt();
             try {
-                wait();
-            } catch (java.lang.InterruptedException ie) {
+                m_thread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
+    }
+
+    /*
+     * public static void main()
+     * 
+     * Defines the entry point into this app.
+     */
+    public static void main(String[] argv) {
+        System.out.println("\n\n" + org.fusesource.testrunner.Version.getVersionString() + "\n");
+
+        String jv = System.getProperty("java.version").substring(0, 3);
+        if (jv.compareTo("1.4") < 0) {
+            System.err.println("The TestRunner agent requires jdk 1.4 or higher to run, the current java version is " + System.getProperty("java.version"));
+            System.exit(-1);
+            return;
+        }
+
+        if (argv.length != 1) {
+            printUsage();
+            System.exit(-1);
+        }
+        TRAgent agent = new TRAgent();
+        agent.setPropFileName(argv[0]);
+        agent.start();
+
     }
 
     /*

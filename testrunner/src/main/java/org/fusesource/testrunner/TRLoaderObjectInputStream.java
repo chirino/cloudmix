@@ -116,7 +116,10 @@ public class TRLoaderObjectInputStream extends ObjectInputStream {
         } catch (java.io.StreamCorruptedException sce) {
             m_underlyingStream.reset();
             byte[] nonSerializedData = new byte[m_underlyingStream.available()];
+            
             m_underlyingStream.read(nonSerializedData, 0, nonSerializedData.length);
+//            System.out.println("Corrupted: " + nonSerializedData.length + ": "+ HexSupport.toHexFromBytes(nonSerializedData));
+            
             throw new StreamCorruptedException("The following data could not be read as an object: " + new String(nonSerializedData));
         }
         return obj;

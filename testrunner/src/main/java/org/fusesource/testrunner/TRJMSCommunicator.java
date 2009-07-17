@@ -26,6 +26,7 @@ package org.fusesource.testrunner;
 
 import javax.jms.*;
 
+
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -34,6 +35,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 
@@ -71,7 +73,7 @@ import java.lang.reflect.Constructor;
 public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.ExceptionListener {
     private static boolean DEBUG = false;
     private static final boolean devDebug = false;
-    private static final String FACTORY_PROP = "testrunner.jms.provider";
+    public static final String FACTORY_PROP = "testrunner.jms.provider";
     //Control Broker Variables:
     protected static final String TOPIC_PREFIX = "TESTRUNNER.";
     protected static final String BROADCAST_TOPIC_POSTFIX = "BROADCAST";
@@ -184,13 +186,13 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                     System.out.println(m_clientID + ": Connecting to TestRunner Control Broker: " + m_hostAddress);
                     //Get a TopicConnectionFactory with the connectID set to user.name
                     createFactory();
-                    
                     m_connection = m_factory.createTopicConnection();
                 } catch (javax.jms.JMSException jmse) {
                     System.out.println("Unable to connect to " + m_hostAddress + "(" + jmse.getMessage() + "). Will try again in " + RETRY_TIMEOUT / 1000 + " seconds.");
                     Thread.sleep(RETRY_TIMEOUT);
                 }
             }
+            m_connection.setClientID(m_clientID);
 
             //Set a connection listener
             m_connection.setExceptionListener((javax.jms.ExceptionListener) this);
@@ -240,31 +242,25 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             System.out.println(m_clientID + ": Connection to " + m_hostAddress + " established.");
         }
     }
-    
-    private TopicConnectionFactory createFactory() throws Exception
-    {
-        if(m_factory == null)
-        {
+
+    private TopicConnectionFactory createFactory() throws Exception {
+        if (m_factory == null) {
             //Instantiate the connection factory:
             String factoryName = System.getProperty(FACTORY_PROP, "progress.message.jclient.TopicConnectionFactory");
-            if(factoryName.startsWith("progress.message"))
-            {
-                Constructor c = Class.forName(factoryName).getConstructor(new Class[] {String.class, String.class, String.class});
-                m_factory = (TopicConnectionFactory) c.newInstance(new Object [] {m_hostAddress, SONIC_ADMIN_USER, SONIC_ADMIN_PASSWORD});
+            if (factoryName.startsWith("progress.message")) {
+                Constructor c = Class.forName(factoryName).getConstructor(new Class[] { String.class, String.class, String.class });
+                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { m_hostAddress, SONIC_ADMIN_USER, SONIC_ADMIN_PASSWORD });
             }
-            if(factoryName.startsWith("org.apache.activemq"))
-            {
-                Constructor c = Class.forName(factoryName).getConstructor(new Class[] {String.class, String.class, String.class});
-                m_factory = (TopicConnectionFactory) c.newInstance(new Object [] {SONIC_ADMIN_USER, SONIC_ADMIN_PASSWORD, m_hostAddress});
-            }
-            else
-            {
+            if (factoryName.startsWith("org.apache.activemq")) {
+                Constructor c = Class.forName(factoryName).getConstructor(new Class[] { String.class, String.class, String.class });
+                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { SONIC_ADMIN_USER, SONIC_ADMIN_PASSWORD, m_hostAddress });
+            } else {
                 //Try for a constructor taking a connect url:
-                Constructor c = Class.forName(factoryName).getConstructor(new Class[] {String.class});
-                m_factory = (TopicConnectionFactory) c.newInstance(new Object [] {m_hostAddress});
+                Constructor c = Class.forName(factoryName).getConstructor(new Class[] { String.class });
+                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { m_hostAddress });
             }
         }
-        
+
         return m_factory;
 
     }
@@ -454,39 +450,40 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             synchronized (boundFlagLock) {
                 if (DEBUG || devDebug)
                     System.out.println("Synched on boundFlagLock in handleMessage");
-                if (source != null && msg instanceof StreamMessage && (!boundFlag || (boundFlag && source.equals(master)))) {
+                if (source != null && msg instanceof BytesMessage && (!boundFlag || (boundFlag && source.equals(master)))) {
 
+                    BytesMessage bMessage = (BytesMessage) msg;
+                    if (devDebug)
+                        System.out.println("Got: " + msg);
                     Object obj = null;
-                    byte[] classBytes;
-                    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+                    byte[] classBytes = new byte[(int) bMessage.getBodyLength()];
+                    bMessage.readBytes(classBytes);
+
+//                    if (devDebug)
+//                        System.out.println("Got : " + classBytes.length + ": " + HexSupport.toHexFromBytes(classBytes));
+
+                    ByteArrayInputStream inByteStream = new ByteArrayInputStream(classBytes);
+
+                    //                    
+                    //                    ObjectInputStream ois = new ObjectInputStream(inByteStream);
+                    //                    obj = ois.readObject();
+
+                    // the wrapped object is serialized inside of a TRMetaMessage, therefore, no special class loader is needed.
+                    TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(new BufferedInputStream(inByteStream), m_defaultClassLoader);
                     try {
-                        while (true) {
-                            byteStream.write(((StreamMessage) msg).readByte());
-                        }
-                    } catch (MessageEOFException meofe) {
+                        obj = inputStream.recoverableReadObject();
+                    } catch (Throwable thrown) {
+                        throw thrown;
+                    }
 
-                        classBytes = byteStream.toByteArray();
-                        byteStream.close();
-                        byteStream = null;
+                    if (inputStream != null) {
+                        inputStream.close();
+                        inputStream = null;
+                    }
 
-                        ByteArrayInputStream inByteStream = new ByteArrayInputStream(classBytes);
-                        // the wrapped object is serialized inside of a TRMetaMessage, therefore, no special class loader is needed.
-                        TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(new BufferedInputStream(inByteStream), m_defaultClassLoader);
-                        try {
-                            obj = inputStream.recoverableReadObject();
-                        } catch (Throwable thrown) {
-                            throw thrown;
-                        }
-
-                        if (inputStream != null) {
-                            inputStream.close();
-                            inputStream = null;
-                        }
-
-                        if (inByteStream != null) {
-                            inByteStream.close();
-                            inByteStream = null;
-                        }
+                    if (inByteStream != null) {
+                        inByteStream.close();
+                        inByteStream = null;
                     }
 
                     if (obj == null) {
@@ -774,7 +771,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
     }
 
     private void internalSend(String recipient, Object content) throws Exception {
-        StreamMessage msg = m_sendSession.createStreamMessage();
+        BytesMessage msg = m_sendSession.createBytesMessage();
 
         //Always set a property with out unique clientID
         //So that the entity we are sending to knows that it is us
@@ -789,17 +786,22 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         oos.writeObject((java.io.Serializable) content);
         oos.flush();
         byte[] objectBytes = byteStream.toByteArray();
-        for (int i = 0; i < objectBytes.length; i++) {
-            msg.writeByte(objectBytes[i]);
-        }
+        msg.writeBytes(objectBytes);
 
         Topic topic = m_sendSession.createTopic(TOPIC_PREFIX + recipient.toUpperCase());
         synchronized (m_sendLock) {
             if (DEBUG || devDebug)
                 System.out.println("Sending message on " + topic.getTopicName());
             m_publisher.publish(topic, msg, DeliveryMode.PERSISTENT, 0, 0);
+            
             if (DEBUG || devDebug)
                 System.out.println("Finished Sending message on " + topic.getTopicName());
+            
+            if(devDebug)
+            {
+                System.out.println("Sent: " + msg);
+//                System.out.println("Sent: " + objectBytes.length + ": " + HexSupport.toHexFromBytes(objectBytes));
+            }
         }
     }
 
