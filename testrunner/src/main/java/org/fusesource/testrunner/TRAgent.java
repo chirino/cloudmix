@@ -254,6 +254,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     private String m_agentID; //The unique identifier for this agent (specified in ini file);
 
     private boolean started = false;
+    private String m_dataDir = ".";
 
     /*
      * public TestRunnerControl
@@ -315,6 +316,24 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     }
 
     /**
+     * Sets the base directory where the agent puts it's data.
+     * 
+     * @param dataDirectory
+     */
+    public void setDataDirectory(String dataDirectory) {
+        m_dataDir = dataDirectory;
+    }
+
+    /**
+     * Sets the base directory where the agent puts it's data.
+     * 
+     * @param dataDirectory
+     */
+    public String getDataDirectory() {
+        return m_dataDir;
+    }
+
+    /**
      * @return This agent's id.
      */
     public String getAgentId() {
@@ -339,11 +358,12 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             }
         }
 
+        readPropFile();
+        
         m_tempFileCleanupThread = new TempFileCleanupThread();
         m_procHandlers = new Hashtable();
         m_processMonitor = new ProcessMonitor();
 
-        readPropFile();
 
         if (m_port >= 0) {
             try {
@@ -456,6 +476,15 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     }
 
     private void readPropFile() {
+
+        if (m_propFileName == null) {
+            String defPropFile = m_dataDir + File.separator + "TRA.ini";
+
+            if (new File(defPropFile).exists()) {
+                m_propFileName = defPropFile;
+            }
+        }
+
         if (m_propFileName != null) {
             properties = new Properties();
 
@@ -826,7 +855,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             m_launchTracking = launchTracking;
             //Create a temporary directory in our current directory:
             //m_tempDirName = "." + File.separator + "temp" + File.separator + m_pid;
-            m_tempDir = new File("." + File.separator + "temp" + File.separator + m_pid);
+            m_tempDir = new File(m_tempFileCleanupThread.m_tempDir + File.separator + m_pid);
             m_tempDir.mkdirs();
 
             readPropFile();
@@ -1176,6 +1205,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             if (true)
                 return path;
 
+            //TODO reenabled copying.
             while (stok.hasMoreElements()) {
                 File file = new File(stok.nextToken());
 
@@ -1796,15 +1826,14 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         private String m_tempDir;
 
         TempFileCleanupThread() {
-            m_tempDir = "." + File.separator + "temp";
+            m_tempDir = m_dataDir + File.separator + getAgentId() + File.separator + "temp";
             m_thread = new Thread(this);
             m_thread.start();
         }
 
         public void run() {
             while (true) {
-                synchronized(this)
-                {
+                synchronized (this) {
                     try {
                         wait();
                     } catch (java.lang.InterruptedException ie) {
