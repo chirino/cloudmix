@@ -62,7 +62,11 @@ public class TRLoaderObjectInputStream extends ObjectInputStream {
     protected Class resolveClass(ObjectStreamClass v) throws ClassNotFoundException, IOException {
         if (DEBUG)
             System.out.println("TRLoaderObjectInputStream loading class " + v.getName());
-        return classLoader.loadClass(v.getName(), true);
+
+        //Doesn't work with JDK 1.6 see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6516909
+        //return classLoader.loadClass(v.getName(), true);
+        
+        return Class.forName(v.getName(), false, classLoader);
     }
 
     /**
@@ -89,15 +93,7 @@ public class TRLoaderObjectInputStream extends ObjectInputStream {
         super.close();
         classLoader = null;
     }
-
-    protected void finalize() throws Throwable {
-        if (DEBUG)
-            System.out.println("Running Finalization on " + this);
-        super.finalize();
-        if (DEBUG)
-            System.out.println("Finished Running Finalization");
-    }
-
+    
     /**
      * Sets whether this object writes debug output to System.out
      * 
@@ -116,10 +112,10 @@ public class TRLoaderObjectInputStream extends ObjectInputStream {
         } catch (java.io.StreamCorruptedException sce) {
             m_underlyingStream.reset();
             byte[] nonSerializedData = new byte[m_underlyingStream.available()];
-            
+
             m_underlyingStream.read(nonSerializedData, 0, nonSerializedData.length);
-//            System.out.println("Corrupted: " + nonSerializedData.length + ": "+ HexSupport.toHexFromBytes(nonSerializedData));
-            
+            //            System.out.println("Corrupted: " + nonSerializedData.length + ": "+ HexSupport.toHexFromBytes(nonSerializedData));
+
             throw new StreamCorruptedException("The following data could not be read as an object: " + new String(nonSerializedData));
         }
         return obj;

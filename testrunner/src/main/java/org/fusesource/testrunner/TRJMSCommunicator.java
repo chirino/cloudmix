@@ -35,7 +35,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 
@@ -459,7 +458,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                     byte[] classBytes = new byte[(int) bMessage.getBodyLength()];
                     bMessage.readBytes(classBytes);
 
-//                    if (devDebug)
+//                      if (devDebug)
 //                        System.out.println("Got : " + classBytes.length + ": " + HexSupport.toHexFromBytes(classBytes));
 
                     ByteArrayInputStream inByteStream = new ByteArrayInputStream(classBytes);
