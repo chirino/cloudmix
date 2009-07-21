@@ -31,15 +31,53 @@
       <artifactId>activemq-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>kahadb</artifactId>
+      <version>${activemq-version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.xbean</groupId>
       <artifactId>xbean-spring</artifactId>
     </dependency>
 
+    <!-- for JMS & spring dependency -->
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jms</artifactId>
     </dependency>
 
+<!--
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-dm</artifactId>
+      <version>${spring-version}</version>
+    </dependency>
+-->    
   </dependencies>
 
   <build>
@@ -64,15 +102,40 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/classes/feature.xml</file>
+                  <file>target/classes/features.xml</file>
                   <type>xml</type>
-                  <classifier>feature</classifier>
+                  <classifier>features</classifier>
                 </artifact>
               </artifacts>
             </configuration>
           </execution>
         </executions>
       </plugin>
+
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>org.fusesource.cloudmix.tests.broker.Main</mainClass>
+          <classpathScope>compile</classpathScope>
+          <arguments>
+<!--
+            <argument>http://localhost:${jetty.port}</argument>
+-->
+          </arguments>
+        </configuration>
+      </plugin>
+
+
     </plugins>
   </build>
 
