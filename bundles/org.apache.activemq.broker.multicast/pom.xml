@@ -41,10 +41,12 @@
     </dependency>
 
     <!-- for JMS & spring dependency -->
+<!--
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-jms</artifactId>
     </dependency>
+-->
 
 <!--
     <dependency>
@@ -126,7 +128,7 @@
         </executions>
         <configuration>
           <mainClass>org.fusesource.cloudmix.tests.broker.Main</mainClass>
-          <classpathScope>compile</classpathScope>
+          <classpathScope>test</classpathScope>
           <arguments>
 <!--
             <argument>http://localhost:${jetty.port}</argument>
