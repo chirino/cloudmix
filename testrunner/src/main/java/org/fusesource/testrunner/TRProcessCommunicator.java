@@ -39,7 +39,7 @@ public class TRProcessCommunicator {
     public static final String STREAM_INIT_STR = "Communication Started";
 
     //////////////////
-    //ProcessCommunicatior memeber variables
+    //ProcessCommunicatior member variables
     private TRLoaderObjectInputStream m_TRLObjInputStream = null; //input object stream
     private ObjectInputStream m_objInputStream = null;
     private ObjectOutputStream m_objOutputStream = null; //output object stream
@@ -76,7 +76,7 @@ public class TRProcessCommunicator {
 
         //construct output and input stream for communication
         try {
-            //Get the class loader (which will only be able to load classes from primordial classLoader:
+            //Get the class loader (which will only be able to load classes from primordial classLoader):
             m_classLoader = new TRClassLoader("");
 
             //create output stream
@@ -144,23 +144,6 @@ public class TRProcessCommunicator {
     }
 
     /**
-     * Prints message by either writing it to System.out or by writing it to the
-     * output stream for display at the other end
-     * 
-     **/
-    public void println(String message) throws Exception {
-        if (!m_isLaunchedProcess) {
-            System.out.println("" + message);
-        } else {
-            writeObject(new TRDisplayMsg(message));
-        }
-    }
-
-    public void writeError(String msg, Throwable thrown) throws Exception {
-        writeObject(new TRErrorMsg(msg, thrown));
-    }
-
-    /**
     *
     **/
     public synchronized void writeObject(Object obj) throws Exception {
@@ -203,11 +186,6 @@ public class TRProcessCommunicator {
                 } else {
                     try {
                         while (m_TRLObjInputStream != null && (objIn = m_TRLObjInputStream.recoverableReadObject()) != null) {
-                            //if the object read is a String then print it:
-                            if (objIn instanceof TRDisplayMsg) {
-                                ((TRDisplayMsg) objIn).setSource("PROCESS");
-                                //System.out.println(objIn);
-                            }
                             break;
                         }
                     }

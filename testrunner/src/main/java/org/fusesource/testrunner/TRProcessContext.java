@@ -38,6 +38,10 @@ public class TRProcessContext implements Serializable {
         return m_pid;
     }
 
+    public int hashCode() {
+        return m_agentID.hashCode() + m_pid.intValue();
+    }
+
     public boolean equals(Object comp) {
         if (comp instanceof TRProcessContext) {
             TRProcessContext trpc = (TRProcessContext) comp;

@@ -40,51 +40,134 @@ import java.io.InputStreamReader;
 public class TRScriptLauncher {
     //private static boolean DEBUG = false;
     private TRLaunchDescr m_launchDescr;
-    private TRJMSCommunicator m_agentCom;
+    private TRClient m_client;
     private ITRScriptListener scriptListener;
     private String m_agentName;
-    private Integer m_pid;
-    private static int retValue = -1;
     private UserInputHandler m_userInputHandler;
     private static boolean m_startInputHandler = false;
 
     //Keeps track of the last line sent when this is run using main();
     private String m_lastRead = null;
-
-    /*
-     * public static void main(String [] argv)
-     * 
-     * Defines entry point to this app.
-     * 
-     * Arguments: -ServerURL: TestRunner Control Server -AgentName: The name of
-     * the test runner agent that will run the script -ScriptPath: Full UNC path
-     * to the script (path that will be accessible from the (agent launching the
-     * script)
+    TRProcessContext ctx;
+    private boolean running;
+    private int exitCode = -1;
+    
+    /**
+     * Java programs that utilized TRScriptLauncher can register themselves to
+     * be notified when a new line is printed to the scripts output stream.
      */
-    public static void main(String[] argv) {
-        if (argv.length < 3) {
-            printUsage();
-            System.exit(-1);
-        } else {
-            String[] actualArgs = new String[argv.length - 3];
-            for (int i = 3; i < argv.length; i++) {
-                actualArgs[i - 3] = argv[i];
-            }
-            TRScriptLauncher trlu = null;
-            try {
-                trlu = new TRScriptLauncher(argv[0], argv[1], argv[2], actualArgs);
-                m_startInputHandler = true;
-                trlu.run();
-            } catch (Exception e) {
-                System.out.println("ERROR: running script.");
-                e.printStackTrace();
-            }
-            trlu.close();
-        }
-        System.out.println("Returning with exit value: " + retValue);
-        System.exit(retValue);
+    public interface ITRScriptListener {
+
+        public void handleScriptErrorOutput(TRScriptLauncher trsl, String output);
+
+        /**
+         * A notify for each new line of output generate by the script launched
+         * by TRScriptLauncher
+         * 
+         * @param trsl
+         *            The TRScriptLauncher the output originates from.
+         * @param output
+         *            The line of output from the process.
+         */
+        public void handleScriptOutput(TRScriptLauncher trsl, String output);
     }
 
+    private final ProcessListener processListener = new ProcessListener() {
+        
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.ITRProcessListener#handleError(org.fusesource
+         * .testrunner.TRProcessContext, java.lang.String, java.lang.Throwable)
+         */
+        public void handleError(TRProcessContext ctx, String message, Throwable thrown) {
+            System.err.println("Error running script " + message + " -- killing");
+            thrown.printStackTrace();
+            kill();
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.ITRProcessListener#handleInfo(org.fusesource
+         * .testrunner.TRProcessContext, java.lang.String)
+         */
+        public void handleProcessInfo(TRProcessContext ctx, String info) {
+            //Just print it:
+            System.out.println(info);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.ITRProcessListener#handleSystemErr(org.fusesource
+         * .testrunner.TRProcessContext, java.lang.String)
+         */
+        public void handleSystemErr(TRProcessContext ctx, String err) {
+            if (scriptListener != null) {
+                scriptListener.handleScriptErrorOutput(TRScriptLauncher.this, err);
+            } else {
+                System.err.print(err);
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.ITRProcessListener#handleSystemOut(org.fusesource
+         * .testrunner.TRProcessContext, java.lang.String)
+         */
+        public void handleSystemOut(TRProcessContext ctx, String output) {
+            //Prevent from echoing what the user just typed in:
+            if (m_lastRead == null || !output.startsWith(m_lastRead)) {
+                if (scriptListener != null) {
+                    scriptListener.handleScriptOutput(TRScriptLauncher.this, output);
+                } else {
+                    System.out.print(output);
+                }
+            } else {
+                m_lastRead = null;
+            }
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.ITRProcessListener#processDone(org.fusesource
+         * .testrunner.TRProcessContext, int)
+         */
+        public void processDone(TRProcessContext ctx, int exitCode) {
+
+            synchronized (TRScriptLauncher.this) {
+                TRScriptLauncher.this.exitCode = exitCode;
+                running = false;
+                notifyAll();
+            }
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.ITRAgentComHandler#handleMessage(java.lang.
+         * Object, java.util.Hashtable, org.fusesource.testrunner.TRProcessContext)
+         */
+        public void handleMessage(TRProcessContext ctx, Object msg) {
+            //Don't expect messages for launched scripts, call
+            //error handler:
+            handleError(ctx, "Unexpected Object Output: " + msg, new Exception("Unexpected Object Output"));
+            return;
+        }
+    };
+    
     /**
      * Constructor This contstructor does two things. First, it instantiates and
      * populates a a TRLaunchDescr object. A LaunchDescr object encapsulates the
@@ -134,20 +217,14 @@ public class TRScriptLauncher {
         //Initialize Communication with the agent
         try {
             //String [] agentsToControl = {agentName};
-            m_agentCom = new TRJMSCommunicator(serverURL, //The test runner control server that the agent is listening on
-                    System.getProperty("user.name") + System.currentTimeMillis(), //The name to identify us as a TestRunnerCommunicator
-                    null, //The bind listener (null means we cannot be bound)
-                    null); //A pointer to an asynchronous message handler (null means we will only read synchronous messages)
+            m_client = new TRClient(new TRJMSCommunicator(serverURL, //The test runner control server that the agent is listening on
+                    System.getProperty("user.name") + System.currentTimeMillis())); //The name to identify us as a TestRunnerCommunicator
 
             //IMPORTANT: attempt to bind the agent to
             //work for us. If someone else is already using the agent
             //the bind will fail:
             System.out.print("Attempting to bind " + agentName + "...");
-            if (!m_agentCom.bind(agentName, 60000)) {
-                //Why?
-                Object obj = m_agentCom.getMessage(60000);
-                throw new Exception("ERROR: Unable to bind " + agentName + ". Reason: " + (obj == null ? "Unknown" : obj.toString()));
-            }
+            m_client.bindAgent(agentName);
             System.out.println("DONE: " + agentName + " bound.");
         } catch (Exception e) {
             close();
@@ -161,14 +238,7 @@ public class TRScriptLauncher {
         scriptListener = null;
     }
 
-    private static void printUsage() {
-        System.out.println("Usage:");
-        System.out.println("Arguments:");
-        System.out.println("   -ServerURL:    TestRunner Control Server");
-        System.out.println("   -AgentName:    The name of the test runner agent that will run the script");
-        System.out.println("   -ScriptPath:   Full UNC path to the script (path that will be accessible from");
-        System.out.println("    the (agent launching the script)");
-    }
+    
 
     /**
      * Once a TRScriptLauncher is instantiated calling its run() method sends
@@ -188,89 +258,25 @@ public class TRScriptLauncher {
      * String comes through We know the process is done and can expect the
      * script's exit value to be returned next.
      */
-    public int run() throws Exception {
-        if (m_agentCom == null)
+    public int runScript() throws Exception {
+        if (m_client == null)
             return -1;
-        m_agentCom.sendMessage(m_agentName, m_launchDescr);
-        m_agentCom.setSendDisplayObjs(true);
-        Object msg;
 
-        //Listen for LAUNCH_SUCCESS. TRAgent always sends TRMsg with either LAUNCH_SUCCESS or LAUNCH_FAILURE
-        //after a process is started:
-        while (true) {
-            msg = m_agentCom.getMessage(60000);
-            if (msg == null) {
-                throw new Exception("Timed out waiting for script to start");
-            } else {
-                if (msg instanceof TRDisplayMsg) {
-                    System.out.println(msg);
-                    continue;
-                } else if (!(msg instanceof TRMsg && ((TRMsg) msg).getMessage().equals(TRAgent.LAUNCH_SUCCESS))) {
-                    throw new Exception("Error launching script: " + msg);
-                }
-            }
-            break;
-        }
+        running = true;
+        ctx = m_client.launchProcess(m_agentName, m_launchDescr, processListener);
 
         //Start a user input handler if we were launched by main():
         if (m_startInputHandler) {
             m_userInputHandler = new UserInputHandler();
         }
 
-        m_pid = (Integer) m_agentCom.getProperties().get(TRAgent.PID);
-        System.out.println("Launched Successfully [pid = " + m_pid + "]");
-        while (true) {
-            //If there is a script listener registered
-            //Send the ouput to the listener. Otherwise dump to
-            //System.out:
-            msg = m_agentCom.getMessage(60000);
+        System.out.println("Launched Successfully: " + ctx);
 
-            //All entities communicating with TRAgent must be able to handle
-            //a TRDisplayObj to deal with non-app related TestRunner messages:
-            if (msg instanceof TRDisplayMsg) {
-                System.out.println(msg.toString());
-                continue;
+        synchronized (this) {
+            while (running) {
+                wait();
             }
-
-            if (msg != null) {
-                //If the process is done kill it and wait for the exit value
-                //to return.
-                if (msg instanceof TRMsg) {
-                    if (((TRMsg) msg).getMessage().equals(TRAgent.PROCESS_DONE)) {
-                        m_agentCom.sendMessage(m_agentName, new TRLaunchKill(), TRAgent.PID, m_pid);
-                        msg = null;
-                        msg = m_agentCom.getMessage(60000);
-                        if (msg != null && msg instanceof TRMsg && ((TRMsg) msg).getMessage().equals(TRAgent.KILL_SUCCESS)) {
-                            retValue = ((Integer) m_agentCom.getProperties().get(TRAgent.EXIT_VALUE)).intValue();
-                        }
-                        close();
-                        return retValue;
-                    }
-                    //The process might have been killed by our UserInputHandler
-                    if (((TRMsg) msg).getMessage().equals(TRAgent.KILL_SUCCESS) || ((TRMsg) msg).getMessage().equals(TRAgent.KILL_FAILURE)) {
-                        System.out.println("Process killed.");
-                        retValue = ((Integer) m_agentCom.getProperties().get(TRAgent.EXIT_VALUE)).intValue();
-                        close();
-                        return retValue;
-                    }
-                }
-                if (msg instanceof TRErrorMsg) {
-                    msg = new String("ERROR: " + ((TRErrorMsg) msg).getMessage());
-                }
-
-                //If a java program has registered a script listener pass the script output to
-                //it, otherwise just dump it to stdout:
-                if (scriptListener != null) {
-                    scriptListener.scriptOutputNotify(this, msg.toString());
-                } else {
-                    //Prevent from echoing what the user just typed in:
-                    if (m_lastRead == null || !msg.toString().startsWith(m_lastRead)) {
-                        System.out.print(msg);
-                    } else {
-                        m_lastRead = null;
-                    }
-                }
-            }
+            return exitCode;
         }
     }
 
@@ -279,24 +285,27 @@ public class TRScriptLauncher {
      * closed when it no longer being used.
      */
     public synchronized void close() {
-        if (m_agentCom != null) {
+        
+        if(running)
+        {
+            kill();
+        }
+        
+        if (m_client != null) {
             try {
                 System.out.print("Releasing " + m_agentName + "...");
-                if (m_agentCom.releaseAll(30000)) {
-                    System.out.println("DONE");
-                } else {
-                    System.out.println("ERROR");
-                }
+                m_client.releaseAll();
+                System.out.println("DONE");
             } catch (Exception e) {
                 System.out.println("ERROR: releasing " + m_agentName);
             }
 
             try {
-                m_agentCom.close();
+                m_client.close();
             } catch (Exception e) {
                 System.out.println("ERROR: closing the communicator.");
             }
-            m_agentCom = null;
+            m_client = null;
         }
 
         if (m_userInputHandler != null) {
@@ -324,21 +333,21 @@ public class TRScriptLauncher {
     }
 
     public synchronized void writeUTF(String utf) throws Exception {
-        if (m_agentCom != null) {
-            m_agentCom.sendMessage(m_agentName, utf, TRAgent.PID, m_pid);
+        if (m_client != null) {
+            m_client.sendMessage(ctx, utf);
         }
     }
 
-    /**
-     * Sets whether the TRScriptLauncher prints debug output to System.out
-     * 
-     * @param val
-     *            The debugFlag
-     */
-    public void setDebug(boolean val) {
-        //DEBUG = val;
-        if (m_agentCom != null) {
-            m_agentCom.setDebug(val);
+    private void kill() {
+        try {
+            exitCode = m_client.killProcess(ctx).intValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            synchronized (this) {
+                running = false;
+                notifyAll();
+            }
         }
     }
 
@@ -364,7 +373,7 @@ public class TRScriptLauncher {
                 while (true) {
                     input = br.readLine();
                     if (input.equalsIgnoreCase("EXIT")) {
-                        m_agentCom.sendMessage(m_agentName, new TRLaunchKill(), TRAgent.PID, m_pid);
+                        kill();
                         return;
                     }
                     m_lastRead = input;
@@ -395,5 +404,51 @@ public class TRScriptLauncher {
                 m_thread = null;
             }
         }
+    }
+
+    private static void printUsage() {
+        System.out.println("Usage:");
+        System.out.println("Arguments:");
+        System.out.println("   -ServerURL:    TestRunner Control Server");
+        System.out.println("   -AgentName:    The name of the test runner agent that will run the script");
+        System.out.println("   -ScriptPath:   Full UNC path to the script (path that will be accessible from");
+        System.out.println("    the (agent launching the script)");
+    }
+
+    /*
+     * public static void main(String [] argv)
+     * 
+     * Defines entry point to this app.
+     * 
+     * Arguments: -ServerURL: TestRunner Control Server -AgentName: The name of
+     * the test runner agent that will run the script -ScriptPath: Full UNC path
+     * to the script (path that will be accessible from the (agent launching the
+     * script)
+     */
+    public static void main(String[] argv) {
+        if (argv.length < 3) {
+            printUsage();
+            System.exit(-1);
+        } else {
+            String[] actualArgs = new String[argv.length - 3];
+            for (int i = 3; i < argv.length; i++) {
+                actualArgs[i - 3] = argv[i];
+            }
+            TRScriptLauncher trlu = null;
+            int exitCode = -1;
+            try {
+                trlu = new TRScriptLauncher(argv[0], argv[1], argv[2], actualArgs);
+                m_startInputHandler = true;
+                exitCode = trlu.runScript();
+            } catch (Exception e) {
+                System.out.println("ERROR: running script.");
+                e.printStackTrace();
+            }
+            trlu.close();
+
+            System.out.println("Returning with exit value: " + exitCode);
+            System.exit(exitCode);
+        }
+
     }
 }

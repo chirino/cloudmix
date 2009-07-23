@@ -22,7 +22,7 @@
  */
 package org.fusesource.testrunner;
 
-import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
 import java.io.OptionalDataException;
@@ -36,12 +36,11 @@ import java.io.IOException;
  * @author Colin MacNaughton (cmacnaug@progress.com)
  * @version 1.0
  * @since 1.0
- * @see TRClassLoader
  */
 public class TRLoaderObjectInputStream extends ObjectInputStream {
     private static boolean DEBUG = false;
-    TRClassLoader classLoader;
-    BufferedInputStream m_underlyingStream;
+    ClassLoader classLoader;
+    InputStream m_underlyingStream;
 
     /**
      * Constructs a new TRLoaderObjectInputStream
@@ -53,10 +52,10 @@ public class TRLoaderObjectInputStream extends ObjectInputStream {
      * @exception java.io.StreamCorruptedException
      * @exception java.io.IOException
      */
-    public TRLoaderObjectInputStream(BufferedInputStream in, TRClassLoader trcl) throws StreamCorruptedException, IOException {
+    public TRLoaderObjectInputStream(InputStream in, ClassLoader cl) throws StreamCorruptedException, IOException {
         super(in);
         m_underlyingStream = in;
-        classLoader = trcl;
+        classLoader = cl;
     }
 
     protected Class resolveClass(ObjectStreamClass v) throws ClassNotFoundException, IOException {
@@ -75,10 +74,7 @@ public class TRLoaderObjectInputStream extends ObjectInputStream {
      * @param trcl
      *            The new TRClassLoader
      */
-    public void setClassLoader(TRClassLoader trcl) {
-        if (classLoader != null) {
-            classLoader.close();
-        }
+    public void setClassLoader(ClassLoader trcl) {
         classLoader = trcl;
     }
 

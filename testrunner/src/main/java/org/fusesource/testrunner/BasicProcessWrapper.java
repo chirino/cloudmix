@@ -18,6 +18,16 @@ public class BasicProcessWrapper {
     private ArrayList _listeners = new ArrayList();
     private int _exitStatus = -1;
 
+    public interface IProcessOutputListener
+    {
+        /**
+         * Called when something is read from a launched process.
+         * @param s The output
+         */
+        public void processOutput(String s);
+    }
+    
+    
     public static final IProcessOutputListener CONSOLE = (new IProcessOutputListener() {
         public void processOutput(String s) {
             System.out.println(s);

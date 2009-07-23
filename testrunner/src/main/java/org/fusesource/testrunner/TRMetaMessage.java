@@ -26,60 +26,141 @@ import java.io.*;
 import java.util.Hashtable;
 
 class TRMetaMessage implements Serializable {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 8934236626977238345L;
-    private byte[] m_classBytes = null;
-    private Hashtable m_props = null;
 
-    public TRMetaMessage(Object content, Hashtable props) throws IOException {
+    private byte[] contentBytes = null;
+    protected Hashtable props = null;
+    private boolean isInternal = false;
+
+    protected transient ClassLoader classLoader = null;
+    private transient Object content;
+    private transient String source;
+
+    TRMetaMessage(Object content) {
+        this(content, null);
+    }
+
+    TRMetaMessage(Object content, Hashtable props) {
         if (content != null) {
             // store serialized object
             //Object obj = null;
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            BufferedOutputStream buffStream = new BufferedOutputStream(byteStream);
-            ObjectOutputStream out = new ObjectOutputStream(buffStream);
-            out.writeObject(content);
-            out.flush();
-            m_classBytes = byteStream.toByteArray();
-            out.close();
+            try
+            {
+                ObjectOutputStream out = new ObjectOutputStream(byteStream);
+                out.writeObject(content);
+                out.flush();
+                contentBytes = byteStream.toByteArray();
+                out.close();
+            }
+            catch(Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
-        m_props = props;
+        this.props = props;
     }
 
-    public Object getContent() throws Throwable {
-        return getContent(null);
+    TRMetaMessage(byte[] contentBytes, Hashtable props) {
+        this.contentBytes = contentBytes;
+        this.props = props;
     }
 
-    public Object getContent(TRClassLoader tcl) throws Throwable {
-        if (m_classBytes == null)
+    public void setIntProperty(String key, Integer val) {
+        if (props == null) {
+            props = new Hashtable();
+        }
+        props.put(key, val);
+    }
+
+    public Integer getIntProperty(String key) {
+        if (props == null) {
+            return null;
+        } else {
+            return (Integer) props.get(key);
+        }
+    }
+
+    public void setProperty(String key, Object val) {
+        if (props == null) {
+            props = new Hashtable();
+        }
+        props.put(key, val);
+    }
+
+    public String getProperty(String key) {
+        if (props == null) {
+            return null;
+        } else {
+            return (String) props.get(key);
+        }
+    }
+
+    public Hashtable getProperties() {
+        return props;
+    }
+
+    byte[] getContentBytes() {
+        return contentBytes;
+    }
+
+    /**
+     * If the message is internal then it is safe to call {@link #getContent()}
+     * since only testrunner classes will be present in the object.
+     * 
+     * @return
+     */
+    boolean isInternal() {
+        return isInternal;
+    }
+
+    /**
+     * @param b
+     */
+    public void setInternal(boolean isInternal) {
+        this.isInternal = isInternal;
+    }
+
+    void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
+    /**
+     * @param source
+     *            The source of the message
+     */
+    void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public Object getContent() throws Exception {
+        if (content != null) {
+            return content;
+        }
+
+        if (contentBytes == null)
             return null;
         // de-serialize content
-        TRClassLoader classLoader = tcl;
         if (classLoader == null)
-            classLoader = new TRClassLoader("");
+            classLoader = Thread.currentThread().getContextClassLoader();
+
+        if (classLoader == null)
+            classLoader = getClass().getClassLoader();
+
         Object obj = null;
-        ByteArrayInputStream inByteStream = new ByteArrayInputStream(m_classBytes);
-        TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(new BufferedInputStream(inByteStream), classLoader);
-        try {
-            obj = inputStream.recoverableReadObject();
-        } catch (Throwable thrown) {
-            throw thrown;
-        }
+        ByteArrayInputStream inByteStream = new ByteArrayInputStream(contentBytes);
+        TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(inByteStream, classLoader);
+        obj = inputStream.recoverableReadObject();
+
         if (inputStream != null) {
             inputStream.close();
             inputStream = null;
         }
 
-        if (inByteStream != null) {
-            inByteStream.close();
-            inByteStream = null;
-        }
         return obj;
     }
 
-    public Hashtable getProperties() {
-        return m_props;
-    }
 }

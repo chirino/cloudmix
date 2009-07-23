@@ -26,15 +26,10 @@ package org.fusesource.testrunner;
 
 import javax.jms.*;
 
-
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
-import java.util.Date;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 
@@ -69,7 +64,7 @@ import java.lang.reflect.Constructor;
  * @see ITRBindListener
  * @see ITRAsyncMessageHandler
  */
-public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.ExceptionListener {
+public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.ExceptionListener, TRCommunicator {
     private static boolean DEBUG = false;
     private static final boolean devDebug = false;
     public static final String FACTORY_PROP = "testrunner.jms.provider";
@@ -79,14 +74,12 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
     private static final long RETRY_TIMEOUT = 30000; //30s
 
     //Internal Msg Property Headers:
-    private static final String BIND = "Bind";
     private static final String PING = "Ping";
-    private static final String RELEASE = "Release";
     private static final String CLIENT_ID = "clientID";
     private static final String VERSION = "Version";
 
-    protected static final String SONIC_ADMIN_USER = "Administrator";
-    protected static final String SONIC_ADMIN_PASSWORD = "Administrator";
+    protected static final String CF_USER = "Administrator";
+    protected static final String CF_PASSWORD = "Administrator";
     private TopicConnectionFactory m_factory;
     private TopicConnection m_connection;
 
@@ -111,22 +104,14 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
     private TopicSession m_replySession;
     private TopicPublisher m_replyPublisher;
 
-    private String m_source; //The clientID of the last message received.
-    private Hashtable m_props; //The properties of the last message received.
     private String m_clientID; //The (unique) clientID
     private String m_hostAddress; //The address of the host to which to connect
-    private boolean boundFlag; //If set bound to communicate with one other entity:
-    private Object boundFlagLock; //To synchronize access to boundFlag
     private Object handleMessageLock; //To synchronize handleMessage() called on synchronous and asynchronous message receipt
     private Object requestLock; //To serialize requests
     private Object replyLock; //To serialize reply
     private Object m_sendLock; //To serialize sends
     private Object m_getMessageLock; //To protect the receive session.
-    private String master; //...and the entities client ID is this
-    private Vector boundList;
-    private ITRBindListener m_bindListener;
     private BroadCastListener m_broadCastListener;
-    private boolean sendDisplayObjs = false; //If set to true DisplayObjects are sent instead of being directly displayed on screen
     private Hashtable m_classLoaders;
     private TRClassLoader m_defaultClassLoader;
 
@@ -144,9 +129,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
      * @param bindListener
      *            If this entity wishes other agents to be able to bind it this
      *            must be non null.
-     * @param asyncHandler
-     *            If this entity wishes to listen for broadCasted messages this
-     *            must be non-null. See broadCast(..)
      * @exception java.lang.Exception
      *                If there is a general error starting communication
      * @exception javax.jms.JMSSecurityException
@@ -155,26 +137,35 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
      *                If there is a JMS error connecting to the broker
      */
 
-    public TRJMSCommunicator(String hostAddress, String clientID, ITRBindListener bindListener, ITRAsyncMessageHandler asyncHandler)
+    public TRJMSCommunicator(String hostAddress, String clientID)
 
     throws Exception, javax.jms.JMSSecurityException, javax.jms.JMSException {
 
         m_hostAddress = hostAddress;
         m_clientID = clientID == null ? null : clientID.toUpperCase();
-        m_bindListener = bindListener;
-        m_broadCastListener = new BroadCastListener(asyncHandler);
+        m_broadCastListener = new BroadCastListener(new TRComHandler() {
 
-        boundList = new Vector();
-        boundFlag = false;
-        boundFlagLock = new Object();
+            public void handleMessage(TRMetaMessage obj) {
+                System.err.println("No broadcast listener set ... ignoring: " + obj);
+            }
+        });
+
         m_classLoaders = new Hashtable(); // key = pid; value = TRClassLoader
         handleMessageLock = new Object();
         requestLock = new Object();
         replyLock = new Object();
         m_sendLock = new Object();
         m_getMessageLock = new Object();
-        setupConnection();
         m_defaultClassLoader = new TRClassLoader("");
+    }
+
+    /**
+     * Sets a handler for asynchronous messages from the communicator
+     * 
+     * @param handler
+     */
+    public void setTRComHandler(TRComHandler handler) {
+        m_broadCastListener.m_messageHandler = handler;
     }
 
     private void setupConnection() throws Exception {
@@ -248,11 +239,11 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             String factoryName = System.getProperty(FACTORY_PROP, "progress.message.jclient.TopicConnectionFactory");
             if (factoryName.startsWith("progress.message")) {
                 Constructor c = Class.forName(factoryName).getConstructor(new Class[] { String.class, String.class, String.class });
-                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { m_hostAddress, SONIC_ADMIN_USER, SONIC_ADMIN_PASSWORD });
+                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { m_hostAddress, CF_USER, CF_PASSWORD });
             }
             if (factoryName.startsWith("org.apache.activemq")) {
                 Constructor c = Class.forName(factoryName).getConstructor(new Class[] { String.class, String.class, String.class });
-                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { SONIC_ADMIN_USER, SONIC_ADMIN_PASSWORD, m_hostAddress });
+                m_factory = (TopicConnectionFactory) c.newInstance(new Object[] { CF_USER, CF_PASSWORD, m_hostAddress });
             } else {
                 //Try for a constructor taking a connect url:
                 Constructor c = Class.forName(factoryName).getConstructor(new Class[] { String.class });
@@ -282,57 +273,10 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             }
         }
 
-        //Release any JMSCommunicators bound to this clientID:
-        if (DEBUG || devDebug)
-            System.out.println(m_clientID + ": Releasing any bound recipients.");
-
-        try {
-            if (!releaseAll(30000)) {
-                errorFlag = true;
-                errorReason += "ERROR: Unable to release bind on all agents." + System.getProperty("line.separator");
-            }
-        } catch (Exception e) {
-            errorFlag = true;
-            errorReason += "ERROR: Unable to release bind on all agents." + System.getProperty("line.separator");
-        }
-
         if (DEBUG || devDebug)
             System.out.println(m_clientID + ": Terminating JMS communication.");
         try {
             if (m_connection != null) {
-                m_connection.stop();
-                m_publisher.close();
-                m_publisher = null;
-                m_sendSession.close();
-                m_sendSession = null;
-
-                m_subscriber.close();
-                m_subscriber = null;
-                m_rcvSession.close();
-                m_rcvSession = null;
-
-                m_broadCastSubscriber.close();
-                m_broadCastSubscriber = null;
-                m_asyncRcvSession.close();
-                m_asyncRcvSession = null;
-
-                m_internalSubscriber.close();
-                m_internalSubscriber = null;
-                m_internalSession.close();
-                m_internalSession = null;
-
-                m_replyPublisher.close();
-                m_replyPublisher = null;
-                m_replySession.close();
-                m_replySession = null;
-
-                m_requestPublisher.close();
-                m_requestPublisher = null;
-                m_requestSubscriber.close();
-                m_requestSubscriber = null;
-                m_requestSession.close();
-                m_requestSession = null;
-
                 m_connection.close();
                 m_connection = null;
             }
@@ -361,23 +305,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
     }
 
     /**
-     * If the owner of this communicator wishes to receive objects of type
-     * TRDisplayMsg, this should be set to true. Otherwise these messages are
-     * printed to System.out.
-     * 
-     * @param value
-     */
-    /*
-     * public void setSendDisplayObjs(boolean value)
-     * 
-     * Determines whether a display object is returned by get message or
-     * directly output to screen.
-     */
-    public void setSendDisplayObjs(boolean value) {
-        sendDisplayObjs = value;
-    }
-
-    /**
      * Gets a message intended for the owner of this.
      * 
      * @param timeout
@@ -389,7 +316,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
      * 
      * * Synchronously receives messages
      */
-    public Object getMessage(long timeout) throws Exception {
+    public TRMetaMessage getMessage(long timeout) throws Exception {
         synchronized (m_getMessageLock) {
             long time = System.currentTimeMillis();
 
@@ -412,18 +339,27 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
 
             if (DEBUG || devDebug)
                 System.out.println("Calling handle message from getMessage");
-            Object obj = null;
+            TRMetaMessage trMsg = null;
 
-            try {
-                obj = handleMessage(msg);
-            } catch (Throwable thrown) {
-                Exception e = new Exception();
-                e = (Exception) thrown;
-                throw e;
-            }
+            trMsg = handleMessage(msg);
 
-            if (obj != null) {
-                return obj;
+            //            obj = (Object) ((TRMetaMessage) obj).getContent(classLoader);
+            //            if (DEBUG || devDebug)
+            //                System.out.println("Meta message content is " + (obj == null ? "null" : obj.getClass().getName()));
+            //
+            //            if (obj instanceof TRDisplayMsg && !sendDisplayObjs) {
+            //                System.out.println(obj);
+            //            } else {
+            //                if (DEBUG || devDebug)
+            //                    System.out.println("" + m_source + ": " + obj);
+            //                if (DEBUG || devDebug)
+            //                    System.out.println("End synch on boundFlagLock in handleMessage (returning msg)");
+            //                m_source = source;
+            //                return obj;
+            //            }
+
+            if (trMsg != null) {
+                return trMsg;
             }
 
             //Otherwise call recursively with the remaining time left:
@@ -431,7 +367,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         }
     }
 
-    private Object handleMessage(javax.jms.Message msg) throws Throwable {
+    private TRMetaMessage handleMessage(javax.jms.Message msg) throws Exception {
         if (DEBUG || devDebug)
             System.out.println("Got message");
         String source = null;
@@ -446,115 +382,71 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             //return the object or
             //display it if it is a DisplayObj and keep waiting for a non-display
             //message:
-            synchronized (boundFlagLock) {
-                if (DEBUG || devDebug)
-                    System.out.println("Synched on boundFlagLock in handleMessage");
-                if (source != null && msg instanceof BytesMessage && (!boundFlag || (boundFlag && source.equals(master)))) {
+            if (DEBUG || devDebug)
+                System.out.println("Synched on boundFlagLock in handleMessage");
+            if (source != null && msg instanceof BytesMessage) {
+                BytesMessage bMessage = (BytesMessage) msg;
+                if (devDebug)
+                    System.out.println("Got: " + msg);
+                Object obj = null;
+                byte[] classBytes = new byte[(int) bMessage.getBodyLength()];
+                bMessage.readBytes(classBytes);
 
-                    BytesMessage bMessage = (BytesMessage) msg;
-                    if (devDebug)
-                        System.out.println("Got: " + msg);
-                    Object obj = null;
-                    byte[] classBytes = new byte[(int) bMessage.getBodyLength()];
-                    bMessage.readBytes(classBytes);
+                // the wrapped object is serialized inside of a TRMetaMessage, therefore, no special class loader is needed.
+                TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(new ByteArrayInputStream(classBytes), m_defaultClassLoader);
+                obj = inputStream.recoverableReadObject();
 
-//                      if (devDebug)
-//                        System.out.println("Got : " + classBytes.length + ": " + HexSupport.toHexFromBytes(classBytes));
+                if (inputStream != null) {
+                    inputStream.close();
+                    inputStream = null;
+                }
 
-                    ByteArrayInputStream inByteStream = new ByteArrayInputStream(classBytes);
-
-                    //                    
-                    //                    ObjectInputStream ois = new ObjectInputStream(inByteStream);
-                    //                    obj = ois.readObject();
-
-                    // the wrapped object is serialized inside of a TRMetaMessage, therefore, no special class loader is needed.
-                    TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(new BufferedInputStream(inByteStream), m_defaultClassLoader);
-                    try {
-                        obj = inputStream.recoverableReadObject();
-                    } catch (Throwable thrown) {
-                        throw thrown;
-                    }
-
-                    if (inputStream != null) {
-                        inputStream.close();
-                        inputStream = null;
-                    }
-
-                    if (inByteStream != null) {
-                        inByteStream.close();
-                        inByteStream = null;
-                    }
-
-                    if (obj == null) {
-                        if (DEBUG || devDebug)
-                            System.out.println(this + "Read null.");
-                        return null;
-                    } else {
-                        if (DEBUG || devDebug)
-                            System.out.println(this + " Read a " + obj.getClass().getName());
-                    }
-
-                    //Check to see that this is a test runner message:
-                    if (!(obj instanceof TRMetaMessage)) {
-                        return null;
-                    }
-
-                    if (obj instanceof TRBroadCastMetaMessage) {
-                        String[] recips = (String[]) ((TRBroadCastMetaMessage) obj).m_recips;
-                        boolean isRecip = false;
-
-                        //We don't break when we find that we are in the recipient
-                        //list instead we traverse the whole array for fairness (so
-                        //that the order of the clientID in the list doesn't matter
-                        for (int i = 0; i < recips.length; i++) {
-                            if (recips[i].equalsIgnoreCase(m_clientID)) {
-                                isRecip = true;
-                            }
-                        }
-                        //If we are not a recipient return null
-                        if (!isRecip)
-                            return null;
-                        m_props = (Hashtable) ((TRBroadCastMetaMessage) obj).getProperties().get(m_clientID);
-                    } else {
-                        m_props = (Hashtable) ((TRMetaMessage) obj).getProperties();
-                    }
-
-                    // get Pid-specific class loader
-                    TRClassLoader classLoader = getClassLoader(m_props);
-
-                    obj = (Object) ((TRMetaMessage) obj).getContent(classLoader);
+                if (obj == null) {
                     if (DEBUG || devDebug)
-                        System.out.println("Meta message content is " + (obj == null ? "null" : obj.getClass().getName()));
-
-                    if (obj instanceof TRDisplayMsg && !sendDisplayObjs) {
-                        System.out.println(obj);
-                    } else {
-                        if (DEBUG || devDebug)
-                            System.out.println("" + m_source + ": " + obj);
-                        if (DEBUG || devDebug)
-                            System.out.println("End synch on boundFlagLock in handleMessage (returning msg)");
-                        m_source = source;
-                        return obj;
-                    }
+                        System.out.println(this + "Read null.");
+                    return null;
                 } else {
                     if (DEBUG || devDebug)
-                        System.out.println("Received a message for another entity from " + source);
+                        System.out.println(this + " Read a " + obj.getClass().getName());
                 }
-            }//synchronized (boundFlagLock)
 
-            if (DEBUG || devDebug)
-                System.out.println("End synch on boundFlagLock in handleMessage (returning null)");
+                //Check to see that this is a test runner message:
+                if (!(obj instanceof TRMetaMessage)) {
+                    return null;
+                }
+
+                TRMetaMessage ret = (TRMetaMessage) obj;
+                if (obj instanceof TRBroadCastMetaMessage) {
+                    String[] recips = (String[]) ((TRBroadCastMetaMessage) obj).m_recips;
+                    boolean isRecip = false;
+
+                    //We don't break when we find that we are in the recipient
+                    //list instead we traverse the whole array for fairness (so
+                    //that the order of the clientID in the list doesn't matter
+                    for (int i = 0; i < recips.length; i++) {
+                        if (recips[i].equalsIgnoreCase(m_clientID)) {
+                            isRecip = true;
+                        }
+                    }
+                    //If we are not a recipient return null
+                    if (!isRecip)
+                        return null;
+
+                    ret = new TRMetaMessage(ret.getContentBytes(), (Hashtable) ((TRBroadCastMetaMessage) obj).getProperties().get(m_clientID));
+                }
+
+                // get Pid-specific class loader
+                TRClassLoader classLoader = getClassLoader(ret.getProperties());
+                ret.setClassLoader(classLoader);
+                ret.setSource(source);
+                
+                return ret;
+            } else {
+                if (DEBUG || devDebug)
+                    System.out.println("Received a message for another entity from " + source);
+            }
             return null;
         }//synchronized(handleMessageLock)
-    }
-
-    /**
-     * Gets the source (clientID) of the last message received
-     * 
-     * @return The source
-     */
-    public String getSource() {
-        return m_source;
     }
 
     private void checkVersionMatch(Message msg) throws TRVersionMismatchException {
@@ -566,14 +458,14 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             if (version != null) {
                 if (!version.equals(Version.getVersionString())) {
                     if (source != null) {
-                        this.sendMessage(source, "Version mismatch: " + Version.getVersionString() + " / " + version);
+                        internalSend("Version mismatch: " + Version.getVersionString() + " / " + version, source);
                     }
                     throw new TRVersionMismatchException("Version mismatch: source (" + source + ") version: " + version + " this version: " + Version.getVersionString());
                 }
                 return;
             } else {
                 if (source != null) {
-                    this.sendMessage(source, "Poorly formatted message, VERSION not specified. Potential TestRunner version mismatch or message from non TestRunner entity");
+                    internalSend("Poorly formatted message, VERSION not specified. Potential TestRunner version mismatch or message from non TestRunner entity", source);
                 }
                 throw new TRVersionMismatchException("Poorly formatted message, VERSION not specified. Potential TestRunner version mismatch.");
             }
@@ -582,17 +474,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         } catch (Exception e) {
             throw new TRVersionMismatchException("ERROR: checking message version.");
         }
-    }
-
-    /**
-     * The properties associated with the last message.
-     * 
-     * @return Properties hashtable or null if no properties.
-     */
-    public Hashtable getProperties() {
-        if (DEBUG || devDebug)
-            System.out.println("Returning properties:" + m_props);
-        return m_props;
     }
 
     /**
@@ -619,76 +500,13 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                 return;
             }
 
-            //Check to see if this is a bind request for this clientID:
-            if (msg.getStringProperty(BIND) != null) //Is a message about a bind:
-            {
-                System.out.println(m_clientID + ": received bind request from " + source);
-
-                synchronized (boundFlagLock) //to protect bound flag
-                {
-                    long time = msg.getLongProperty("TimeOut");
-                    //Check first if we are still connected to our master
-                    //If the master is gone we are free to accept more
-                    //bind requests:
-                    //We use a timeout that is half the bind requestors timeout
-                    //when we ping the the current master so that we can reply to
-                    //the requestor in time.
-                    if (boundFlag && !ping(master, time / 2)) {
-                        System.out.println(m_clientID + ": releasing bind to " + master);
-                        boundFlag = false;
-                        this.m_bindListener.bindReleaseNotify(master);
-                        master = null;
-                    }
-                    //If we are not bound accept the request
-                    if ((!boundFlag && source != null && m_bindListener != null)) {
-                        //Accept the bind:
-                        boundFlag = true;
-                        master = source;
-                        this.m_bindListener.bindNotify(master);
-                        this.reply(msg, source, BIND, "reply", new Boolean(true), true);
-                        if (DEBUG || devDebug)
-                            System.out.println(m_clientID + ": accepting bind request. Now bound to " + master);
-                    } else {
-                        if (DEBUG || devDebug)
-                            System.out.println(m_clientID + ": rejecting bind request from " + source + ".");
-                        this.reply(msg, source, BIND, "reply", new Boolean(false), true);
-                        this.sendMessage(source, new TRErrorMsg("Already bound", null));
-                    }
-                }
-                //m_pingTimer.SetNotify(this);
-                return;
-            }
-            //Check to see if this is a release request for this clientID:
-            if (msg.getStringProperty(RELEASE) != null) {
-                //Always accept and acknowledge a release:
-                //Even if we aren't bound to the source we can still say that
-                //we aren't bound to them anymore. This way the source at
-                //least knows that the request was received
-                if (DEBUG || devDebug)
-                    System.out.println(m_clientID + ": acknowledging bind release request.");
-
-                //If we actually are bound to the source release the bind
-                synchronized (boundFlagLock) //to protect bound flag
-                {
-                    if (boundFlag && source.equalsIgnoreCase(master)) {
-                        m_bindListener.bindReleaseNotify(master);
-                        if (DEBUG || devDebug)
-                            System.out.println(m_clientID + ": releasing bind to " + source);
-                        boundFlag = false;
-                        master = null;
-                    }
-                }
-                this.reply(msg, source, RELEASE, "reply", new Boolean(true), true);
-                return;
-            }
-
             //Check to see if this is a ping request for this clientID:
             if (msg.getStringProperty(PING) != null) //Is a message about a bind:
             {
                 //Always acknowledge a ping:
                 if (DEBUG || devDebug)
                     System.out.println(m_clientID + ": acknowledging ping request.");
-                this.reply(msg, source, PING, "reply", new Boolean(true), true);
+                this.reply(msg, source, PING, "reply", new Boolean(true));
                 return;
             }
         } catch (JMSException jmse) {
@@ -700,76 +518,38 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         }
     }
 
-    void printStatus() {
-        System.out.println("STATUS:");
-        System.out.println("Time: " + new Date());
-        System.out.println("bound: " + boundFlag);
-        System.out.println("master: " + master);
-        System.out.println("Last Message Source: " + m_source);
-        System.out.println("bindListener: " + m_bindListener);
-    }
-
-    /**
-     * Sends a message
+    /*
+     * (non-Javadoc)
      * 
-     * @param recipient
-     *            The clientID of the intended recipient
-     * @param content
-     *            The object to send
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
+     * @see
+     * org.fusesource.testrunner.TRCommunicator#broadCast(org.fusesource.testrunner
+     * .TRMetaMessage, java.lang.String[])
      */
-    public void sendMessage(String recipient, Object content) throws Exception {
-        sendMessage(recipient, content, null);
+    public void broadCast(TRMetaMessage msg, String[] agentIDs) throws Exception {
+        sendMessage(new TRBroadCastMetaMessage(msg, agentIDs, null), BROADCAST_TOPIC_POSTFIX);
     }
 
-    /**
-     * Sends a message with a property set
+    /*
+     * (non-Javadoc)
      * 
-     * @param recipient
-     *            The clientId of the recipient
-     * @param content
-     *            The object to send
-     * @param propertyName
-     *            The key for the property
-     * @param PropertyValue
-     *            The value of the property.
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
+     * @see org.fusesource.testrunner.TRCommunicator#connect()
      */
-    public void sendMessage(String recipient, Object content, String propertyName, Object PropertyValue) throws Exception {
-        Hashtable props = new Hashtable();
-        props.put(propertyName, PropertyValue);
-        sendMessage(recipient, content, props);
+    public void connect() throws Exception {
+        setupConnection();
     }
 
-    /**
-     * Sends a message with properties set
+    private void internalSend(Object obj, String recipient) throws Exception {
+        sendMessage(new TRMetaMessage(obj), recipient);
+    }
+
+    /*
+     * (non-Javadoc)
      * 
-     * @param recipient
-     *            The clientID of the intended recipient
-     * @param content
-     *            The object to send
-     * @param props
-     *            The properties to send
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
+     * @seeorg.fusesource.testrunner.TRCommunicator#sendMessage(org.fusesource.
+     * testrunner.TRMetaMessage, java.lang.String)
      */
-
-    public void sendMessage(String recipient, Object content, Hashtable props) throws Exception {
-        if (props == null) {
-            props = new Hashtable();
-        }
-        if (content instanceof TRMsg) {
-            ((TRMsg) content).setSource(m_clientID);
-        }
-        internalSend(recipient, new TRMetaMessage(content, props));
-    }
-
-    private void internalSend(String recipient, Object content) throws Exception {
+    public void sendMessage(TRMetaMessage trMsg, String recipient) throws Exception {
+        trMsg.setSource(m_clientID);
         BytesMessage msg = m_sendSession.createBytesMessage();
 
         //Always set a property with out unique clientID
@@ -777,12 +557,10 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         msg.setStringProperty(CLIENT_ID, m_clientID);
         msg.setStringProperty(VERSION, Version.getVersionString());
 
-        //Send the serializable object as an stream of bytes to be
-        //dealt with on the other end:
-
+        
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(byteStream));
-        oos.writeObject((java.io.Serializable) content);
+        ObjectOutputStream oos = new ObjectOutputStream(byteStream);
+        oos.writeObject(trMsg);
         oos.flush();
         byte[] objectBytes = byteStream.toByteArray();
         msg.writeBytes(objectBytes);
@@ -792,152 +570,15 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             if (DEBUG || devDebug)
                 System.out.println("Sending message on " + topic.getTopicName());
             m_publisher.publish(topic, msg, DeliveryMode.PERSISTENT, 0, 0);
-            
+
             if (DEBUG || devDebug)
                 System.out.println("Finished Sending message on " + topic.getTopicName());
-            
-            if(devDebug)
-            {
+
+            if (devDebug) {
                 System.out.println("Sent: " + msg);
-//                System.out.println("Sent: " + objectBytes.length + ": " + HexSupport.toHexFromBytes(objectBytes));
+                //                System.out.println("Sent: " + objectBytes.length + ": " + HexSupport.toHexFromBytes(objectBytes));
             }
         }
-    }
-
-    /**
-     * Broadcasts a message to be sent asynchronously to all entities whose
-     * clientID is in recips and are connected to the Control broker.
-     * 
-     * @param content
-     *            The object to send
-     * @param recips
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
-     */
-    public void broadCast(Object content, String[] recips) throws Exception, JMSException, MessageFormatException, MessageNotWriteableException {
-        broadCast(content, recips, null);
-    }
-
-    /**
-     * Broadcasts a message to be sent asynchronously to all entities whose
-     * clientID is in recips and are connected to the control broker.
-     * 
-     * @param content
-     *            The object to send
-     * @param recips
-     *            The intended recipients
-     * @param propsTable
-     *            A Hashtable of Hashtables of properties for each recipient
-     *            each keyed on the name of the recipient.
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
-     */
-    public void broadCast(Object content, String[] recips, Hashtable propsTable) throws Exception, JMSException, MessageFormatException, MessageNotWriteableException {
-        if (propsTable == null) {
-            propsTable = new Hashtable();
-        }
-        if (content instanceof TRMsg) {
-            ((TRMsg) content).setSource(m_clientID);
-        }
-
-        internalSend(BROADCAST_TOPIC_POSTFIX, new TRBroadCastMetaMessage(content, recips, propsTable));
-    }
-
-    /**
-     * Binds another entity for exclusive communication.
-     * 
-     * @param recipient
-     *            The clientID of the recipient to bind
-     * @param timeout
-     *            The amount of time to allow the entity being bound to
-     *            acknowledge that it is bound before returning false
-     * @return true if the bind request is accepted, false otherwise.
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
-     */
-    /*
-     * public boolean bind(String recipient, long timeout)
-     * 
-     * Request to bind another JMSCommunicator for exclusive communication with
-     * this JMSCommunicator (using its unique clientID.
-     */
-    public boolean bind(String recipient, long timeout) throws JMSException, MessageFormatException, MessageNotWriteableException {
-        if (DEBUG || devDebug)
-            System.out.println("Attempting to bind: " + recipient);
-
-        if (request(recipient, BIND, "", timeout)) {
-            if (DEBUG || devDebug)
-                System.out.println("Bound: " + recipient);
-            boundList.addElement(recipient);
-            return true;
-        } else {
-            if (DEBUG || devDebug)
-                System.out.println(m_clientID + ": ERROR: binding " + recipient);
-        }
-        return false;
-
-    }
-
-    /**
-     * Release all agents bound by this communicator
-     * 
-     * @param timeout
-     *            The amount of time for all the bound entities to confirm they
-     *            have been released
-     * @return true if successful.
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
-     */
-    public boolean releaseAll(long timeout) throws JMSException, MessageFormatException, MessageNotWriteableException {
-        boolean releaseSuccess = true;
-        while (boundList.size() > 0) {
-            if (!release((String) boundList.elementAt(0), timeout)) {
-                if (DEBUG || devDebug)
-                    System.out.println("ERROR: Unable to release bind on " + (String) boundList.elementAt(0));
-                releaseSuccess = false;
-                boundList.removeElementAt(0);
-            }
-        }
-        return releaseSuccess;
-    }
-
-    /**
-     * Releases a single bindee.
-     * 
-     * @param recipient
-     *            The clientID of the recipient to release.
-     * @param timeout
-     *            The time to allow for the bindee to comfirm that it has been
-     *            released
-     * @return true if the recipient was released.
-     * @exception JMSException
-     * @exception MessageFormatException
-     * @exception MessageNotWriteableException
-     */
-    /*
-     * public boolean release(String recipient, long timeout)
-     * 
-     * Request to release another JMSCommunicator from exclusive communication
-     * with this JMSCommunicator (using its unique clientID).
-     */
-    public boolean release(String recipient, long timeout) throws JMSException, MessageFormatException, MessageNotWriteableException {
-        if (DEBUG || devDebug)
-            System.out.println("Attempting to release: " + recipient);
-
-        if (request(recipient, RELEASE, "request", timeout)) {
-            if (DEBUG || devDebug)
-                System.out.println("Released: " + recipient);
-            boundList.removeElement(recipient);
-            return true;
-        } else {
-            if (DEBUG || devDebug)
-                System.out.println(m_clientID + " ERROR: releasing bind on " + recipient + " (timed out)");
-        }
-        return false;
     }
 
     /**
@@ -951,12 +592,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
      * @exception JMSException
      * @exception MessageFormatException
      * @exception MessageNotWriteableException
-     */
-
-    /*
-     * public boolean ping(String recipient, long timeout)
-     * 
-     * Request for ping reply from another JMSCommunicator.
      */
     public boolean ping(String recipient, long timeout) throws JMSException, MessageFormatException, MessageNotWriteableException {
         if (DEBUG || devDebug)
@@ -1029,7 +664,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         }
     }
 
-    private void reply(Message msg, String source, String property, String value, Object object, boolean internal) {
+    private void reply(Message msg, String source, String property, String value, Object object) {
         if (DEBUG || devDebug)
             System.out.println("In reply (" + source + " - " + property + ")");
         synchronized (replyLock) {
@@ -1106,9 +741,9 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
     }
 
     private class BroadCastListener implements javax.jms.MessageListener {
-        ITRAsyncMessageHandler m_messageHandler;
+        TRComHandler m_messageHandler;
 
-        public BroadCastListener(ITRAsyncMessageHandler messageHandler) {
+        public BroadCastListener(TRComHandler messageHandler) {
             m_messageHandler = messageHandler;
         }
 
@@ -1120,7 +755,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                 if (DEBUG || devDebug)
                     System.out.println("Received broadcast message.");
                 try {
-                    Object obj = handleMessage(message);
+                    TRMetaMessage obj = handleMessage(message);
 
                     if (obj != null) {
                         if (DEBUG || devDebug)
@@ -1139,7 +774,7 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                     System.out.println("ERROR: handling broadcast message.");
                     thrown.printStackTrace();
                     try {
-                        sendMessage((String) message.getStringProperty(CLIENT_ID), new TRErrorMsg("ERROR: handling broadcast message.", thrown));
+                        internalSend(new TRErrorMsg("ERROR: handling broadcast message.", thrown), (String) message.getStringProperty(CLIENT_ID));
                     } catch (Exception ex2) {
                         System.out.println("Error sending error to source.");
                         ex2.printStackTrace();

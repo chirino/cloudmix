@@ -1,36 +1,22 @@
 package org.fusesource.testrunner;
 
+import java.io.IOException;
 import java.util.Vector;
 
 /**
- * <p>
- * Title: TestRunner 2.0
- * </p>
- * <p>
- * Description:
- * </p>
- * <p>
- * Copyright: Copyright (c) 2002
- * </p>
- * <p>
- * Company: Sonic Software
- * </p>
- * 
- * @author Colin MacNaughton
- * @version 1.0
+ * Used to broadcast an object to multiple processes running across multiple agents.
  */
-
-public class TRComHubBroadcastMetaMsg implements java.io.Serializable {
+public class TRProcessBroadcastMetaMsg extends TRMetaMessage implements java.io.Serializable {
 
     private static final long serialVersionUID = 3532929922135852792L;
 
     TRProcessContext[] m_recipProcs;
-    Object m_msg;
     private transient String[] m_trRecips;
     private transient boolean m_serialized = true;
 
-    public TRComHubBroadcastMetaMsg(Object msg, TRProcessContext[] recipProcs) {
-        m_msg = msg;
+    public TRProcessBroadcastMetaMsg(Object msg, TRProcessContext[] recipProcs) throws IOException {
+        super(msg);
+        setInternal(true);
         m_recipProcs = recipProcs;
 
         //Find the recipient TRAgents
@@ -46,13 +32,23 @@ public class TRComHubBroadcastMetaMsg implements java.io.Serializable {
         m_serialized = false;
     }
 
-    /**
-     * @return Returns a reference to the payload object.
-     */
-    Object getMessage() {
-        return m_msg;
+    public TRMetaMessage[] getSubMessages(String agentId)
+    {
+        Vector msgs = new Vector();
+        for(int i = 0; i < m_recipProcs.length; i++)
+        {
+            TRMetaMessage msg = new TRMetaMessage(getContentBytes(), getProperties());
+            msg.setIntProperty(TRAgent.PID, m_recipProcs[i].getPid());
+            msg.setSource(getSource());
+            msg.classLoader = classLoader;
+            msgs.add(msg);
+        }
+        
+        TRMetaMessage[] ret = new TRMetaMessage [msgs.size()];
+        msgs.copyInto(ret);
+        return ret;
     }
-
+    
     /**
      * 
      * @return Returns the transient array of ids of testrunner agents with

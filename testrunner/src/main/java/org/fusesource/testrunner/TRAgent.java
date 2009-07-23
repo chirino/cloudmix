@@ -27,7 +27,7 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.lang.Process;
 
-//import org.nsclient4j.NSClient4j;
+import org.fusesource.testrunner.TRCommunicator.TRComHandler;
 
 /**
  * public class TRAgent
@@ -147,7 +147,7 @@ import java.lang.Process;
  * @see TRLaunchDescr
  */
 
-public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
+public class TRAgent {
     private static final boolean devDebug = false;
     private static boolean classDebug = Boolean.getBoolean("org.fuse.testrunner.TRAgent.debug");
     private static boolean packageDebug = Boolean.getBoolean("org.fuse.testrunner.debug");
@@ -155,40 +155,13 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     private static boolean cmdDebug = devDebug || classDebug || packageDebug || globalDebug;
     private static boolean DEBUG = cmdDebug;
 
+    static final String COMMAND_BIND = "BIND";
+    static final String COMMAND_RELEASE = "RELEASE";
+    static final String COMMAND_LAUNCH = "LAUNCH";
+    static final String COMMAND_KILL = "KILL";
+    static final String PROP_COMMAND_RESPONSE = "CMD_RESP";
+
     private static final long CLEANUP_TIMEOUT = 60000;
-
-    /**
-     * Sent in a TRMsg back to the entity that sent the LaunchDescr that started
-     * the process to indicate that the process was launched successfully.
-     */
-    public static final String LAUNCH_SUCCESS = "Launch Successful";
-
-    /**
-     * Sent back in a TRErrorMsg if the process was not successfully launched
-     * 
-     * @see LAUNCH_SUCCESS
-     */
-    public static final String LAUNCH_FAILURE = "Launch Failure";
-
-    /**
-     * Sent back to the entity that sent the LaunchDescr that started the
-     * process to indicate that the process has finished executing. This will
-     * always be followed by another message containing the process' exit value.
-     */
-    public static final String PROCESS_DONE = "Process Finished";
-
-    /**
-     * Sent in a TRMsg back to the entity that sent a KillDescr to indicate that
-     * the process has been Successfully killed.
-     * 
-     */
-    public static final String KILL_SUCCESS = "Kill Success";
-
-    /**
-     * Sent in a TRErrorMsg to the entity that sent a KillDescr if the agent
-     * fails to kill the specified process.
-     */
-    public static final String KILL_FAILURE = "Kill Failure";
 
     /**
      * The key for the property returned to indicate a successfully launched
@@ -201,29 +174,22 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
      */
     public static final String PID = "PID";
 
-    // Property to hold PID to pass to launched process
-    public static final String PID_PROPERTY = "org.fuse.testrunner.TRAgent.pid";
-
     //Sent in some TRMsgs so that the sender can correlate a response to a request:
     public static final String TR_REQ_TRACKING = "TR_REQ_TRACKING";
 
-    /**
-     * The key to the Integer property set to indicate the exit value of a
-     * killed process.
-     * 
-     * @see KILL_SUCCESS
-     */
-    public static final String EXIT_VALUE = "Exit value";
+    // Property to hold PID to pass to launched process
+    public static final String PID_PROPERTY = "org.fusesource.testrunner.tragent.pid";
 
     // Property to hold optional port to pass to launched process
-    public static final String PORT_PROPERTY = "org.fuse.testrunner.TRAgent.port";
+    public static final String PORT_PROPERTY = "org.fusesource.testrunner.tragent.port";
 
     private static final long PORT_CONNECT_TIMEOUT = 30000; // 30 secs
 
-    //Commmunication Object:
-    private TRJMSCommunicator m_controlCom;
-
+    //Url of remote controller:
     private String controlUrl;
+
+    //Handler for remote commands:
+    private RemoteCommandHandler commandListener;
 
     //ProcessHandlers:
     private Hashtable m_procHandlers;
@@ -235,12 +201,6 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
     //ProcessMonitor: Periodically tries to clean up abandoned processes:
     private ProcessMonitor m_processMonitor;
 
-    //Thread listening for launch requests.
-    private Thread m_thread;
-
-    //Temp file cleanup thread.
-    private TempFileCleanupThread m_tempFileCleanupThread;
-
     //Used to generate unique process ids
     private int m_pidCount;
 
@@ -249,12 +209,14 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
     private Properties properties = new Properties();
 
-    private String m_currentMaster = null;
-
     private String m_agentID; //The unique identifier for this agent (specified in ini file);
 
     private boolean started = false;
     private String m_dataDir = ".";
+
+    private String exclusiveOwner;
+
+    private Thread shutdownHook;
 
     /*
      * public TestRunnerControl
@@ -299,8 +261,8 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
      *            the name of the agent id.
      */
     public void setAgentId(String id) {
-        if (m_agentID == null) {
-            m_agentID = id;
+        if (m_agentID == null && id != null) {
+            m_agentID = id.trim().toUpperCase();
         }
     }
 
@@ -340,30 +302,99 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         return m_agentID;
     }
 
-    public synchronized void start() {
+    public void bind(String owner) throws Exception {
+        if (exclusiveOwner == null) {
+            exclusiveOwner = owner;
+            m_processMonitor.checkForRogueProcesses(0);
+            System.out.println("Now bound to: " + exclusiveOwner);
+            return;
+        } else if (!exclusiveOwner.equals(owner)) {
+            throw new Exception("Bind failure, already bound: " + exclusiveOwner);
+        } else {
+            return;
+        }
+    }
+
+    public void release(String owner) throws Exception {
+        if (exclusiveOwner == null) {
+            return;
+        } else if (exclusiveOwner.equals(owner)) {
+            System.out.println("Bind to " + exclusiveOwner + " released");
+            exclusiveOwner = null;
+            m_processMonitor.requestCleanup();
+            return;
+        } else {
+            throw new Exception("Release failure, different owner: " + exclusiveOwner);
+        }
+    }
+
+    public int kill(TRProcessContext ctx) throws Exception {
+
+        ProcessHandler procHandler = (ProcessHandler) m_procHandlers.get(ctx.getPid());
+        int exit;
+        if (procHandler == null) {
+            return 0;
+        } else {
+            try {
+                exit = procHandler.kill(false);
+            } finally {
+                m_procHandlers.remove(new Integer(procHandler.m_pid));
+            }
+        }
+
+        m_processMonitor.requestCleanup();
+
+        return exit;
+    }
+
+    public TRProcessContext launch(TRLaunchDescr ld, ProcessListener listener) throws Exception {
+        int pid = m_pidCount++;
+        ProcessHandler procHandler = new ProcessHandler(listener, pid);
+        try {
+            procHandler.launch(ld);
+            m_procHandlers.put(new Integer(pid), procHandler);
+        } catch (Exception exception) {
+            try {
+                procHandler.kill(true);
+            } catch (Exception e) {
+            }
+            throw exception;
+        }
+        return procHandler.getProcessContext();
+    }
+
+    public synchronized void start() throws Exception {
         if (started) {
             return;
         }
 
         started = true;
 
+        readPropFile();
+
         if (m_agentID == null) {
 
             try {
-                m_agentID = java.net.InetAddress.getLocalHost().getHostName();
+                setAgentId(java.net.InetAddress.getLocalHost().getHostName());
             } catch (java.net.UnknownHostException uhe) {
                 System.out.println("Error determining hostname. Edit " + m_propFileName + " to set TRA_NAME explicitly.");
                 uhe.printStackTrace();
-                m_agentID = "UNDEFINED";
+                setAgentId("UNDEFINED");
             }
         }
 
-        readPropFile();
-        
-        m_tempFileCleanupThread = new TempFileCleanupThread();
+        shutdownHook = new Thread(getAgentId() + "-Shutdown") {
+            public void run() {
+                System.out.println("Executing Shutdown Hook for " + TRAgent.this);
+                TRAgent.this.stop();
+
+            }
+        };
+
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
         m_procHandlers = new Hashtable();
         m_processMonitor = new ProcessMonitor();
-
 
         if (m_port >= 0) {
             try {
@@ -376,55 +407,15 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             }
         }
 
-        try {
-            m_controlCom = new TRJMSCommunicator(controlUrl, //TestRunner Server
-                    m_agentID, //clientID (null = not specified)
-                    (ITRBindListener) this, //specifiecs that this Communicator is bindable
-                    (ITRAsyncMessageHandler) this); //specifies that we will process asyncronous messages
-        } catch (javax.jms.JMSSecurityException jmsse) {
-            System.out.println("ERROR: Security error connecting to server: " + controlUrl);
-            jmsse.printStackTrace();
-            stop();
-        } catch (javax.jms.JMSException jmse) {
-            System.out.println("ERROR: connecting to server: " + controlUrl);
-            jmse.printStackTrace();
-            stop();
-        } catch (Exception e) {
-            System.out.println("ERROR: connecting to server: " + controlUrl);
-            e.printStackTrace();
-            stop();
-        }
-
-        m_thread = new Thread(new Runnable() {
-
-            public void run() {
-                try {
-                    //Start handling async Messages:
-                    while (started) {
-                        try {
-                            handleMessage(m_controlCom.getMessage(1000));
-                        } catch (InterruptedException e) {
-                            System.out.println(getAgentId() + ": Stopping...");
-                            break;
-                        } catch (Exception e) {
-                            if (e.getCause() instanceof InterruptedException) {
-                                System.out.println(getAgentId() + ": Stopping...");
-                                break;
-                            }
-                            System.out.println("ERROR: reading message.");
-                            e.printStackTrace();
-                        }
-                    }
-                } finally {
-                    synchronized (TRAgent.this) {
-                        TRAgent.this.notifyAll();
-                    }
-                }
+        if (controlUrl != null) {
+            try {
+                commandListener = new RemoteCommandHandler(controlUrl);
+            } catch (Exception e) {
+                stop();
+                throw e;
             }
-
-        }, "TRAgent-" + getAgentId());
-        m_thread.setDaemon(false);
-        m_thread.start();
+            commandListener.start();
+        }
     }
 
     public synchronized void stop() {
@@ -432,19 +423,25 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             return;
         }
 
-        started = false;
+        if (Thread.currentThread() != shutdownHook) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        }
 
-        //Stop the process monitor:
-        m_processMonitor.shutdown();
+        started = false;
 
         //Kill all processes:
         Iterator procHandlers = m_procHandlers.values().iterator();
         while (procHandlers.hasNext()) {
             ProcessHandler handler = (ProcessHandler) procHandlers.next();
-            handler.kill(true, new Integer(-1));
-            handler.sendMessageToLauncher(new TRMsg(PROCESS_DONE));
+            try {
+                handler.kill(true);
+            } catch (Exception e) {
+            }
         }
         m_procHandlers.clear();
+
+        //Stop the process monitor:
+        m_processMonitor.shutdown();
 
         //Close the process acceptor:
         if (m_processAcceptor != null) {
@@ -452,27 +449,10 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             m_processAcceptor = null;
         }
 
-        //Close the control comm:
-        try {
-            m_controlCom.close();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if (commandListener != null) {
+            commandListener.stop();
         }
 
-        //Stop our processing thread:
-        m_thread.interrupt();
-        try {
-            if (m_thread.isAlive()) {
-                wait();
-            }
-        } catch (InterruptedException e1) {
-            Thread.currentThread().interrupt();
-        }
-
-        //Issue a final cleanup:
-        m_tempFileCleanupThread.cleanup();
-        m_tempFileCleanupThread.shutdown();
     }
 
     private void readPropFile() {
@@ -495,11 +475,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             }
 
             if (m_agentID != null) {
-                m_agentID = properties.getProperty("TRA_NAME");
-                if (m_agentID != null) {
-                    m_agentID = m_agentID.trim();
-                }
-
+                setAgentId(properties.getProperty("TRA_NAME"));
             }
 
             // if a port is specified, create a server socket and acceptor thread
@@ -642,172 +618,6 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         out.close();
     }//public void copyFile (File currentFile, File newFile)
 
-    /**
-     * Called when this agent's TRJMSCommunicator accepts a bind release
-     * request.
-     */
-    public void bindReleaseNotify(String controllerID) {
-        System.out.println("Bind to " + controllerID + " released");
-        m_currentMaster = null;
-        synchronized (m_tempFileCleanupThread) {
-            m_tempFileCleanupThread.notify();
-        }
-    }
-
-    /**
-     * Called when this agent's TRJMSCommunicator accepts a bind request.
-     * 
-     * @param controllerID
-     *            The id of the controller that send the bind request.
-     */
-    public void bindNotify(String controllerID) {
-        //With such a short time out this will kill all processes be run by other controllers.
-        //Which is fine because when someone binds the agent they are asking for
-        //exclusive use of this agent
-        m_currentMaster = controllerID;
-        m_processMonitor.checkForRogueProcesses(0);
-        System.out.println("Now bound to: " + controllerID);
-    }
-
-    /**
-     * Called when an asynchronous message is sent to the JMSCommunicator. OR
-     * when we synchronously receive a message:
-     * 
-     * @param obj
-     *            The message
-     * @param source
-     *            The ID of the entity that sent the message.
-     * 
-     */
-    public synchronized void handleMessage(Object msg) {
-        if (DEBUG)
-            System.out.println(m_agentID + ": Received async message");
-
-        try {
-            if (msg == null) {
-                return;
-            }
-            if (DEBUG)
-                System.out.println("Received Message");
-
-            if (msg instanceof TRLaunchDescr) {
-                System.out.println("Got a Launch Descr from " + m_controlCom.getSource() + " on " + new Date());
-                m_pidCount++;
-                Integer launchTracking = (Integer) m_controlCom.getProperties().get(TR_REQ_TRACKING);
-                ProcessHandler procHandler = new ProcessHandler(m_controlCom.getSource(), m_pidCount, launchTracking);
-                try {
-                    procHandler.start((TRLaunchDescr) msg);
-                    m_procHandlers.put(new Integer(m_pidCount), procHandler);
-                } catch (Throwable thrown) {
-                    thrown.printStackTrace();
-                    Hashtable replyProps = new Hashtable();
-                    replyProps.put(PID, new Integer(procHandler.m_pid));
-                    if (launchTracking != null) {
-                        replyProps.put(TR_REQ_TRACKING, launchTracking);
-                    }
-                    //Send success message to process launcher:
-                    m_controlCom.sendMessage(m_controlCom.getSource(), new TRErrorMsg(LAUNCH_FAILURE, thrown), replyProps);
-                    procHandler.kill(true, null);
-                    return;
-                }
-                return;
-            }
-
-            //If the controller is requesting to kill the process:
-            if (msg instanceof TRLaunchKill) {
-                handleKill(m_controlCom.getSource(), (Integer) m_controlCom.getProperties().get(PID), (Integer) m_controlCom.getProperties().get(TR_REQ_TRACKING));
-                return;
-            }
-
-            //Handle a broad cast message
-            //Find the processes that belong to this agent and dispatch
-            //the message to each process.
-            if (msg instanceof TRComHubBroadcastMetaMsg) {
-                TRComHubBroadcastMetaMsg metaMsg = (TRComHubBroadcastMetaMsg) msg;
-                TRProcessContext[] recipProcs = metaMsg.getRecips();
-                Object subMsg = metaMsg.getMessage();
-
-                for (int i = 0; i < recipProcs.length; i++) {
-                    if (recipProcs[i].getAgentID().equalsIgnoreCase(m_agentID)) {
-                        if (subMsg instanceof TRLaunchKill) {
-                            handleKill(m_controlCom.getSource(), recipProcs[i].getPid(), null);
-                            continue;
-                        }
-
-                        ProcessHandler procHandler = (ProcessHandler) m_procHandlers.get(recipProcs[i].getPid());
-                        if (procHandler == null) {
-                            System.out.println("Broadcast msg received with an invalid pid: (" + recipProcs[i] + ")");
-                            throw new Exception("Unknown process id");
-                        }
-                        try {
-                            procHandler.writeObject(subMsg);
-                        } catch (Throwable thrown) {
-                            m_controlCom.sendMessage(m_controlCom.getSource(), new TRErrorMsg("ERROR: writing to process: " + recipProcs[i], thrown));
-                        }
-                    }
-                }
-                return;
-            }
-
-            //If it isn't a launch or kill try to send the message to a running process:
-            try {
-                if (m_controlCom.getProperties() != null && m_controlCom.getProperties().containsKey(PID)) {
-                    ProcessHandler procHandler = (ProcessHandler) m_procHandlers.get(m_controlCom.getProperties().get(PID));
-                    if (procHandler == null) {
-                        System.out.println("Msg received with an invalid pid.");
-                        throw new Exception("Unknown process id");
-                    }
-                    procHandler.writeObject(msg);
-                } else {
-                    throw new Exception("No process id specified.");
-                }
-            } catch (Exception e) {
-                m_controlCom.sendMessage(m_controlCom.getSource(), new TRErrorMsg("ERROR: writing to process", e));
-            }
-        } catch (Exception e) {
-            System.out.println("Error sending control message");
-            e.printStackTrace();
-        }
-    }
-
-    private final void handleKill(String source, Integer pid, Integer reqTracking) {
-        System.out.println("Got a Launch Kill from " + source + " for [pid " + pid + "] on " + new Date());
-
-        ProcessHandler procHandler = null;
-        if (pid != null) {
-            procHandler = (ProcessHandler) m_procHandlers.get(pid);
-        }
-
-        if (procHandler == null) {
-            try {
-                if (reqTracking == null) {
-                    m_controlCom.sendMessage(source, new TRMsg(KILL_SUCCESS), EXIT_VALUE, new Integer(0));
-                } else {
-                    Hashtable props = new Hashtable();
-                    props.put(EXIT_VALUE, new Integer(0));
-                    props.put(TR_REQ_TRACKING, reqTracking);
-
-                    m_controlCom.sendMessage(source, new TRMsg(KILL_SUCCESS), props);
-                }
-            } catch (Exception e) {
-                System.out.println("Error sending control message");
-                e.printStackTrace();
-            }
-            return;
-        } else {
-            procHandler.kill(false, reqTracking);
-            m_procHandlers.remove(new Integer(procHandler.m_pid));
-        }
-
-        //Cleanup:
-        synchronized (m_tempFileCleanupThread) {
-            m_tempFileCleanupThread.notifyAll();
-        }
-        System.runFinalization();
-        System.gc();
-        Runtime.getRuntime().freeMemory();
-    }
-
     private static void printUsage() {
         System.out.println("Usage:");
         System.out.println("Arguments: iniFileName");
@@ -822,18 +632,22 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
      * launch via TRAgent's TestRunnerJMSCommunicator object.
      * 
      */
-
     private class ProcessHandler implements Runnable {
 
-        Process m_process;
         String m_currentProcessString;
         TRProcessCommunicator m_processCom;
         Thread m_thread;
         Object m_killLock;
-        Object m_sendLock;
-        String m_launcherID;
         File m_tempDir = null;
+
+        //TODO consider removing should be able to get away with
+        //sending object data as bytes:
         TRClassLoader m_procClassLoader;
+
+        //The process:
+        Process m_process;
+
+        //Process output streams:
         ProcessOutputHandler m_errorHandler;
         ProcessOutputHandler m_outputHandler;
 
@@ -841,7 +655,11 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
         int m_pid;
         int m_exitVal;
-        Integer m_launchTracking = null;
+
+        final TRProcessContext ctx;
+        ProcessListener listener;
+        RemoteCommandHandler remoteController;
+        String remoteControllerID;
 
         /**
          * Upon return the ProcessHandler can be started. The initialization
@@ -849,20 +667,30 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
          * 
          * @param launcherID
          */
-        public ProcessHandler(String launcherID, int pid, Integer launchTracking) {
-            m_launcherID = launcherID;
+        public ProcessHandler(ProcessListener listener, int pid) {
+            this.listener = listener;
+            ctx = new TRProcessContext(getAgentId(), new Integer(pid));
             m_pid = pid;
-            m_launchTracking = launchTracking;
             //Create a temporary directory in our current directory:
             //m_tempDirName = "." + File.separator + "temp" + File.separator + m_pid;
-            m_tempDir = new File(m_tempFileCleanupThread.m_tempDir + File.separator + m_pid);
+            m_tempDir = new File(m_processMonitor.m_tempDir + File.separator + m_pid);
             m_tempDir.mkdirs();
 
             readPropFile();
 
             m_killLock = new Object();
-            m_sendLock = new Object();
-            m_thread = new Thread(this, "TR Process Handler for pid " + m_pid);
+        }
+
+        public void setRemoteContext(RemoteCommandHandler remoteController, String remoteControllerID) {
+            this.remoteController = remoteController;
+            this.remoteControllerID = remoteControllerID;
+        }
+
+        /**
+         * @return
+         */
+        public TRProcessContext getProcessContext() {
+            return ctx;
         }
 
         /**
@@ -872,9 +700,8 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
          * the launch.
          * 
          */
-        public void start(TRLaunchDescr ld) throws Throwable {
+        public void launch(TRLaunchDescr ld) throws Exception {
             DEBUG = ld.getDebug() || DEBUG;
-            m_controlCom.setDebug(DEBUG);
 
             String javaExe = "";
             String classPath = "";
@@ -957,20 +784,20 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             //in the launched classpath.
             //This is necessary in case the controller or launched process try to send
             //objects between each other that we do not know about.
+            //            TODO REMOVE THIS
             if (isObjectStream) {
                 if (DEBUG)
                     System.out.println("TRAgent: creating TRClassLoader with " + exposedClassPath + " for PID = " + m_pid);
                 m_procClassLoader = new TRClassLoader(exposedClassPath);
-                m_controlCom.setDebug(DEBUG);
                 if (DEBUG)
                     m_procClassLoader.listLoaded(System.out);
-                m_controlCom.setClassLoader(m_procClassLoader, m_pid);
+                //m_controlCom.setClassLoader(m_procClassLoader, m_pid);
             }
 
             //Generate the launch string
             System.out.println("Launching as: " + m_currentProcessString + " [pid = " + m_pid + "]" + ((workingDir != null && workingDir.length() > 0) ? " [workDir = " + workingDir + "]" : ""));
-            m_controlCom.sendMessage(m_launcherID, new TRDisplayMsg("Launching as: " + m_currentProcessString + " [pid = " + m_pid + "]"
-                    + ((workingDir != null && workingDir.length() > 0) ? " [workDir = " + workingDir + "]" : "")), PID, new Integer(m_pid));
+            listener.handleProcessInfo(ctx, "Launching as: " + m_currentProcessString + " [pid = " + m_pid + "]"
+                    + ((workingDir != null && workingDir.length() > 0) ? " [workDir = " + workingDir + "]" : ""));
 
             //Launch:
             if (workingDir != null && workingDir.length() > 0)
@@ -982,15 +809,18 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             }
 
             // create error handler
-            m_errorHandler = new ProcessOutputHandler(m_process.getErrorStream(), "TR Process Error Handler for: " + m_pid);
-
-            // create communication channel for the process
-            if (m_port < 0 || !isObjectStream) // no port, or data output, use System.out as process input
+            m_errorHandler = new ProcessOutputHandler(m_process.getErrorStream(), "TR Process Error Handler for: " + m_pid, true);
+            if(!isObjectStream)
+            {
+                m_outputHandler = new ProcessOutputHandler(m_process.getInputStream(), "TR Process Output Handler for: " + m_pid, false); // just handle output as data
+                
+            }
+            else if(m_port < 0) // no port, or data output, use System.out as process input
             {
                 //Create  a communicator for the process:
                 m_processCom = new TRProcessCommunicator(m_process.getInputStream(), m_process.getOutputStream(), m_agentID, isObjectStream); //Create object stream?
             } else {
-                m_outputHandler = new ProcessOutputHandler(m_process.getInputStream(), "TR Process Output Handler for: " + m_pid); // just handle output as data
+                m_outputHandler = new ProcessOutputHandler(m_process.getInputStream(), "TR Process Output Handler for: " + m_pid, false); // just handle output as data
                 // get process input stream from port socket
                 int retries = 0;
                 long sleep = 500;
@@ -1031,33 +861,20 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
                 Object startStr = m_processCom.readObject();
                 if (startStr instanceof String && ((String) startStr).equals(TRProcessCommunicator.STREAM_INIT_STR)) {
-                    Hashtable replyProps = new Hashtable();
-                    replyProps.put(PID, new Integer(m_pid));
-                    if (m_launchTracking != null) {
-                        replyProps.put(TR_REQ_TRACKING, m_launchTracking);
-                    }
-                    //Send success message to process launcher:
-                    m_controlCom.sendMessage(m_launcherID, new TRMsg(LAUNCH_SUCCESS), replyProps);
-                    //And start the thread to start to listen for input
-                    //from the process:
-                    m_thread.start();
                     return;
                 } else {
                     throw new Exception("Stream init string not detected in process output stream.");
                 }
             } else //DATA_OUTPUT
             {
-                Hashtable replyProps = new Hashtable();
-                replyProps.put(PID, new Integer(m_pid));
-                if (m_launchTracking != null) {
-                    replyProps.put(TR_REQ_TRACKING, m_launchTracking);
-                }
-                //Send success message to process launcher:
-                m_controlCom.sendMessage(m_launcherID, new TRMsg(LAUNCH_SUCCESS), replyProps);
-                //And start the thread to start to listen for input
-                //from the process:
-                m_thread.start();
                 return;
+            }
+        }
+
+        public void start() {
+            if (m_processCom != null) {
+                m_thread = new Thread(this, "TR Process Handler for pid " + m_pid);
+                m_thread.start();
             }
         }
 
@@ -1093,7 +910,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             //These are copied because they may not be local, and we don't want to be
             //loading classes over the network at runtime.
             for (int i = 0; paths != null && i < paths.size(); i++) {
-                ret += setUpLocalClassPath((String) paths.elementAt(i));
+                ret += setUpLocalClassPath((String) paths.elementAt(i), false);
             }
 
             for (int i = 0; tags != null && i < tags.size(); i++) {
@@ -1197,12 +1014,12 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
          * 
          */
 
-        private String setUpLocalClassPath(String path) throws Exception {
+        private String setUpLocalClassPath(String path, boolean copy) throws Exception {
             String classPath = "";
 
             StringTokenizer stok = new StringTokenizer(path, File.pathSeparator);
 
-            if (true)
+            if (!copy)
                 return path;
 
             //TODO reenabled copying.
@@ -1244,7 +1061,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             while (true) {
 
                 if (DEBUG)
-                    sendMessageToLauncher(new TRDisplayMsg("Starting to listen to process output."));
+                    listener.handleProcessInfo(ctx, "Starting to listen to process output.");
                 Object obj;
                 try {
                     while (true) {
@@ -1253,7 +1070,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                                 if (obj == null || m_thread.isInterrupted()) {
                                     return;
                                 }
-                                sendMessageToLauncher(obj);
+                                listener.handleMessage(ctx, obj);
                             }
                         } else {
                             return;
@@ -1280,7 +1097,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                             }
                         }
 
-                        sendMessageToLauncher(new TRMsg(PROCESS_DONE));
+                        listener.processDone(ctx, m_process.exitValue());
                         System.out.println("PROCESS FINISHED.");
 
                     }
@@ -1295,7 +1112,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                     if (!m_thread.isInterrupted()) {
                         System.out.println("ERROR: running process: " + e.getMessage());
                         e.printStackTrace();
-                        sendMessageToLauncher(new TRErrorMsg("Error reading from process' output stream.", e));
+                        listener.handleError(ctx, "Error reading from process' output stream.", e);
                     }
                     return;
                 }
@@ -1325,65 +1142,18 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
          */
 
         /**
-         * Sends a message to the entity that launched this process:
-         */
-        private void sendMessageToLauncher(Object obj) {
-            sendMessageToLauncher(obj, null, null);
-        }
-
-        private void sendMessageToLauncher(Object obj, String propName, Object value) {
-            if (DEBUG || devDebug)
-                System.out.println("TRAgent.sendMesageToLaucher obj: " + obj);
-
-            Hashtable props = new Hashtable();
-            if (propName != null) {
-                props.put(propName, value);
-            }
-            sendMessageToLauncher(obj, props);
-        }
-
-        private void sendMessageToLauncher(Object obj, Hashtable props) {
-            props.put(PID, new Integer(m_pid));
-
-            synchronized (m_sendLock) {
-                try {
-                    if (!Thread.interrupted()) {
-                        m_controlCom.sendMessage(m_launcherID, obj, props);
-                    }
-                } catch (Exception e) {
-                    System.out.println("ERROR: sending to controller");
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void finalize() throws Throwable {
-            if (DEBUG)
-                System.out.println("Running Finalization on " + this);
-            super.finalize();
-            if (DEBUG)
-                System.out.println("Finished Running Finalization");
-        }
-
-        /**
          * Terminate the currently running process and release the resources
          * allocated to it.
          * 
+         * @throws Exception
+         * 
          */
-        public void kill(boolean internal, Integer reqTracking) {
+        public int kill(boolean internal) throws Exception {
             boolean killSuccessFlag = true;
             synchronized (m_killLock) {
                 m_currentProcessString = null;
 
-                Hashtable replyProps = null;
-
-                if (!internal) {
-                    replyProps = new Hashtable();
-                    if (reqTracking != null) {
-                        replyProps.put(TR_REQ_TRACKING, reqTracking);
-                    }
-                    replyProps.put(EXIT_VALUE, new Integer(-1));
-                }
+                Exception exception = null;
 
                 //Destroy the process:
                 //do not stop the process handler thread yet, as it will try to send a message
@@ -1400,15 +1170,14 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                             m_exitVal = m_process.exitValue();
                         }
 
-                        replyProps.put(EXIT_VALUE, new Integer(m_exitVal));
+                        listener.processDone(ctx, m_exitVal);
+
                         System.out.println("...DONE.");
                         m_process = null;
                     } catch (Exception e) {
                         System.out.println("ERROR: destroying process.");
                         e.printStackTrace();
-                        if (killSuccessFlag && !internal) {
-                            sendMessageToLauncher(new TRErrorMsg(KILL_FAILURE, e), replyProps);
-                        }
+                        exception = e;
                         killSuccessFlag = false;
                     }
                 }
@@ -1426,7 +1195,7 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                         System.out.println("ERROR: closing error handler");
                         e.printStackTrace();
                         if (killSuccessFlag && !internal) {
-                            sendMessageToLauncher(new TRErrorMsg(KILL_FAILURE, e), replyProps);
+                            exception = e;
                         }
                         killSuccessFlag = false;
                     }
@@ -1445,14 +1214,14 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                         System.out.println("ERROR: closing output handler");
                         e.printStackTrace();
                         if (killSuccessFlag && !internal) {
-                            sendMessageToLauncher(new TRErrorMsg(KILL_FAILURE, e), replyProps);
+                            exception = e;
                         }
                         killSuccessFlag = false;
                     }
                 }
 
                 //Stop the thread and wait for it to die
-                if (m_thread != null) {
+                if (m_thread != null && m_thread.isAlive()) {
                     if (DEBUG)
                         System.out.print("Stopping process handler for" + m_process + " [pid = " + m_pid + "]");
 
@@ -1483,28 +1252,27 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                             System.out.println("...DONE.");
                     } catch (java.io.IOException ie) {
                         System.out.println("WARNING: exception closing process communicator: " + ie.getMessage());
-                        //TODO: IO errors other than "The pipe is being closed" may be serious.
                     } catch (Exception e) {
                         System.out.println("ERROR: closing process communicator");
                         e.printStackTrace();
                         if (killSuccessFlag && !internal) {
-                            sendMessageToLauncher(new TRErrorMsg(KILL_FAILURE, e), replyProps);
+                            exception = e;
                         }
                         killSuccessFlag = false;
                     }
                 }
 
-                //Unload classloader:
+                //Unload classloader:TODO REMOVE?
                 if (m_procClassLoader != null) {
                     try {
-                        m_controlCom.removeClassLoader(m_procClassLoader, m_pid);
+                        //m_controlCom.removeClassLoader(m_procClassLoader, m_pid);
                         m_procClassLoader.close();
                         m_procClassLoader = null;
                     } catch (Exception e) {
                         System.out.println("ERROR: closing classloader for pid = " + m_pid);
                         e.printStackTrace();
                         if (killSuccessFlag && !internal) {
-                            sendMessageToLauncher(new TRErrorMsg(KILL_FAILURE, e), replyProps);
+                            exception = e;
                         }
                         killSuccessFlag = false;
                     }
@@ -1515,9 +1283,11 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                     m_processAcceptor.closeClient(m_pid);
 
                 m_thread = null;
-                if (killSuccessFlag && !internal) {
-                    sendMessageToLauncher(new TRMsg(KILL_SUCCESS), replyProps);
+                if (exception != null) {
+                    throw exception;
                 }
+
+                return m_exitVal;
 
             }//synchronized(m_shutDownLock)
         }//public void shutdown()
@@ -1525,10 +1295,11 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         // handle output or error data
         private class ProcessOutputHandler implements Runnable {
             BufferedInputStream outReader;
-            long delay = 3000;
+            long delay = 100;
             Thread m_thread;
+            boolean isStdError;
 
-            public ProcessOutputHandler(InputStream is, String name) {
+            public ProcessOutputHandler(InputStream is, String name, boolean isStdError) {
                 outReader = new BufferedInputStream(is);
                 m_thread = new Thread(this, name);
                 m_thread.start();
@@ -1536,35 +1307,52 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
 
             public void run() {
                 String line = "";
+                boolean newline = false;
+                String newLineString = System.getProperty("line.separator", "\n");
+                
                 while (true) {
                     try {
-                        //Wait for available data:
-                        if (outReader.available() == 0) {
+                        
+                        int nextByte;
+                        nextByte = outReader.read();
+                        if (nextByte == -1) {
+                            throw new EOFException();
+                        }
+                        line += (char) nextByte;
+
+                        //Check to see if we reached the end of a line:
+                        if (newLineString.charAt(0) == nextByte) {
+                            if (newLineString.length() > 1) {
+                                nextByte = outReader.read();
+                                line += (char) nextByte;
+                            }
+                            newline = true;
+                        }
+
+                        //If there is no output currently available wait a little longer
+                        //in an attempt to avoid sending more messages than we need to.
+                        //Just returning on newLines is insufficient because not all applications
+                        //will desire to read lines delimited by linefeeds (e.g. an app that
+                        //prompts the user.
+                        //If it is a newLine don't wait, send it:
+                        if (!newline && outReader.available() == 0) {
                             Thread.sleep(delay);
                         }
 
-                        if (outReader.available() > 0) {
-                            int nextByte = outReader.read();
-
-                            if (nextByte == -1) {
-                                throw new EOFException();
-                            }
-                            line += (char) nextByte;
-                        }
-
                         //If this line isn't blank and there is nothing else to read
-                        //even after the delay return what we have so far. Also limit the
-                        //line length to 16384
-                        if (outReader.available() == 0 || line.length() > 16384) {
+                        //even after the delay return what we have so far.
+                        if (line != null && line != "" && (outReader.available() == 0 || newline)) {
                             sendLine(line);
                             line = "";
+                            newline = false;
                         }
+
                     } catch (EOFException eof) {
                         sendLine(line);
                         return;
                     } catch (java.io.IOException ioe) {
                         sendLine(line);
-                        sendMessageToLauncher(new TRErrorMsg("Error reading from process' output or error stream " + line, ioe));
+                        listener.handleError(ctx, "Error reading from process' output or error stream " + line, ioe);
                         ioe.printStackTrace();
                         return;
                     } catch (java.lang.InterruptedException ie) {
@@ -1584,12 +1372,16 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 }
 
                 try {
-                    sendMessageToLauncher(new TRDisplayMsg(line));
+                    if (isStdError) {
+                        listener.handleSystemErr(ctx, line);
+                    } else {
+                        listener.handleSystemOut(ctx, line);
+                    }
                     if (DEBUG) {
                         System.out.println(line);
                     }
                 } catch (Exception e) {
-                    sendMessageToLauncher(new TRErrorMsg("Error reading process output or error stream " + line, e));
+                    listener.handleError(ctx, "Error reading process output or error stream " + line, e);
                 }
             }
 
@@ -1609,6 +1401,34 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                     e.printStackTrace();
                 }
             }
+        }
+
+        /**
+         * 
+         */
+        public void ping(long timeout) {
+            if (remoteControllerID != null) {
+                //Check to see if the controller is still around for the process:
+                try {
+                    //Don't ping controller if we are still bound to it or if timeout is 0 or less
+                    if (exclusiveOwner == null || !exclusiveOwner.equals(remoteControllerID)) {
+                        if (timeout <= 0) {
+                            throw new Exception("Killing process [pid = " + m_pid + "] without pinging controller.");
+                        }
+
+                        if (!remoteController.ping(remoteControllerID, timeout)) {
+                            throw new Exception("No response pinging controller for [pid = " + m_pid + "] -- killing.");
+                        }
+                    }
+                } catch (Exception e) {
+                    try {
+                        TRAgent.this.kill(ctx);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+
         }
 
     }//private class ProcessHandler
@@ -1730,47 +1550,39 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
                 m_clientSockets.remove(clientSocket);
             }
         }
-
-        // get the port this acceptor is listening on
-        /*
-         * public int getPort() { return m_port; }
-         */
-
-        /*
-         * private class ProcessOutputListener implements Runnable { Socket
-         * m_socket; ObjectInputStream m_processOutput; public
-         * ProcessOutputListener(Socket socket) { m_socket = socket;
-         * m_processOutput = new ObjectInputStream(socket.getInputStream()); }
-         * public void run() { while (true) { Object obj =
-         * m_processOutput.readObject(); // TODO: where does it go?? } } }// end
-         * ProcessOuputListener
-         */
-    }// end ProcessAcceptor
+    }
 
     private class ProcessMonitor implements Runnable {
         Thread m_thread;
+        private String m_tempDir;
+        private boolean cleanupRequested = false;
 
         public ProcessMonitor() {
+            m_tempDir = m_dataDir + File.separator + getAgentId() + File.separator + "temp";
             m_thread = new Thread(this);
+            m_thread.start();
+
+            m_thread = new Thread(this, getAgentId() + "-Process Monitor");
             m_thread.start();
         }
 
         public void run() {
             while (true) {
-                try {
-                    Thread.sleep(CLEANUP_TIMEOUT);
-                } catch (java.lang.InterruptedException ie) {
-                    break;
-                }
-                if (Thread.interrupted()) {
-                    break;
+                synchronized (this) {
+                    try {
+                        wait(CLEANUP_TIMEOUT);
+                    } catch (java.lang.InterruptedException ie) {
+                        cleanupRequested = true;
+                        return;
+                    } finally {
+                        checkForRogueProcesses(15000);
+                        if (cleanupRequested) {
+                            cleanUpTempFiles();
+                            cleanupRequested = false;
+                        }
+                    }
                 }
 
-                checkForRogueProcesses(15000);
-
-                //System.runFinalization();
-                //System.gc();
-                //Runtime.getRuntime().freeMemory();
             }
         }
 
@@ -1779,72 +1591,11 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             try {
                 m_thread.join();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
 
-        public void checkForRogueProcesses(long timeOut) {
-            if (m_procHandlers != null && m_procHandlers.size() > 0) {
-                Enumeration procHandlerList = m_procHandlers.elements();
-                while (procHandlerList.hasMoreElements()) {
-                    ProcessHandler procHandler = (ProcessHandler) procHandlerList.nextElement();
-                    //Check to see if the controller is still around for the process:
-                    try {
-                        //Don't ping controller if we are still bound to it or if timeout is 0 or less
-                        if (m_currentMaster == null || !m_currentMaster.equals(procHandler.m_launcherID)) {
-                            if (timeOut <= 0) {
-                                throw new Exception("Killing process [pid = " + procHandler.m_pid + "] without pinging controller.");
-                            }
-
-                            if (m_controlCom == null || !m_controlCom.ping(procHandler.m_launcherID, timeOut)) {
-                                throw new Exception("No response pinging controller for [pid = " + procHandler.m_pid + "] -- killing.");
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        procHandler.kill(true, null);
-                        m_procHandlers.remove(new Integer(procHandler.m_pid));
-                        synchronized (m_tempFileCleanupThread) {
-                            m_tempFileCleanupThread.notifyAll();
-                        }
-                    }
-
-                }//while(procHandlerList.hasMoreElements())
-            }//if(m_procHandlers != null && m_procHandlers.size() > 0)
-        }//public void checkForRogueProcesses()
-    }//private class ProcessMonitor
-
-    //CWM: I decoupled temporary file deletion from the kill process
-    //because if an error was encountered in killing the process
-    //and it still had a hold on some files we may not be able to delete
-    //them which could lead to a whole directory tree being left around.
-    //The TempFileCleanupThread just waits until no processes are running
-    //to delete the files.
-    private class TempFileCleanupThread implements Runnable {
-        Thread m_thread = null;
-        private String m_tempDir;
-
-        TempFileCleanupThread() {
-            m_tempDir = m_dataDir + File.separator + getAgentId() + File.separator + "temp";
-            m_thread = new Thread(this);
-            m_thread.start();
-        }
-
-        public void run() {
-            while (true) {
-                synchronized (this) {
-                    try {
-                        wait();
-                    } catch (java.lang.InterruptedException ie) {
-                        return;
-                    }
-                    cleanup();
-                }
-            }
-        }
-
-        public synchronized void cleanup() {
+        public void cleanUpTempFiles() {
             //If we aren't running anything cleanup: temp files
             if (m_procHandlers == null || m_procHandlers.size() == 0) {
                 File tempDir = new File(m_tempDir);
@@ -1862,14 +1613,341 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
             }
         }
 
-        public void shutdown() {
-            m_thread.interrupt();
-            try {
-                m_thread.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        public void checkForRogueProcesses(long timeout) {
+            if (m_procHandlers != null && m_procHandlers.size() > 0) {
+                Enumeration procHandlerList = m_procHandlers.elements();
+                while (procHandlerList.hasMoreElements()) {
+                    ProcessHandler procHandler = (ProcessHandler) procHandlerList.nextElement();
+                    procHandler.ping(timeout);
+                }
             }
         }
+
+        /**
+         * Requests cleanup of temporary files
+         */
+        public synchronized void requestCleanup() {
+            cleanupRequested = true;
+            notify();
+        }
+
+    }//private class ProcessMonitor
+
+    private class RemoteProcessListener implements ProcessListener {
+
+        String launcherID;
+        RemoteCommandHandler commandAcceptor;
+
+        RemoteProcessListener(String launcherID, RemoteCommandHandler acceptor) {
+            this.launcherID = launcherID;
+            this.commandAcceptor = acceptor;
+        }
+
+        /* (non-Javadoc)
+         * @see org.fusesource.testrunner.ProcessListener#handleError(org.fusesource.testrunner.TRProcessContext, java.lang.String, java.lang.Throwable)
+         */
+        public void handleError(TRProcessContext ctx, String message, Throwable thrown) {
+            
+            commandAcceptor.sendMessage(launcherID, new RMIRequest(RMIRequest.CLIENT_PROC_LISTENER, "handleError", new Object[]{ctx, message, thrown}));
+        }
+
+        /* (non-Javadoc)
+         * @see org.fusesource.testrunner.ProcessListener#handleMessage(org.fusesource.testrunner.TRProcessContext, java.lang.Object)
+         */
+        public void handleMessage(TRProcessContext ctx, Object msg) {
+            commandAcceptor.sendMessage(launcherID, new RMIRequest(RMIRequest.CLIENT_PROC_LISTENER, "handleMessage", new Object[]{ctx, msg}));
+        }
+
+        /* (non-Javadoc)
+         * @see org.fusesource.testrunner.ProcessListener#handleProcessInfo(org.fusesource.testrunner.TRProcessContext, java.lang.String)
+         */
+        public void handleProcessInfo(TRProcessContext ctx, String info) {
+            commandAcceptor.sendMessage(launcherID, new RMIRequest(RMIRequest.CLIENT_PROC_LISTENER, "handleProcessInfo", new Object[]{ctx, info}));
+        }
+
+        /* (non-Javadoc)
+         * @see org.fusesource.testrunner.ProcessListener#handleSystemErr(org.fusesource.testrunner.TRProcessContext, java.lang.String)
+         */
+        public void handleSystemErr(TRProcessContext ctx, String err) {
+            commandAcceptor.sendMessage(launcherID, new RMIRequest(RMIRequest.CLIENT_PROC_LISTENER, "handleSystemErr", new Object[]{ctx, err}));
+            
+        }
+
+        /* (non-Javadoc)
+         * @see org.fusesource.testrunner.ProcessListener#handleSystemOut(org.fusesource.testrunner.TRProcessContext, java.lang.String)
+         */
+        public void handleSystemOut(TRProcessContext ctx, String output) {
+            commandAcceptor.sendMessage(launcherID, new RMIRequest(RMIRequest.CLIENT_PROC_LISTENER, "handleSystemOut", new Object[]{ctx, output}));
+            
+        }
+
+        /* (non-Javadoc)
+         * @see org.fusesource.testrunner.ProcessListener#processDone(org.fusesource.testrunner.TRProcessContext, int)
+         */
+        public void processDone(TRProcessContext ctx, int exitCode) {
+            commandAcceptor.sendMessage(launcherID, new RMIRequest(RMIRequest.CLIENT_PROC_LISTENER, "processDone", new Object[]{ctx, new Integer(exitCode)}));
+        }
+    }
+
+    private class RemoteCommandHandler implements TRComHandler, Runnable {
+        TRCommunicator com;
+        Thread thread;
+
+        RemoteCommandHandler(String controlUrl) throws Exception {
+            com = new TRJMSCommunicator(controlUrl, //TestRunner Server
+                    m_agentID //clientID (null = not specified)
+            ); //specifies that we will process asyncronous messages
+            com.setTRComHandler(this);
+            com.connect();
+        }
+
+        public boolean ping(String controllerID, long timeout) throws Exception {
+            return com.ping(controllerID, timeout);
+        }
+
+        /**
+         * @param launcherID
+         * @param msg
+         * @param props
+         */
+        public void sendMessage(String launcherID, TRMetaMessage msg) {
+            try {
+                com.sendMessage(msg, launcherID);
+            } catch (Exception e) {
+                System.err.println("Error sending message to controller: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        
+        /**
+         * @param launcherID
+         * @param msg
+         * @param props
+         */
+        public void sendMessage(String launcherID, Object msg, Hashtable props) {
+            try {
+                com.sendMessage(new TRMetaMessage(msg, props), launcherID);
+            } catch (Exception e) {
+                System.err.println("Error sending message to controller: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        public synchronized void start() {
+            if (thread == null) {
+                thread = new Thread(this, "TRAgent-" + getAgentId());
+            }
+            thread.setDaemon(false);
+            thread.start();
+        }
+
+        public synchronized void stop() {
+            //Close the control comm:
+            try {
+                com.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (thread != null) {
+                //Stop our processing thread:
+                thread.interrupt();
+                try {
+                    if (thread.isAlive()) {
+                        wait();
+                    }
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Runnable#run()
+         */
+        public void run() {
+            try {
+                //Start handling async Messages:
+                while (started) {
+                    try {
+                        handleMessage(com.getMessage(1000));
+                    } catch (InterruptedException e) {
+                        System.out.println(getAgentId() + ": Stopping...");
+                        break;
+                    } catch (Exception e) {
+                        if (e.getCause() instanceof InterruptedException) {
+                            System.out.println(getAgentId() + ": Stopping...");
+                            break;
+                        }
+                        System.out.println("ERROR: reading message.");
+                        e.printStackTrace();
+                    }
+                }
+            } finally {
+                synchronized (this) {
+                    notifyAll();
+                }
+            }
+        }
+
+        /**
+         * Called when an asynchronous message is sent to the JMSCommunicator.
+         * OR when we synchronously receive a message:
+         * 
+         * @param obj
+         *            The message
+         * @param source
+         *            The ID of the entity that sent the message.
+         * 
+         */
+        public synchronized void handleMessage(TRMetaMessage msg) {
+            if (DEBUG)
+                System.out.println(getAgentId() + ": Received async message");
+
+            if (msg == null) {
+                return;
+            }
+
+            if (DEBUG)
+                System.out.println("Received Message");
+
+            if (msg.isInternal()) {
+                
+                if(msg instanceof RMIRequest)
+                {
+                    Integer requestTracking = msg.getIntProperty(TR_REQ_TRACKING);
+                    
+                    //TODO refactor all of this to be more generic:
+                    Hashtable responseProps = new Hashtable();
+                    responseProps.put(TR_REQ_TRACKING, requestTracking);
+                    
+                    RMIRequest rmiMsg = (RMIRequest)msg;
+                    if(rmiMsg.getTarget() == RMIRequest.AGENT)
+                    {
+                    
+                        String method = rmiMsg.getMethod();
+                        Object [] args = rmiMsg.getArgs();
+    
+                        responseProps.put(PROP_COMMAND_RESPONSE, method);
+    
+                        if (method.equals(COMMAND_LAUNCH)) {
+                            System.out.println("Got a Launch Descr from " + msg.getSource() + " on " + new Date());
+    
+                            TRLaunchDescr trld = (TRLaunchDescr) args[0];
+                            try {
+                                RemoteProcessListener rpl = new RemoteProcessListener(msg.getSource(), this);
+                                TRProcessContext ctx = launch(trld, rpl);
+                                //Set the pid in the remote process listener:
+                                ProcessHandler procHandler = (ProcessHandler) m_procHandlers.get(ctx.getPid());
+                                procHandler.setRemoteContext(this, msg.getSource());
+                                responseProps.put(PID, ctx.getPid());
+                                sendMessage(msg.getSource(), ctx, responseProps);
+                                //Start the handler after sending the response:
+                                procHandler.start();
+    
+                            } catch (Exception e) {
+                                sendMessage(msg.getSource(), new TRErrorMsg("Launch Failed", e), responseProps);
+                            }
+                            return;
+                        }
+    
+                        //If the controller is requesting to kill the process:
+                        if (method.equals(COMMAND_KILL)) {
+    
+                            TRProcessContext ctx = (TRProcessContext) args[0];
+                            System.out.println("Got a Launch Kill from " + msg.getSource() + " for [" + ctx + "] on " + new Date());
+    
+                            responseProps.put(PID, ctx.getPid());
+                            try {
+                                int exitValue = kill(ctx);
+                                sendMessage(msg.getSource(), new Integer(exitValue), responseProps);
+                            } catch (Exception e) {
+                                sendMessage(msg.getSource(), new TRErrorMsg("Kill Failed", e), responseProps);
+                            }
+    
+                            return;
+                        }
+    
+                        if (method.equals(COMMAND_BIND)) {
+                            try {
+                                bind(msg.getSource());
+                                sendMessage(msg.getSource(), new Boolean(true), responseProps);
+                            } catch (Exception e) {
+                                sendMessage(msg.getSource(), new TRErrorMsg("Bind Failed", e), responseProps);
+                            }
+                            return;
+                        }
+    
+                        if (method.equals(COMMAND_RELEASE)) {
+                            try {
+                                release(msg.getSource());
+                                sendMessage(msg.getSource(), new Boolean(true), responseProps);
+                            } catch (Exception e) {
+                                sendMessage(msg.getSource(), new TRErrorMsg("Release Failed", e), responseProps);
+                            }
+                            return;
+                        }
+    
+                        sendMessage(msg.getSource(), new TRErrorMsg("Unexpected Command: " + method, new Exception("Unexpected Command" + method)), responseProps);
+    
+                    }
+                    else
+                    {
+                        sendMessage(msg.getSource(), new TRErrorMsg("Unexpected Request target: " + rmiMsg.getTarget(), new Exception("Unexpected Request target: " + rmiMsg.getTarget())), responseProps);
+                    }
+                }
+
+                Object content = null;
+                try {
+                    content = msg.getContent();
+                } catch (Exception e1) {
+                    sendMessage(msg.getSource(), new TRErrorMsg("Corrupt Command", e1), null);
+                }
+                //Handle a broad cast message
+                //Find the processes that belong to this agent and dispatch
+                //the message to each process.
+                if (content instanceof TRProcessBroadcastMetaMsg) {
+                    TRProcessBroadcastMetaMsg metaMsg = (TRProcessBroadcastMetaMsg) content;
+                    TRMetaMessage[] procMessages = metaMsg.getSubMessages(getAgentId());
+                    for (int i = 0; i < procMessages.length; i++) {
+                        handleMessage(procMessages[i]);
+                    }
+
+                    return;
+                }
+
+                sendMessage(msg.getSource(), new TRErrorMsg("Unexpected Command", new Exception("Unexpected Command" + msg)), null);
+                return;
+            }
+
+            //If it isn't an internal request, must be for a process:
+            try {
+                if (msg.getProperties() != null && msg.getProperties().containsKey(PID)) {
+                    ProcessHandler procHandler = (ProcessHandler) m_procHandlers.get(msg.getProperties().get(PID));
+                    if (procHandler == null) {
+                        System.out.println("Msg received with an invalid pid.");
+                        throw new Exception("Unknown process id");
+                    }
+                    procHandler.writeObject(msg);
+                } else {
+                    throw new Exception("No process id specified.");
+                }
+            } catch (Exception e) {
+                Hashtable responseProps = new Hashtable();
+                responseProps.put(PID, msg.getIntProperty(PID));
+                sendMessage(msg.getSource(), new TRErrorMsg("ERROR: writing to process", e), null);
+            }
+        }
+
+        public String toString() {
+            return getAgentId() + ":CommandHandler:" + com.toString();
+        }
+    }
+
+    public String toString() {
+        return "TRAgent-" + getAgentId();
     }
 
     /*
@@ -1893,18 +1971,12 @@ public class TRAgent implements ITRBindListener, ITRAsyncMessageHandler {
         }
         TRAgent agent = new TRAgent();
         agent.setPropFileName(argv[0]);
-        agent.start();
+        try {
+            agent.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
-
-    /*
-     * private class SysStatsCollector implements Runnable { final Thread
-     * m_thread;
-     * 
-     * SysStatsCollector() { m_thread = new Thread(this, "SysStatsCollector");
-     * m_thread.start(); }
-     * 
-     * public void run() { //NSClient4j statsCollector = new NSClient4j(); } }
-     */
 
 }//public class TRAgent

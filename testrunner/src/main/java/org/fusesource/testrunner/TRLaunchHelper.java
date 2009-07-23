@@ -3,6 +3,8 @@ package org.fusesource.testrunner;
 import java.io.*;
 import java.util.StringTokenizer;
 
+import org.fusesource.testrunner.BasicProcessWrapper.IProcessOutputListener;
+
 class TRLaunchHelper {
     private LaunchCommand _lcommand = null;
     private String _rawLaunchString = null;
@@ -10,6 +12,8 @@ class TRLaunchHelper {
     private String _bootstrapString;
     public static final String NL = System.getProperty("line.separator");
 
+    
+    
     public TRLaunchHelper(String bootstrapString, TRLaunchDescr bootstrapLD) throws Exception {
         _bootstrapString = bootstrapString;
         _bootstrapLD = bootstrapLD;
