@@ -28,13 +28,13 @@ import java.io.StringWriter;
  * @see TRMsg
  */
 
-public class TRErrorMsg extends TRMsg {
+public class TRErrorMsg {
     /**
      * 
      */
     private static final long serialVersionUID = 8203120286863862224L;
-    protected String m_exception;
-
+    protected Throwable thrown;
+    protected String msg;
     /**
      * Constructor
      * 
@@ -49,10 +49,26 @@ public class TRErrorMsg extends TRMsg {
      *            The Throwable that may have caused the error (optionally null)
      */
     public TRErrorMsg(String msg, Throwable thrown) {
-        super(msg);
+        setMessage(msg);
         setException(thrown);
     }
 
+    /**
+     * Sets the error message associated with the TRErrorObj
+     *
+     * @param str The error message.
+     */
+    public void setMessage(String str)
+    {
+        msg = str;
+    }
+
+    public String getMessage()  {return msg;}
+    
+    public Throwable getException() {
+        return thrown;
+    }
+    
     /**
      * Set the Throwable associated with this error object. The exception's
      * stack trace will be displayed in the error message.
@@ -61,11 +77,7 @@ public class TRErrorMsg extends TRMsg {
      * @param thrown
      */
     public void setException(Throwable thrown) {
-        if (thrown != null) {
-            StringWriter stackTrace = new StringWriter();
-            thrown.printStackTrace(new PrintWriter(stackTrace));
-            m_exception = stackTrace.toString();
-        }
+        this.thrown = thrown;
     }
 
     /**
@@ -75,11 +87,9 @@ public class TRErrorMsg extends TRMsg {
      *         <i>ErrorMessage</i> Related Exception: <i>ExceptionStackTrace</i>
      */
     public String toString() {
-        return "ERROR from " + m_source + ":" + (m_message == null ? "" : newLine + "\t" + m_message) + (m_exception == null ? "" : newLine + "\tRelated Exception:" + newLine + m_exception);
+        return "ERROR " + msg;
     }
 
-    public String getException() {
-        return m_exception;
-    }
+    
 
 }

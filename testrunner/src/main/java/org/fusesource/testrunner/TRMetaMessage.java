@@ -31,7 +31,6 @@ class TRMetaMessage implements Serializable {
     protected Hashtable props = null;
     private boolean isInternal = false;
 
-    protected transient ClassLoader classLoader = null;
     private transient Object content;
     private transient String source;
 
@@ -44,16 +43,13 @@ class TRMetaMessage implements Serializable {
             // store serialized object
             //Object obj = null;
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            try
-            {
+            try {
                 ObjectOutputStream out = new ObjectOutputStream(byteStream);
                 out.writeObject(content);
                 out.flush();
                 contentBytes = byteStream.toByteArray();
                 out.close();
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -120,10 +116,6 @@ class TRMetaMessage implements Serializable {
         this.isInternal = isInternal;
     }
 
-    void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-    }
-
     /**
      * @param source
      *            The source of the message
@@ -141,26 +133,17 @@ class TRMetaMessage implements Serializable {
             return content;
         }
 
-        if (contentBytes == null)
+        if (contentBytes == null) {
             return null;
-        // de-serialize content
-        if (classLoader == null)
-            classLoader = Thread.currentThread().getContextClassLoader();
-
-        if (classLoader == null)
-            classLoader = getClass().getClassLoader();
-
-        Object obj = null;
-        ByteArrayInputStream inByteStream = new ByteArrayInputStream(contentBytes);
-        TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(inByteStream, classLoader);
-        obj = inputStream.recoverableReadObject();
-
-        if (inputStream != null) {
-            inputStream.close();
-            inputStream = null;
         }
 
-        return obj;
+        Object obj = null;
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(contentBytes));
+        try {
+            return ois.readObject();
+        } finally {
+            ois.close();
+        }
     }
 
 }

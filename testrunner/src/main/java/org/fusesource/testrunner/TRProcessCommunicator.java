@@ -40,7 +40,6 @@ public class TRProcessCommunicator {
 
     //////////////////
     //ProcessCommunicatior member variables
-    private TRLoaderObjectInputStream m_TRLObjInputStream = null; //input object stream
     private ObjectInputStream m_objInputStream = null;
     private ObjectOutputStream m_objOutputStream = null; //output object stream
     private BufferedInputStream processOutput = null; //output from process
@@ -50,8 +49,6 @@ public class TRProcessCommunicator {
     private boolean m_objectStreamFlag = false; //True if the type of i/o streams are to be object streams. Otherwise they will be data streams.
     private BufferedWriter m_log = null; //writes exception to m_appName-ProcessCommmunicatorExceptionLog[SystemDate].log
     private String m_appName = null;
-
-    private TRClassLoader m_classLoader = null; //So that we can dynamically load classes without having them in the primordial classpath
 
     private Socket m_portSocket = null; // optional socket for object output exposed by TRAgent
     private OutputStream m_portOutputStream = null; // optional output stream to port
@@ -76,9 +73,6 @@ public class TRProcessCommunicator {
 
         //construct output and input stream for communication
         try {
-            //Get the class loader (which will only be able to load classes from primordial classLoader):
-            m_classLoader = new TRClassLoader("");
-
             //create output stream
             if (m_objectStreamFlag) {
                 OutputStream objectOutput;
@@ -96,8 +90,7 @@ public class TRProcessCommunicator {
             //the ProcessObject can create the inputstream on the other end
             if (m_isLaunchedProcess) {
                 if (m_objectStreamFlag) {
-                    m_objOutputStream.writeObject(STREAM_INIT_STR);
-                    m_objOutputStream.flush();
+                    writeObject(STREAM_INIT_STR);
                 } else {
                     m_printStream.println(STREAM_INIT_STR);
                     m_printStream.flush();
@@ -108,12 +101,7 @@ public class TRProcessCommunicator {
 
             //create input stream
             if (m_objectStreamFlag) {
-                if (m_isLaunchedProcess) {
-                    m_objInputStream = new ObjectInputStream(processOutput);
-                } else {
-                    m_TRLObjInputStream = new TRLoaderObjectInputStream(processOutput, m_classLoader);
-                    m_TRLObjInputStream.setDebug(DEBUG);
-                }
+                m_objInputStream = new ObjectInputStream(processOutput);
             }
         } catch (Exception ex) {
             //tries to display or log the exception and then throws the exception up
@@ -144,12 +132,13 @@ public class TRProcessCommunicator {
     }
 
     /**
-    *
-    **/
+     *
+     **/
     public synchronized void writeObject(Object obj) throws Exception {
         try {
             if (m_objectStreamFlag) {
                 try {
+                    
                     m_objOutputStream.writeObject(obj);
                     m_objOutputStream.flush();
                 } catch (Exception e) {
@@ -178,21 +167,9 @@ public class TRProcessCommunicator {
         String line = "";
         try {
             if (m_objectStreamFlag) {
-                if (m_isLaunchedProcess) {
-                    while (m_objInputStream != null && (objIn = m_objInputStream.readObject()) != null) {
-                        //break to return the object
-                        break;
-                    }
-                } else {
-                    try {
-                        while (m_TRLObjInputStream != null && (objIn = m_TRLObjInputStream.recoverableReadObject()) != null) {
-                            break;
-                        }
-                    }
-                    //Catch error with non object
-                    catch (java.io.StreamCorruptedException sce) {
-                        objIn = new TRErrorMsg("ERROR: non-serialized data detected in process' output stream.", sce);
-                    }
+                while (m_objInputStream != null && (objIn = m_objInputStream.readObject()) != null) {
+                    //break to return the object
+                    break;
                 }
             } else {
                 boolean newline = false;
@@ -254,49 +231,10 @@ public class TRProcessCommunicator {
         }
     }
 
-    public void setClassLoader(TRClassLoader trcl) {
-        //First Check if we are using a Loading object stream. If not
-        //We don't need to set the classloader for the stream because
-        //We'll only be reading primitive stream data from the data stream:
-        if (m_TRLObjInputStream != null) {
-            m_TRLObjInputStream.setClassLoader(trcl);
-            return;
-        }
-
-        //If null is passed in set to use default classloader:
-        if (trcl == null) {
-            try {
-                m_classLoader = new TRClassLoader("");
-            } catch (Exception e) {
-            } //No action keep old class loader:
-        }
-
-        if (!m_isLaunchedProcess && DEBUG) {
-            System.out.println("Turning on TRClassLoader debug.");
-            m_classLoader.setDebug(true);
-        }
-    }
-
-    public void setDebug(boolean val) {
-        DEBUG = val;
-        if (m_classLoader != null) {
-            m_classLoader.setDebug(val);
-        }
-    }
-
     public synchronized void close() throws Exception {
-        if (m_classLoader != null) {
-            m_classLoader.close();
-            m_classLoader = null;
-        }
-
-        if (m_TRLObjInputStream != null) {
-            if (DEBUG)
-                log("TRProcessCommunicator: Closing TRLObjInputStream");
-            m_TRLObjInputStream.close();
-            m_TRLObjInputStream = null;
-            if (DEBUG)
-                log("DONE Closing TRLObjInputStream");
+        if (m_objInputStream != null) {
+            m_objInputStream.close();
+            m_objInputStream = null;
         }
 
         if (m_objOutputStream != null) {

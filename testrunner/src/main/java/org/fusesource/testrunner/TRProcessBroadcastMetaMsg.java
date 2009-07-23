@@ -40,7 +40,6 @@ public class TRProcessBroadcastMetaMsg extends TRMetaMessage implements java.io.
             TRMetaMessage msg = new TRMetaMessage(getContentBytes(), getProperties());
             msg.setIntProperty(TRAgent.PID, m_recipProcs[i].getPid());
             msg.setSource(getSource());
-            msg.classLoader = classLoader;
             msgs.add(msg);
         }
         

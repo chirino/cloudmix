@@ -640,10 +640,6 @@ public class TRAgent {
         Object m_killLock;
         File m_tempDir = null;
 
-        //TODO consider removing should be able to get away with
-        //sending object data as bytes:
-        TRClassLoader m_procClassLoader;
-
         //The process:
         Process m_process;
 
@@ -780,20 +776,6 @@ public class TRAgent {
             } else
                 m_currentProcessString = javaExe + classPath + processName + " " + args;
 
-            //If the process is launched with object streams, create a class loader to dynamically load classes
-            //in the launched classpath.
-            //This is necessary in case the controller or launched process try to send
-            //objects between each other that we do not know about.
-            //            TODO REMOVE THIS
-            if (isObjectStream) {
-                if (DEBUG)
-                    System.out.println("TRAgent: creating TRClassLoader with " + exposedClassPath + " for PID = " + m_pid);
-                m_procClassLoader = new TRClassLoader(exposedClassPath);
-                if (DEBUG)
-                    m_procClassLoader.listLoaded(System.out);
-                //m_controlCom.setClassLoader(m_procClassLoader, m_pid);
-            }
-
             //Generate the launch string
             System.out.println("Launching as: " + m_currentProcessString + " [pid = " + m_pid + "]" + ((workingDir != null && workingDir.length() > 0) ? " [workDir = " + workingDir + "]" : ""));
             listener.handleProcessInfo(ctx, "Launching as: " + m_currentProcessString + " [pid = " + m_pid + "]"
@@ -813,7 +795,6 @@ public class TRAgent {
             if(!isObjectStream)
             {
                 m_outputHandler = new ProcessOutputHandler(m_process.getInputStream(), "TR Process Output Handler for: " + m_pid, false); // just handle output as data
-                
             }
             else if(m_port < 0) // no port, or data output, use System.out as process input
             {
@@ -854,11 +835,7 @@ public class TRAgent {
             //Attempt to read the STREAM_INIT_STR from the launched process.
             //Also, set the classloader.
             if (isObjectStream) {
-                m_processCom.setClassLoader(m_procClassLoader);
-                if (DEBUG)
-                    System.out.println("TRAgent: set " + m_procClassLoader + " on process com for pid = " + m_pid);
-                m_processCom.setDebug(DEBUG || devDebug);
-
+                
                 Object startStr = m_processCom.readObject();
                 if (startStr instanceof String && ((String) startStr).equals(TRProcessCommunicator.STREAM_INIT_STR)) {
                     return;
@@ -1254,22 +1231,6 @@ public class TRAgent {
                         System.out.println("WARNING: exception closing process communicator: " + ie.getMessage());
                     } catch (Exception e) {
                         System.out.println("ERROR: closing process communicator");
-                        e.printStackTrace();
-                        if (killSuccessFlag && !internal) {
-                            exception = e;
-                        }
-                        killSuccessFlag = false;
-                    }
-                }
-
-                //Unload classloader:TODO REMOVE?
-                if (m_procClassLoader != null) {
-                    try {
-                        //m_controlCom.removeClassLoader(m_procClassLoader, m_pid);
-                        m_procClassLoader.close();
-                        m_procClassLoader = null;
-                    } catch (Exception e) {
-                        System.out.println("ERROR: closing classloader for pid = " + m_pid);
                         e.printStackTrace();
                         if (killSuccessFlag && !internal) {
                             exception = e;

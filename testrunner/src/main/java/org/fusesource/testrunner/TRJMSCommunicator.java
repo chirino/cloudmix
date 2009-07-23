@@ -27,9 +27,9 @@ package org.fusesource.testrunner;
 import javax.jms.*;
 
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 
@@ -112,8 +112,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
     private Object m_sendLock; //To serialize sends
     private Object m_getMessageLock; //To protect the receive session.
     private BroadCastListener m_broadCastListener;
-    private Hashtable m_classLoaders;
-    private TRClassLoader m_defaultClassLoader;
 
     /**
      * Constructor
@@ -150,13 +148,11 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
             }
         });
 
-        m_classLoaders = new Hashtable(); // key = pid; value = TRClassLoader
         handleMessageLock = new Object();
         requestLock = new Object();
         replyLock = new Object();
         m_sendLock = new Object();
         m_getMessageLock = new Object();
-        m_defaultClassLoader = new TRClassLoader("");
     }
 
     /**
@@ -263,16 +259,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         String errorReason = "";
         boolean errorFlag = false;
 
-        // close all class loaders
-        Iterator it = m_classLoaders.values().iterator();
-        while (it.hasNext()) {
-            TRClassLoader classLoader = (TRClassLoader) it.next();
-            if (classLoader != null) {
-                classLoader.close();
-                classLoader = null;
-            }
-        }
-
         if (DEBUG || devDebug)
             System.out.println(m_clientID + ": Terminating JMS communication.");
         try {
@@ -287,21 +273,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
 
         if (errorFlag)
             throw new Exception(errorReason);
-    }
-
-    // Get Pid-specific class loader, if any, else return default class loader
-    private TRClassLoader getClassLoader(Hashtable props) {
-        TRClassLoader classLoader = null;
-        if (props != null) {
-            Integer pid = (Integer) props.get(TRAgent.PID);
-            if (DEBUG)
-                System.out.println("Getting classloader for PID = " + pid);
-            if (pid != null)
-                classLoader = (TRClassLoader) m_classLoaders.get(pid);
-        }
-        if (classLoader == null)
-            classLoader = m_defaultClassLoader;
-        return classLoader;
     }
 
     /**
@@ -393,12 +364,11 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                 bMessage.readBytes(classBytes);
 
                 // the wrapped object is serialized inside of a TRMetaMessage, therefore, no special class loader is needed.
-                TRLoaderObjectInputStream inputStream = new TRLoaderObjectInputStream(new ByteArrayInputStream(classBytes), m_defaultClassLoader);
-                obj = inputStream.recoverableReadObject();
-
-                if (inputStream != null) {
-                    inputStream.close();
-                    inputStream = null;
+                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(classBytes));
+                try {
+                    obj = ois.readObject();
+                } finally {
+                    ois.close();
                 }
 
                 if (obj == null) {
@@ -435,11 +405,8 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                     ret = new TRMetaMessage(ret.getContentBytes(), (Hashtable) ((TRBroadCastMetaMessage) obj).getProperties().get(m_clientID));
                 }
 
-                // get Pid-specific class loader
-                TRClassLoader classLoader = getClassLoader(ret.getProperties());
-                ret.setClassLoader(classLoader);
                 ret.setSource(source);
-                
+
                 return ret;
             } else {
                 if (DEBUG || devDebug)
@@ -557,7 +524,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
         msg.setStringProperty(CLIENT_ID, m_clientID);
         msg.setStringProperty(VERSION, Version.getVersionString());
 
-        
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(byteStream);
         oos.writeObject(trMsg);
@@ -682,47 +648,6 @@ public class TRJMSCommunicator implements javax.jms.MessageListener, javax.jms.E
                 jmse.printStackTrace();
             }
             return;
-        }
-    }
-
-    /**
-     * Sets the custom class loader for this Communicator and Pid to be used
-     * when reading serialized objects:
-     * 
-     * @param tcl
-     *            = class loader pid = id of launched process which is the
-     *            destination for an object
-     */
-    public void setClassLoader(TRClassLoader tcl, int pid) throws Exception {
-        if (DEBUG)
-            System.out.println("Setting class loader " + tcl + " for PID = " + pid);
-        TRClassLoader existingClassLoader = (TRClassLoader) m_classLoaders.get(new Integer(pid));
-        if (existingClassLoader != null) {
-            existingClassLoader.close();
-            existingClassLoader = null;
-        }
-        TRClassLoader newClassLoader = tcl;
-        if (newClassLoader == null)
-            newClassLoader = new TRClassLoader("");
-        m_classLoaders.put(new Integer(pid), newClassLoader);
-    }
-
-    /**
-     * Remove the specified TRClassLoader if it had been set for this
-     * communicator and pid before
-     * 
-     * @param tcl
-     *            The TRClassloader to remove pid = the id of the launched
-     *            process with which the class loader was associated
-     */
-    public void removeClassLoader(TRClassLoader tcl, int pid) {
-        if (DEBUG)
-            System.out.println("Removing class loader for PID = " + pid);
-        TRClassLoader classLoader = (TRClassLoader) m_classLoaders.get(new Integer(pid));
-        if (classLoader == tcl) {
-            tcl.close();
-            tcl = null;
-            m_classLoaders.remove(new Integer(pid));
         }
     }
 
