@@ -1,11 +1,10 @@
-package org.fusesource.testrunner;
+package org.fusesource.testrunner.rmi;
 
 /**
  * Defines the interface used for an TRAgentComHub to route messages.
  * 
  * @author Colin MacNaughton
  * @since 2.0
- * @see TRAgentComHub
  */
 public interface ProcessListener {
     
