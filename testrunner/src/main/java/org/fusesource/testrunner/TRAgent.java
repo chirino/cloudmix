@@ -1392,7 +1392,7 @@ public class TRAgent {
 
         }
 
-    }//private class ProcessHandler
+    }//private class RemoteProcess
 
     // Acceptor for optional port for launched processes' object input
     private class ProcessAcceptor implements Runnable {

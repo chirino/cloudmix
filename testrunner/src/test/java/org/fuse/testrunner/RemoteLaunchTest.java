@@ -108,7 +108,7 @@ public class RemoteLaunchTest extends TestCase implements TRClientListener {
      * (non-Javadoc)
      * 
      * @see
-     * org.fusesource.testrunner.TRClient.TRClientListener#onTRException(java
+     * org.fusesource.testrunner.TRClient.LaunchClientListener#onTRException(java
      * .lang.String, java.lang.Throwable)
      */
     public void onTRException(String reason, Throwable thrown) {
@@ -121,7 +121,7 @@ public class RemoteLaunchTest extends TestCase implements TRClientListener {
      * (non-Javadoc)
      * 
      * @see
-     * org.fusesource.testrunner.TRClient.TRClientListener#onTRInfo(java.lang
+     * org.fusesource.testrunner.TRClient.LaunchClientListener#onTRInfo(java.lang
      * .String)
      */
     public void onTRInfo(String msg) {

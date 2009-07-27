@@ -17,8 +17,13 @@
 package org.fusesource.testrunner.rmi;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.rmi.RemoteException;
 
 import org.apache.activemq.broker.BrokerService;
+import static org.fusesource.testrunner.rmi.Expression.*;
+import org.fusesource.rmiviajms.JMSRemoteObject;
 
 import junit.framework.TestCase;
 
@@ -31,37 +36,28 @@ import junit.framework.TestCase;
  * @author cmacnaug
  * @version 1.0
  */
-public class RemoteLaunchTest extends TestCase implements TRClient.TRClientListener {
-    static {
-        try {
-            System.setProperty(TRJMSCommunicator.FACTORY_PROP, "org.apache.activemq.ActiveMQConnectionFactory");
-        } catch (Exception e) {}
-    }
+public class RemoteLaunchTest extends TestCase {
+
     BrokerService controlBroker;
-    TRAgent agent;
-    TRClient client;
+    ProcessLauncher agent;
+    LauncherClient client;
 
     protected void setUp() throws Exception {
         controlBroker = new BrokerService();
         controlBroker.setBrokerName("TRControlBroker");
         controlBroker.setPersistent(false);
-        controlBroker.addConnector("tcp://localhost:6000");
+        controlBroker.addConnector("tcp://localhost:61616");
         controlBroker.start();
 
         //Set up a launch agent:
-        agent = new TRAgent();
+        agent = new ProcessLauncher();
         agent.setDataDirectory("target" + File.separator + "testrunner-data");
-        agent.setControlUrl("tcp://localhost:6000");
         agent.start();
 
-        //Set up a communicator to talk to the agent:
-        TRJMSCommunicator jmsComm = new TRJMSCommunicator("tcp://localhost:6000", System.getProperty("user.name") + System.currentTimeMillis());
-
-        client = new TRClient(jmsComm);
+        client = new LauncherClient("client1");
         client.setBindTimeout(5000);
         client.setLaunchTimeout(10000);
         client.setKillTimeout(5000);
-        client.setListener(this);
         client.bindAgent(agent.getAgentId());
 
     }
@@ -81,48 +77,26 @@ public class RemoteLaunchTest extends TestCase implements TRClient.TRClientListe
     }
 
     public void testDataOutput() throws Exception {
-        TRLaunchDescr ld = new TRLaunchDescr();
-        ld.setProcessType(TRLaunchDescr.PROCESS_TYPE_JAVA_EXE);
-        ld.setOutputType(TRLaunchDescr.DATA_OUTPUT);
-        ld.setJVMPath("java");
-        ld.setRunName("org.fuse.testrunner.DataInputTestApplication");
-        ld.addClassPath(System.getProperty("java.class.path"));
-        ld.setWorkingDir(System.getProperty("user.dir") + File.separator + "target");
+        LaunchDescription ld = new LaunchDescription();
+        ld.add("java");
+        ld.add("-cp");
+
+        ArrayList<FileExpression> files = new ArrayList<FileExpression>();
+        for (String file : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            files.add(file(file));
+        }
+
+        ld.add(path(files));
+        ld.add("org.fuse.testrunner.DataInputTestApplication");
+
 
         DataOutputTester tester = new DataOutputTester();
         tester.test(client.launchProcess(agent.getAgentId(), ld, tester));
 
     }
 
-    public void testObjectOutput() throws Exception {
+    public class DataOutputTester extends JMSRemoteObject implements IProcessListener {
 
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.fusesource.testrunner.TRClient.TRClientListener#onTRException(java
-     * .lang.String, java.lang.Throwable)
-     */
-    public void onTRException(String reason, Throwable thrown) {
-        System.err.println(reason);
-        thrown.printStackTrace();
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.fusesource.testrunner.TRClient.TRClientListener#onTRInfo(java.lang
-     * .String)
-     */
-    public void onTRInfo(String msg) {
-        System.out.println(msg);
-    }
-
-    private class DataOutputTester implements ProcessListener {
         private final int TEST_OUTPUT = 0;
         private final int TEST_ERROR = 1;
         private final int SUCCESS = 2;
@@ -135,18 +109,22 @@ public class RemoteLaunchTest extends TestCase implements TRClient.TRClientListe
 
         private Exception failure;
 
-        public synchronized void test(TRProcessContext ctx) throws Exception {
+        public DataOutputTester() throws RemoteException {
+        }
+
+        public synchronized void test(IProcess process) throws Exception {
+
             while (true) {
 
                 switch (state) {
                 case TEST_OUTPUT: {
                     System.out.println("Testing output");
-                    client.sendMessage(ctx, "echo:" + EXPECTED_OUTPUT);
+                    client.println(process, "echo:" + EXPECTED_OUTPUT);
                     break;
                 }
                 case TEST_ERROR: {
                     System.out.println("Testing error");
-                    client.sendMessage(ctx, "echo:" + EXPECTED_ERROR);
+                    client.println(process, "error:" + EXPECTED_ERROR);
                     break;
                 }
                 case SUCCESS: {
@@ -173,94 +151,47 @@ public class RemoteLaunchTest extends TestCase implements TRClient.TRClientListe
             }
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.fusesource.testrunner.ProcessListener#handleError(org.fusesource
-         * .testrunner.TRProcessContext, java.lang.String, java.lang.Throwable)
-         */
-        public synchronized void handleError(TRProcessContext ctx, String message, Throwable thrown) {
-            // TODO Auto-generated method stub
 
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.fusesource.testrunner.ProcessListener#handleMessage(org.fusesource
-         * .testrunner.TRProcessContext, java.lang.Object)
-         */
-        public synchronized void handleMessage(TRProcessContext ctx, Object msg) {
-            failure = new Exception("Unexpected object output: " + msg);
-            state = FAIL;
-            notifyAll();
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @seeorg.fusesource.testrunner.ProcessListener#handleProcessInfo(org.
-         * fusesource.testrunner.TRProcessContext, java.lang.String)
-         */
-        public synchronized void handleProcessInfo(TRProcessContext ctx, String info) {
-            System.out.println(ctx + ": " + info);
-
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.fusesource.testrunner.ProcessListener#handleSystemErr(org.fusesource
-         * .testrunner.TRProcessContext, java.lang.String)
-         */
-        public synchronized void handleSystemErr(TRProcessContext ctx, String err) {
-            System.err.print(err);
-            if (state == TEST_ERROR && EXPECTED_OUTPUT.equals(err.trim())) {
-                state = SUCCESS;
-            } else {
-                failure = new Exception("Unexpected system err: " + err);
-                state = FAIL;
-            }
-
-            notifyAll();
-
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.fusesource.testrunner.ProcessListener#handleSystemOut(org.fusesource
-         * .testrunner.TRProcessContext, java.lang.String)
-         */
-        public synchronized void handleSystemOut(TRProcessContext ctx, String output) {
+        synchronized public void write(int fd, byte[] data) throws RemoteException {
+            String output = new String(data);
             System.out.print(output);
-            if (state == TEST_OUTPUT && EXPECTED_OUTPUT.equals(output.trim())) {
-                state = TEST_ERROR;
-            } else {
-                failure = new Exception("Unexpected system output: " + output);
-                state = FAIL;
+
+            if (fd == IStream.FD_STD_OUT ) {
+                if (state == TEST_OUTPUT && EXPECTED_OUTPUT.equals(output.trim())) {
+                    state = TEST_ERROR;
+                } else {
+                    failure = new Exception("Unexpected system output: " + output);
+                    state = FAIL;
+                }
+                notifyAll();
+            } else if (fd == IStream.FD_STD_ERR ) {
+                if (state == TEST_ERROR && EXPECTED_ERROR.equals(output.trim())) {
+                    state = SUCCESS;
+                } else {
+                    failure = new Exception("Unexpected system err: " + output);
+                    state = FAIL;
+                }
+                notifyAll();
             }
-
-            notifyAll();
-
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * org.fusesource.testrunner.ProcessListener#processDone(org.fusesource
-         * .testrunner.TRProcessContext, int)
-         */
-        public synchronized void processDone(TRProcessContext ctx, int exitCode) {
-            // TODO Auto-generated method stub
-
+        public void onExit(int exitCode) {
         }
 
+        public void onError(Throwable thrown) {
+        }
+
+        public void onInfoLogging(String message) {
+        }
+
+        public void ping() {
+        }
+
+        public void open(int fd) throws RemoteException, IOException {
+        }
+
+        public void close(int fd) throws RemoteException {
+        }
     }
 
 }
