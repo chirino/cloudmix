@@ -28,9 +28,9 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
     private final int pid;
 
     Thread thread;
-    Process m_process;
-    ProcessOutputHandler m_errorHandler;
-    ProcessOutputHandler m_outputHandler;
+    Process process;
+    ProcessOutputHandler errorHandler;
+    ProcessOutputHandler outputHandler;
     private OutputStream os;
 
     AtomicBoolean running = new AtomicBoolean();
@@ -95,27 +95,27 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
 
         //Launch:
         synchronized (mutex) {
-            m_process = Runtime.getRuntime().exec(cmd, env, workingDirectory);
-            if (m_process == null) {
+            process = Runtime.getRuntime().exec(cmd, env, workingDirectory);
+            if (process == null) {
                 throw new Exception("Process launched failed (returned null).");
             }
 
             // create error handler
-            m_errorHandler = new ProcessOutputHandler(m_process.getErrorStream(), "Process Error Handler for: " + pid, IStream.FD_STD_ERR);
-            m_outputHandler = new ProcessOutputHandler(m_process.getInputStream(), "Process Output Handler for: " + pid, IStream.FD_STD_OUT);
-            os = m_process.getOutputStream();
+            errorHandler = new ProcessOutputHandler(process.getErrorStream(), "Process Error Handler for: " + pid, IStream.FD_STD_ERR);
+            outputHandler = new ProcessOutputHandler(process.getInputStream(), "Process Output Handler for: " + pid, IStream.FD_STD_OUT);
+            os = process.getOutputStream();
 
             running.set(true);
 
-            m_errorHandler.start();
-            m_outputHandler.start();
+            errorHandler.start();
+            outputHandler.start();
         }
 
     }
 
     public boolean isRunning() {
         synchronized (mutex) {
-            return m_process != null;
+            return process != null;
         }
     }
 
@@ -123,16 +123,16 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
         running.set(false);
         synchronized (mutex) {
             //Destroy the process:
-            if (m_process != null) {
+            if (process != null) {
                 try {
-                    System.out.print("Killing process " + m_process + " [pid = " + pid + "]");
-                    m_process.destroy();
-                    m_process.waitFor();
-                    int exitValue = m_process.exitValue();
+                    System.out.print("Killing process " + process + " [pid = " + pid + "]");
+                    process.destroy();
+                    process.waitFor();
+                    int exitValue = process.exitValue();
                     listener.onExit(exitValue);
 
                     System.out.println("...DONE.");
-                    m_process = null;
+                    process = null;
                 } catch (Exception e) {
                     System.err.println("ERROR: destroying process.");
                     e.printStackTrace();
@@ -141,13 +141,13 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
         }
 
         try {
-            m_errorHandler.stop();
+            errorHandler.stop();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         try {
-            m_outputHandler.stop();
+            outputHandler.stop();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
