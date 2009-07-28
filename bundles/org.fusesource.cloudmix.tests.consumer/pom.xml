@@ -28,6 +28,10 @@
       <artifactId>activemq-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-camel</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
     </dependency>
@@ -61,6 +65,29 @@
                 </artifact>
               </artifacts>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--
+       lets make an executable jar
+       you can then start this up via
+
+         java -jar target/thejar.jar
+      -->
+      <plugin>
+        <groupId>org.dstovall</groupId>
+        <artifactId>onejar-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <attachToBuild>true</attachToBuild>
+              <classifier>onejar</classifier>
+              <mainClass>org.fusesource.cloudmix.tests.consumer.Main</mainClass>
+            </configuration>
+            <goals>
+              <goal>one-jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

@@ -645,8 +645,11 @@
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-core</artifactId>
         <version>${activemq-version}</version>
+<!--
         <exclusions>
-          <!-- Workaround for bug with geronimo specs - see AMQ-1944 -->
+          -->
+<!-- Workaround for bug with geronimo specs - see AMQ-1944 -->
+<!--
           <exclusion>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
@@ -656,6 +659,12 @@
             <artifactId>geronimo-j2ee-management_1.0_spec</artifactId>
           </exclusion>
         </exclusions>
+-->
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-camel</artifactId>
+        <version>${activemq-version}</version>
       </dependency>
 
       <dependency>
