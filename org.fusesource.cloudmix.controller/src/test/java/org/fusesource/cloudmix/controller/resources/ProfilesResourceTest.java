@@ -23,22 +23,6 @@ import org.fusesource.cloudmix.controller.resources.ProfilesResource;
 import org.fusesource.cloudmix.controller.resources.ProfileResource;
 
 public class ProfilesResourceTest extends TestCase {
-    public void testAnnotations() throws Exception {
-        Class<ProfilesResource> cls = ProfilesResource.class;
-        Path ann = cls.getAnnotation(Path.class);
-        assertEquals("/profiles", ann.value());
-        
-        Method getProfiles = cls.getDeclaredMethod("getProfileList");
-        assertNotNull(getProfiles.getAnnotation(GET.class));
-        assertEquals("application/xml", getProfiles.getAnnotation(Produces.class).value()[0]);
-        
-        Method getProfile = cls.getDeclaredMethod("getProfile", String.class);
-        assertTrue(getProfile.getAnnotation(Path.class).value().startsWith("{id"));
-        Annotation[][] parameterAnnotations = getProfile.getParameterAnnotations();
-        PathParam pp = (PathParam) parameterAnnotations[0][0];
-        assertEquals("id", pp.value());
-    }
-    
     public void testControllerAccessor() {
         ProfilesResource pr = new ProfilesResource();
         GridController gc = EasyMock.createNiceMock(GridController.class);
