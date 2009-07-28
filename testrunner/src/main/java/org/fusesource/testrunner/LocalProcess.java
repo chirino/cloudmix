@@ -15,13 +15,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Revision: 1.1 $
-*/
+ */
 public class LocalProcess implements Process {
 
     int FD_STD_IN = 0;
     int FD_STD_OUT = 1;
     int FD_STD_ERR = 2;
-    
+
     private final Object mutex = new Object();
     private final LaunchDescription ld;
     protected final ProcessListener listener;
@@ -84,7 +84,7 @@ public class LocalProcess implements Process {
         if (ld.getWorkingDirectory() != null) {
             workingDirectory = new File(ld.getWorkingDirectory().evaluate());
         } else {
-            workingDirectory = new File(processLauncher.getDataDirectory(), "pid-"+this.pid);
+            workingDirectory = new File(processLauncher.getDataDirectory(), "pid-" + this.pid);
         }
         workingDirectory.mkdirs();
 
@@ -112,6 +112,11 @@ public class LocalProcess implements Process {
                     try {
                         process.waitFor();
                         int exitValue = process.exitValue();
+                        //Prior to sending exit join the output
+                        //handler threads to make sure that all 
+                        //data is sent:
+                        errorHandler.join();
+                        outputHandler.join();
                         onExit(exitValue);
                     } catch (InterruptedException e) {
                     }
@@ -134,12 +139,11 @@ public class LocalProcess implements Process {
     }
 
     public void kill() throws Exception {
-        if ( running.compareAndSet(true, false) ) {
+        if (running.compareAndSet(true, false)) {
             try {
                 System.out.print("Killing process " + process + " [pid = " + pid + "]");
                 process.destroy();
-                process.waitFor();
-                listener.onProcessExit(process.exitValue());
+                thread.join();
                 System.out.println("...DONE.");
             } catch (Exception e) {
                 System.err.println("ERROR: destroying process " + process + " [pid = " + pid + "]");
@@ -176,34 +180,45 @@ public class LocalProcess implements Process {
     // handle output or error data
     private class ProcessOutputHandler implements Runnable {
         private final int fd;
-        private final InputStream is;
+        private final BufferedInputStream is;
+        private static final int MAX_CHUNK_SIZE = 8 * 1024;
+        Thread thread;
 
         public ProcessOutputHandler(InputStream is, String name, int fd) {
-            this.is = is;
+            this.is = new BufferedInputStream(is, MAX_CHUNK_SIZE);
             this.fd = fd;
-            Thread m_thread = new Thread(this, name);
-            m_thread.start();
+            thread = new Thread(this, name);
+            thread.start();
         }
 
+        public void join() throws InterruptedException {
+            thread.join();
+        }
 
         public void run() {
-//            try {
-//                listener.open(fd);
-//            } catch (Throwable e) {
-//                e.printStackTrace();
-//                return;
-//            }
 
             try {
-                byte buffer[] = new byte[1024 * 4];
+
+                byte b = -1;
                 while (true) {
 
-                    int count = is.read(buffer);
-                    if (count > 0) {
-                        byte b[] = new byte[count];
-                        System.arraycopy(buffer, 0, b, 0, count);
-                        listener.onProcessOutput(fd, b);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream(MAX_CHUNK_SIZE);
+                    b = (byte) is.read();
+                    if (b == -1) {
+                        throw new EOFException();
                     }
+
+                    baos.write(b);
+
+                    while (is.available() > 0 && baos.size() < MAX_CHUNK_SIZE) {
+                        b = (byte) is.read();
+                        if (b == -1) {
+                            throw new EOFException();
+                        }
+                        baos.write(b);
+                    }
+
+                    listener.onProcessOutput(fd, baos.toByteArray());
 
                 }
             } catch (EOFException expected) {

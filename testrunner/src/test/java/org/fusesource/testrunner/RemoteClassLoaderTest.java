@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fuse.testrunner;
+package org.fusesource.testrunner;
 
 import junit.framework.TestCase;
 import org.fusesource.testrunner.rmi.RemoteClassLoader;

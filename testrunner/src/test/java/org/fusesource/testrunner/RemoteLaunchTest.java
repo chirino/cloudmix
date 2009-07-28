@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fuse.testrunner;
+package org.fusesource.testrunner;
 
 import static org.fusesource.testrunner.Expression.file;
 import static org.fusesource.testrunner.Expression.path;
@@ -92,7 +92,7 @@ public class RemoteLaunchTest extends TestCase {
         }
 
         ld.add(path(files));
-        ld.add("org.fuse.testrunner.DataInputTestApplication");
+        ld.add("org.fusesource.testrunner.DataInputTestApplication");
 
         DataOutputTester tester = new DataOutputTester();
         tester.test(clientRemote.launchProcess(agent.getAgentId(), ld, tester));
