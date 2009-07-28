@@ -38,7 +38,7 @@ import org.fusesource.testrunner.rmi.RemoteProcessLauncher;
  * <p>
  * Description:
  * </p>
- *
+ * 
  * @author cmacnaug
  * @version 1.0
  */
@@ -67,7 +67,6 @@ public class RemoteLaunchTest extends TestCase {
         clientRemote.bindAgent(agent.getAgentId());
 
     }
-    
 
     protected void tearDown() throws Exception {
         System.out.println("Shutting down control com");
@@ -95,7 +94,6 @@ public class RemoteLaunchTest extends TestCase {
         ld.add(path(files));
         ld.add("org.fuse.testrunner.DataInputTestApplication");
 
-
         DataOutputTester tester = new DataOutputTester();
         tester.test(clientRemote.launchProcess(agent.getAgentId(), ld, tester));
 
@@ -120,49 +118,51 @@ public class RemoteLaunchTest extends TestCase {
 
         public synchronized void test(Process process) throws Exception {
 
-            while (true) {
+            try {
+                while (true) {
 
-                switch (state) {
-                case TEST_OUTPUT: {
-                    System.out.println("Testing output");
-                    process.write(Process.FD_STD_IN, new String("echo:" + EXPECTED_OUTPUT + "\n").getBytes());
-                    break;
-                }
-                case TEST_ERROR: {
-                    System.out.println("Testing error");
-                    process.write(Process.FD_STD_IN, new String("error:" + EXPECTED_ERROR + "\n").getBytes());
-                    break;
-                }
-                case SUCCESS: {
-                    if (failure != null) {
+                    switch (state) {
+                    case TEST_OUTPUT: {
+                        System.out.println("Testing output");
+                        process.write(Process.FD_STD_IN, new String("echo:" + EXPECTED_OUTPUT + "\n").getBytes());
+                        break;
+                    }
+                    case TEST_ERROR: {
+                        System.out.println("Testing error");
+                        process.write(Process.FD_STD_IN, new String("error:" + EXPECTED_ERROR + "\n").getBytes());
+                        break;
+                    }
+                    case SUCCESS: {
+                        if (failure != null) {
+                            throw failure;
+                        }
+                        return;
+                    }
+                    case FAIL:
+                    default: {
+                        if (failure == null) {
+                            failure = new Exception();
+                        }
                         throw failure;
                     }
-                    return;
-                }
-                case FAIL:
-                default: {
-                    if (failure == null) {
-                        failure = new Exception();
                     }
-                    throw failure;
-                }
-                }
 
-                int oldState = state;
-                wait(10000);
-                if(oldState == state)
-                {
-                    throw new Exception("Timed out in state: " + state);
+                    int oldState = state;
+                    wait(10000);
+                    if (oldState == state) {
+                        throw new Exception("Timed out in state: " + state);
+                    }
                 }
+            } finally {
+                process.kill();
             }
         }
-
 
         synchronized public void onProcessOutput(int fd, byte[] data) {
             String output = new String(data);
             System.out.print(output);
 
-            if (fd == Process.FD_STD_OUT ) {
+            if (fd == Process.FD_STD_OUT) {
                 if (state == TEST_OUTPUT && EXPECTED_OUTPUT.equals(output.trim())) {
                     state = TEST_ERROR;
                 } else {
@@ -170,7 +170,7 @@ public class RemoteLaunchTest extends TestCase {
                     state = FAIL;
                 }
                 notifyAll();
-            } else if (fd == Process.FD_STD_ERR ) {
+            } else if (fd == Process.FD_STD_ERR) {
                 if (state == TEST_ERROR && EXPECTED_ERROR.equals(output.trim())) {
                     state = SUCCESS;
                 } else {

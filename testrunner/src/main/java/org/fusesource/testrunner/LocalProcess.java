@@ -138,6 +138,8 @@ public class LocalProcess implements Process {
             try {
                 System.out.print("Killing process " + process + " [pid = " + pid + "]");
                 process.destroy();
+                process.waitFor();
+                listener.onProcessExit(process.exitValue());
                 System.out.println("...DONE.");
             } catch (Exception e) {
                 System.err.println("ERROR: destroying process " + process + " [pid = " + pid + "]");

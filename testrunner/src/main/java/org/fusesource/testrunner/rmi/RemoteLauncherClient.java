@@ -25,6 +25,7 @@ public class RemoteLauncherClient {
     private long bindTimeout = 1000 * 30;
     private AtomicBoolean closed = new AtomicBoolean();
     private final String name;
+    private HashMap<ProcessListener, RemotedProcessListener> processListnerMap = new HashMap<ProcessListener, RemotedProcessListener>();
 
     private final HashMap<String, IRemoteProcessLauncher> boundAgents = new HashMap<String, IRemoteProcessLauncher>();
 
@@ -100,7 +101,14 @@ public class RemoteLauncherClient {
             agent = getAgent(agentName);
         }
 
-        RemotedProcessListener rpl = new RemotedProcessListener(listener);
+        RemotedProcessListener rpl = null;
+        synchronized (processListnerMap) {
+            rpl = processListnerMap.get(listener);
+            if (rpl == null) {
+                rpl = new RemotedProcessListener(listener);
+            }
+            rpl.addReference();
+        }
 
         return agent.launch(trld, rpl.getProxy());
     }
@@ -141,11 +149,35 @@ public class RemoteLauncherClient {
 
     private class RemotedProcessListener extends JMSRemoteObject implements IRemoteProcessListener {
         private final ProcessListener server;
-        private final IRemoteProcessListener proxy;
+        private IRemoteProcessListener proxy;
+        private int refs;
 
         public RemotedProcessListener(ProcessListener listener) throws RemoteException {
             this.server = listener;
-            proxy = (IRemoteProcessListener) JMSRemoteObject.exportObject(this);
+
+        }
+
+        void addReference() throws RemoteException {
+            synchronized (processListnerMap) {
+                refs++;
+                if (refs == 1) {
+                    proxy = (IRemoteProcessListener) JMSRemoteObject.exportObject(this);
+                }
+            }
+        }
+
+        void removeReference() throws RemoteException {
+            synchronized (processListnerMap) {
+                refs--;
+                if (refs == 0) {
+                    JMSRemoteObject.unexportObject(this, true);
+                    proxy = null;
+                }
+            }
+        }
+
+        synchronized IRemoteProcessListener getProxy() {
+            return proxy;
         }
 
         /*
@@ -166,6 +198,7 @@ public class RemoteLauncherClient {
          */
         public void onExit(int exitCode) throws RemoteException {
             server.onProcessExit(exitCode);
+            removeReference();
         }
 
         /*
@@ -198,10 +231,5 @@ public class RemoteLauncherClient {
         public void ping() throws RemoteException {
             //Yup, still here...
         }
-
-        public IRemoteProcessListener getProxy() {
-            return proxy;
-        }
-
     }
 }
