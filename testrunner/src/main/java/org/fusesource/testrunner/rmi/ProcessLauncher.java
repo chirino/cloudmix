@@ -25,18 +25,10 @@ public class ProcessLauncher implements IProcessLauncher {
 
     //ProcessHandlers:
     private final HashMap<Integer, RemoteProcess> processes = new HashMap<Integer, RemoteProcess>();
-    int pid_counter=0;
+    int pid_counter = 0;
     private Thread shutdownHook;
     private IProcessLauncher proxy;
 
-    /**
-     * private class ProcessHandler
-     * <p/>
-     * Handles launching a process using Runtime.exec(). Utilizes a
-     * ProcessCommunicator object to communicate with the launched process.
-     * Output from the process is relayed to the entity that requested the
-     * launch via TRAgent's TestRunnerJMSCommunicator object.
-     */
     public class RemoteProcess extends JMSRemoteObject implements IProcess {
 
         private final Object mutex = new Object();
@@ -52,39 +44,30 @@ public class ProcessLauncher implements IProcessLauncher {
 
         AtomicBoolean running = new AtomicBoolean();
 
-        /**
-         * Upon return the ProcessHandler can be started. The initialization
-         * file is reloaded.
-         */
         public RemoteProcess(LaunchDescription ld, IProcessListener listener, int pid) throws RemoteException {
             this.ld = ld;
             this.listener = listener;
             this.pid = pid;
         }
 
-
         /**
-         * Interprets the launch description and generates a command line to be
-         * spawned. Creates a classloader to dynamically loadClasses.
-         * LAUNCH_SUCCESS or LAUNCH_FAILURE is sent to the entity that requested
-         * the launch.
+         * Launches the process.
          */
         public void start() throws Exception {
-            if( ld.getCommand().isEmpty() ) {
+            if (ld.getCommand().isEmpty()) {
                 throw new Exception("LaunchDescription command empty.");
             }
 
-
             // Evaluate the command...
-            String [] cmd = new String[ld.getCommand().size()];
+            String[] cmd = new String[ld.getCommand().size()];
             StringBuilder command_line = new StringBuilder();
             boolean first = true;
-            int i=0;
+            int i = 0;
             for (Expression expression : ld.getCommand()) {
-                if( !first ) {
+                if (!first) {
                     command_line.append(" ");
                 }
-                first=false;
+                first = false;
 
                 String arg = expression.evaluate();
                 cmd[i++] = arg;
@@ -96,16 +79,16 @@ public class ProcessLauncher implements IProcessLauncher {
 
             // Evaluate the enviorment...
             String[] env = null;
-            if( ld.getEnviorment()!=null ) {
+            if (ld.getEnviorment() != null) {
                 env = new String[ld.getEnviorment().size()];
-                i=0;
+                i = 0;
                 for (Map.Entry<String, Expression> entry : ld.getEnviorment().entrySet()) {
-                    env[i++] = entry.getKey()+"="+entry.getValue().evaluate();
+                    env[i++] = entry.getKey() + "=" + entry.getValue().evaluate();
                 }
             }
 
             File workingDirectory;
-            if( ld.getWorkingDirectory()!=null ) {
+            if (ld.getWorkingDirectory() != null) {
                 workingDirectory = new File(ld.getWorkingDirectory().evaluate());
             } else {
                 workingDirectory = new File(processMonitor.m_tempDir + File.separator + this.pid);
@@ -129,18 +112,17 @@ public class ProcessLauncher implements IProcessLauncher {
                 m_outputHandler = new ProcessOutputHandler(m_process.getInputStream(), "Process Output Handler for: " + pid, IStream.FD_STD_OUT);
                 os = m_process.getOutputStream();
 
-
                 running.set(true);
 
                 m_errorHandler.start();
                 m_outputHandler.start();
             }
-            
+
         }
 
         public boolean isRunning() {
             synchronized (mutex) {
-                return m_process!=null;
+                return m_process != null;
             }
         }
 
@@ -159,13 +141,24 @@ public class ProcessLauncher implements IProcessLauncher {
                         System.out.println("...DONE.");
                         m_process = null;
                     } catch (Exception e) {
-                        System.out.println("ERROR: destroying process.");
+                        System.err.println("ERROR: destroying process.");
                         e.printStackTrace();
                     }
                 }
             }
-        }
 
+            try {
+                m_errorHandler.stop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                m_outputHandler.stop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         /**
          *
@@ -187,13 +180,13 @@ public class ProcessLauncher implements IProcessLauncher {
         }
 
         public void open(int fd) throws RemoteException, IOException {
-            if( fd!= IStream.FD_STD_IN ) {
+            if (fd != IStream.FD_STD_IN) {
                 throw new IOException("Only IProcessLauncher.FD_STD_IN is supported");
             }
         }
 
         public void write(int fd, byte[] data) throws RemoteException {
-            if( fd!= IStream.FD_STD_IN ) {
+            if (fd != IStream.FD_STD_IN) {
                 return;
             }
             try {
@@ -204,7 +197,7 @@ public class ProcessLauncher implements IProcessLauncher {
         }
 
         public void close(int fd) throws RemoteException {
-            if( fd!= IStream.FD_STD_IN ) {
+            if (fd != IStream.FD_STD_IN) {
                 return;
             }
             try {
@@ -228,7 +221,7 @@ public class ProcessLauncher implements IProcessLauncher {
                 this.fd = fd;
             }
 
-            public void start () {
+            public void start() {
                 m_thread = new Thread(this, name);
                 m_thread.start();
             }
@@ -240,9 +233,11 @@ public class ProcessLauncher implements IProcessLauncher {
                     e.printStackTrace();
                 }
 
-                m_thread.interrupt();
-                m_thread.join();
-                m_thread = null;
+                if (m_thread != null) {
+                    m_thread.interrupt();
+                    m_thread.join();
+                    m_thread = null;
+                }
             }
 
             public void run() {
@@ -254,25 +249,25 @@ public class ProcessLauncher implements IProcessLauncher {
                 }
 
                 try {
-                    byte buffer[] = new byte[1024*4];
+                    byte buffer[] = new byte[1024 * 4];
                     while (true) {
 
                         int count = is.read(buffer);
-                        if( count > 0 ) {
+                        if (count > 0) {
                             byte b[] = new byte[count];
                             System.arraycopy(buffer, 0, b, 0, count);
-// TODO: we might want to local echo for easier debugging??                            
-//                            if( fd == IStream.FD_STD_OUT ) {
-//                                System.out.write(b);
-//                            } else if( fd == IStream.FD_STD_ERR ) {
-//                                System.err.write(b);
-//                            }
+                            // TODO: we might want to local echo for easier debugging??                            
+                            //                            if( fd == IStream.FD_STD_OUT ) {
+                            //                                System.out.write(b);
+                            //                            } else if( fd == IStream.FD_STD_ERR ) {
+                            //                                System.err.write(b);
+                            //                            }
                             listener.write(fd, b);
                         }
 
                     }
                 } catch (Exception e) {
-                    if( running.get() ) {
+                    if (running.get()) {
                         System.out.println("ERROR: reading from process' output or  error stream.");
                         e.printStackTrace();
                     }
@@ -280,9 +275,7 @@ public class ProcessLauncher implements IProcessLauncher {
             }
         }
 
-
     }//private class RemoteProcess
-
 
     private class ProcessMonitor implements Runnable {
         Thread m_thread;
@@ -358,7 +351,6 @@ public class ProcessLauncher implements IProcessLauncher {
 
     }
 
-
     synchronized public void bind(String owner) throws Exception {
         if (exclusiveOwner == null) {
             exclusiveOwner = owner;
@@ -384,7 +376,6 @@ public class ProcessLauncher implements IProcessLauncher {
             throw new Exception("Release failure, different owner: " + exclusiveOwner);
         }
     }
-
 
     synchronized public IProcess launch(LaunchDescription launchDescription, IProcessListener handler) throws Exception {
         int pid = pid_counter++;
@@ -441,11 +432,10 @@ public class ProcessLauncher implements IProcessLauncher {
         try {
             JMSRemoteObject.unexportObject(proxy, false);
         } catch (NoSuchObjectException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         started = false;
-
 
         for (RemoteProcess process : processes.values()) {
             process.kill();
@@ -456,10 +446,9 @@ public class ProcessLauncher implements IProcessLauncher {
         processMonitor.shutdown();
     }
 
-
     /**
      * Sets the name of the agent id. Once set it cannot be changed.
-     *
+     * 
      * @param id
      *            the name of the agent id.
      */
@@ -468,10 +457,10 @@ public class ProcessLauncher implements IProcessLauncher {
             agentId = id.trim().toUpperCase();
         }
     }
-    
+
     /**
      * Sets the base directory where the agent puts it's data.
-     *
+     * 
      * @param dataDirectory
      */
     public void setDataDirectory(String dataDirectory) {
@@ -552,5 +541,38 @@ public class ProcessLauncher implements IProcessLauncher {
             }
         }
     }//private void recursiveDelete(String dir)
+
+    public String toString() {
+        return "ProcessLauncer-" + getAgentId();
+    }
+
+    /*
+     * public static void main()
+     * 
+     * Defines the entry point into this app.
+     */
+    public static void main(String[] argv) {
+        System.out.println("\n\n PROCESS LAUNCHER\n");
+
+        String jv = System.getProperty("java.version").substring(0, 3);
+        if (jv.compareTo("1.5") < 0) {
+            System.err.println("The ProcessLauncher agent requires jdk 1.4 or higher to run, the current java version is " + System.getProperty("java.version"));
+            System.exit(-1);
+            return;
+        }
+
+        if (argv.length > 1) {
+            System.err.println("Too many arguments.");
+            System.exit(-1);
+        }
+        ProcessLauncher agent = new ProcessLauncher();
+        //        agent.setPropFileName(argv[0]);
+        try {
+            agent.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }

@@ -75,6 +75,7 @@ public class LauncherClient {
         try {
             releaseAll();
         } catch (Exception e) {
+            e.printStackTrace();
 //            listener.onTRException("Error releasing agents.", e);
         }
         closed.set(true);
@@ -95,8 +96,8 @@ public class LauncherClient {
         if( agent == null ) {
             agent = getAgent(agentName);
         }
-
-        return agent.launch(trld, handler);
+        
+        return agent.launch(trld, (IProcessListener) JMSRemoteObject.exportObject(handler));
     }
 
     public long getBindTimeout() {
