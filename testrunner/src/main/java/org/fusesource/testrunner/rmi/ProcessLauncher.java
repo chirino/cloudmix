@@ -23,7 +23,7 @@ public class ProcessLauncher implements IProcessLauncher {
 
     //ProcessHandlers:
     private final Map<Integer, RemoteProcess> processes = new HashMap<Integer, RemoteProcess>();
-    int pid_counter = 0;
+    int pidCounter = 0;
     private Thread shutdownHook;
     private IProcessLauncher proxy;
 
@@ -54,7 +54,7 @@ public class ProcessLauncher implements IProcessLauncher {
     }
 
     synchronized public IProcess launch(LaunchDescription launchDescription, IProcessListener handler) throws Exception {
-        int pid = pid_counter++;
+        int pid = pidCounter++;
         RemoteProcess rc = new RemoteProcess(this, launchDescription, handler, pid);
         processes.put(pid, rc);
         try {

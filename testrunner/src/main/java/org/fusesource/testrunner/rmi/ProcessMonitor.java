@@ -8,14 +8,13 @@
 package org.fusesource.testrunner.rmi;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @version $Revision: 1.1 $
 */
 public class ProcessMonitor implements Runnable {
-    Thread m_thread;
+    Thread thread;
     private String tempDirectory;
     private boolean cleanupRequested = false;
     private ProcessLauncher processLauncher;
@@ -23,8 +22,8 @@ public class ProcessMonitor implements Runnable {
     public ProcessMonitor(ProcessLauncher processLauncher) {
         this.processLauncher = processLauncher;
         tempDirectory = processLauncher.getDataDirectory() + File.separator + processLauncher.getAgentId() + File.separator + "temp";
-        m_thread = new Thread(this, processLauncher.getAgentId() + "-Process Monitor");
-        m_thread.start();
+        thread = new Thread(this, processLauncher.getAgentId() + "-Process Monitor");
+        thread.start();
     }
 
     public void run() {
@@ -48,9 +47,9 @@ public class ProcessMonitor implements Runnable {
     }
 
     public void shutdown() {
-        m_thread.interrupt();
+        thread.interrupt();
         try {
-            m_thread.join();
+            thread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
