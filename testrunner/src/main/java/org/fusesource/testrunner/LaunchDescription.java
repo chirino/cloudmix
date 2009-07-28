@@ -1,4 +1,6 @@
-package org.fusesource.testrunner.rmi;
+package org.fusesource.testrunner;
+
+import org.fusesource.testrunner.Expression;
 
 import java.io.Serializable;
 import java.util.ArrayList;

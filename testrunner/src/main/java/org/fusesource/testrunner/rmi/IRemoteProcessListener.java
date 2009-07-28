@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 /**
  * @author chirino
 */
-public interface IProcessListener extends IStream {
+public interface IRemoteProcessListener extends IRemoteStreamListener {
     @Oneway
     public void onExit(int exitCode) throws RemoteException;
 

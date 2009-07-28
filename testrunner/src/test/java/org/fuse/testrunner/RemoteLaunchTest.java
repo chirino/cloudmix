@@ -22,15 +22,11 @@ import java.util.ArrayList;
 import java.rmi.RemoteException;
 
 import org.apache.activemq.broker.BrokerService;
-import static org.fusesource.testrunner.rmi.Expression.*;
+import static org.fusesource.testrunner.Expression.*;
 import org.fusesource.rmiviajms.JMSRemoteObject;
-import org.fusesource.testrunner.rmi.IProcess;
-import org.fusesource.testrunner.rmi.IProcessListener;
-import org.fusesource.testrunner.rmi.IStream;
-import org.fusesource.testrunner.rmi.LaunchDescription;
-import org.fusesource.testrunner.rmi.LauncherClient;
-import org.fusesource.testrunner.rmi.ProcessLauncher;
-import org.fusesource.testrunner.rmi.Expression.FileExpression;
+import org.fusesource.testrunner.LaunchDescription;
+import org.fusesource.testrunner.rmi.*;
+import org.fusesource.testrunner.Expression.FileExpression;
 
 import junit.framework.TestCase;
 
@@ -46,8 +42,8 @@ import junit.framework.TestCase;
 public class RemoteLaunchTest extends TestCase {
 
     BrokerService controlBroker;
-    ProcessLauncher agent;
-    LauncherClient client;
+    RemoteProcessLauncher agent;
+    RemoteLauncherClient clientRemote;
 
     protected void setUp() throws Exception {
         controlBroker = new BrokerService();
@@ -57,22 +53,22 @@ public class RemoteLaunchTest extends TestCase {
         controlBroker.start();
 
         //Set up a launch agent:
-        agent = new ProcessLauncher();
-        agent.setDataDirectory("target" + File.separator + "testrunner-data");
+        agent = new RemoteProcessLauncher();
+        agent.setDataDirectory(new File("target" + File.separator + "testrunner-data"));
         agent.start();
 
-        client = new LauncherClient("client1");
-        client.setBindTimeout(5000);
-        client.setLaunchTimeout(10000);
-        client.setKillTimeout(5000);
-        client.bindAgent(agent.getAgentId());
+        clientRemote = new RemoteLauncherClient("client1");
+        clientRemote.setBindTimeout(5000);
+        clientRemote.setLaunchTimeout(10000);
+        clientRemote.setKillTimeout(5000);
+        clientRemote.bindAgent(agent.getAgentId());
 
     }
     
 
     protected void tearDown() throws Exception {
         System.out.println("Shutting down control com");
-        client.close();
+        clientRemote.close();
         System.out.println("Shutting down agent");
         try {
             agent.stop();
@@ -98,11 +94,11 @@ public class RemoteLaunchTest extends TestCase {
 
 
         DataOutputTester tester = new DataOutputTester();
-        tester.test(client.launchProcess(agent.getAgentId(), ld, tester));
+        tester.test(clientRemote.launchProcess(agent.getAgentId(), ld, tester));
 
     }
 
-    public class DataOutputTester extends JMSRemoteObject implements IProcessListener {
+    public class DataOutputTester extends JMSRemoteObject implements IRemoteProcessListener {
 
         private final int TEST_OUTPUT = 0;
         private final int TEST_ERROR = 1;
@@ -119,19 +115,19 @@ public class RemoteLaunchTest extends TestCase {
         public DataOutputTester() throws RemoteException {
         }
 
-        public synchronized void test(IProcess process) throws Exception {
+        public synchronized void test(IRemoteProcess remoteProcess) throws Exception {
 
             while (true) {
 
                 switch (state) {
                 case TEST_OUTPUT: {
                     System.out.println("Testing output");
-                    client.println(process, "echo:" + EXPECTED_OUTPUT);
+                    clientRemote.println(remoteProcess, "echo:" + EXPECTED_OUTPUT);
                     break;
                 }
                 case TEST_ERROR: {
                     System.out.println("Testing error");
-                    client.println(process, "error:" + EXPECTED_ERROR);
+                    clientRemote.println(remoteProcess, "error:" + EXPECTED_ERROR);
                     break;
                 }
                 case SUCCESS: {
@@ -163,7 +159,7 @@ public class RemoteLaunchTest extends TestCase {
             String output = new String(data);
             System.out.print(output);
 
-            if (fd == IStream.FD_STD_OUT ) {
+            if (fd == IRemoteStreamListener.FD_STD_OUT ) {
                 if (state == TEST_OUTPUT && EXPECTED_OUTPUT.equals(output.trim())) {
                     state = TEST_ERROR;
                 } else {
@@ -171,7 +167,7 @@ public class RemoteLaunchTest extends TestCase {
                     state = FAIL;
                 }
                 notifyAll();
-            } else if (fd == IStream.FD_STD_ERR ) {
+            } else if (fd == IRemoteStreamListener.FD_STD_ERR ) {
                 if (state == TEST_ERROR && EXPECTED_ERROR.equals(output.trim())) {
                     state = SUCCESS;
                 } else {

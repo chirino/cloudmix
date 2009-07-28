@@ -1,4 +1,4 @@
-package org.fusesource.testrunner.rmi;
+package org.fusesource.testrunner;
 
 import java.io.File;
 import java.io.Serializable;

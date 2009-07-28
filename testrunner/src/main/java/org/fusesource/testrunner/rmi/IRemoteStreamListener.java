@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 /**
  * @author chirino
 */
-public interface IStream extends Remote {
+public interface IRemoteStreamListener extends Remote {
     int FD_STD_IN = 0;
     int FD_STD_OUT = 1;
     int FD_STD_ERR = 2;

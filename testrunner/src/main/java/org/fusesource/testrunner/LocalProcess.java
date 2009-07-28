@@ -5,24 +5,23 @@
  * The software in this package is published under the terms of the AGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.fusesource.testrunner.rmi;
+package org.fusesource.testrunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
+import org.fusesource.testrunner.LocalProcessLauncher;
+import org.fusesource.testrunner.rmi.*;
+
+import java.io.*;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Revision: 1.1 $
 */
-public class LocalProcessExecutor implements ProcessExecutor {
+public class LocalProcess implements LocalStreamListener {
 
     private final Object mutex = new Object();
     private final LaunchDescription ld;
-    private final IProcessListener listener;
+    protected final LocalProcessListener listener;
     private final int pid;
 
     Thread thread;
@@ -32,9 +31,9 @@ public class LocalProcessExecutor implements ProcessExecutor {
     private OutputStream os;
 
     AtomicBoolean running = new AtomicBoolean();
-    private ProcessLauncher processLauncher;
+    private LocalProcessLauncher processLauncher;
 
-    public LocalProcessExecutor(ProcessLauncher processLauncher, LaunchDescription ld, IProcessListener listener, int pid) throws RemoteException {
+    public LocalProcess(LocalProcessLauncher processLauncher, LaunchDescription ld, LocalProcessListener listener, int pid) {
         this.processLauncher = processLauncher;
         this.ld = ld;
         this.listener = listener;
@@ -82,7 +81,7 @@ public class LocalProcessExecutor implements ProcessExecutor {
         if (ld.getWorkingDirectory() != null) {
             workingDirectory = new File(ld.getWorkingDirectory().evaluate());
         } else {
-            workingDirectory = new File(processLauncher.getProcessMonitor().getTempDirectory() + File.separator + this.pid);
+            workingDirectory = new File(processLauncher.getDataDirectory(), "pid-"+this.pid);
         }
         workingDirectory.mkdirs();
 
@@ -99,16 +98,30 @@ public class LocalProcessExecutor implements ProcessExecutor {
             }
 
             // create error handler
-            errorHandler = new ProcessOutputHandler(process.getErrorStream(), "Process Error Handler for: " + pid, IStream.FD_STD_ERR);
-            outputHandler = new ProcessOutputHandler(process.getInputStream(), "Process Output Handler for: " + pid, IStream.FD_STD_OUT);
+            running.set(true);
+            errorHandler = new ProcessOutputHandler(process.getErrorStream(), "Process Error Handler for: " + pid, IRemoteStreamListener.FD_STD_ERR);
+            outputHandler = new ProcessOutputHandler(process.getInputStream(), "Process Output Handler for: " + pid, IRemoteStreamListener.FD_STD_OUT);
             os = process.getOutputStream();
 
-            running.set(true);
-
-            errorHandler.start();
-            outputHandler.start();
+            thread = new Thread("Process Watcher for: " + pid) {
+                @Override
+                public void run() {
+                    try {
+                        process.waitFor();
+                        int exitValue = process.exitValue();
+                        onExit(exitValue);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            };
+            thread.start();
         }
 
+    }
+
+    protected void onExit(int exitValue) {
+        running.set(false);
+        listener.onExit(exitValue);
     }
 
     public boolean isRunning() {
@@ -118,77 +131,34 @@ public class LocalProcessExecutor implements ProcessExecutor {
     }
 
     public void kill() {
-        running.set(false);
-        synchronized (mutex) {
-            //Destroy the process:
-            if (process != null) {
-                try {
-                    System.out.print("Killing process " + process + " [pid = " + pid + "]");
-                    process.destroy();
-                    process.waitFor();
-                    int exitValue = process.exitValue();
-                    listener.onExit(exitValue);
-
-                    System.out.println("...DONE.");
-                    process = null;
-                } catch (Exception e) {
-                    System.err.println("ERROR: destroying process.");
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            errorHandler.stop();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            outputHandler.stop();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     *
-     */
-    public void ping(long timeout) {
-        if (listener != null) {
-            //Check to see if the controller is still around for the process:
+        if ( running.compareAndSet(true, false) ) {
             try {
-                listener.ping();
+                System.out.print("Killing process " + process + " [pid = " + pid + "]");
+                process.destroy();
+                System.out.println("...DONE.");
             } catch (Exception e) {
-                try {
-                    kill();
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
+                System.err.println("ERROR: destroying process.");
+                e.printStackTrace();
             }
         }
-
     }
 
-    public void open(int fd) throws RemoteException, IOException {
-        if (fd != IStream.FD_STD_IN) {
-            throw new IOException("Only IProcessLauncher.FD_STD_IN is supported");
+    public void open(int fd) throws IOException {
+        if (fd != IRemoteStreamListener.FD_STD_IN) {
+            throw new IOException("Only IRemoteProcessLauncher.FD_STD_IN is supported");
         }
     }
 
-    public void write(int fd, byte[] data) throws RemoteException {
-        if (fd != IStream.FD_STD_IN) {
+    public void write(int fd, byte[] data) throws IOException {
+        if (fd != IRemoteStreamListener.FD_STD_IN) {
             return;
         }
-        try {
-            os.write(data);
-            os.flush();
-        } catch (IOException e) {
-        }
+        os.write(data);
+        os.flush();
     }
 
-    public void close(int fd) throws RemoteException {
-        if (fd != IStream.FD_STD_IN) {
+    public void close(int fd) {
+        if (fd != IRemoteStreamListener.FD_STD_IN) {
             return;
         }
         try {
@@ -202,34 +172,16 @@ public class LocalProcessExecutor implements ProcessExecutor {
     private class ProcessOutputHandler implements Runnable {
         private final String name;
         private final int fd;
-
         private final InputStream is;
-        Thread m_thread;
 
         public ProcessOutputHandler(InputStream is, String name, int fd) {
             this.is = is;
             this.name = name;
             this.fd = fd;
-        }
-
-        public void start() {
-            m_thread = new Thread(this, name);
+            Thread m_thread = new Thread(this, name);
             m_thread.start();
         }
 
-        public void stop() throws InterruptedException {
-            try {
-                is.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (m_thread != null) {
-                m_thread.interrupt();
-                m_thread.join();
-                m_thread = null;
-            }
-        }
 
         public void run() {
             try {
@@ -247,16 +199,11 @@ public class LocalProcessExecutor implements ProcessExecutor {
                     if (count > 0) {
                         byte b[] = new byte[count];
                         System.arraycopy(buffer, 0, b, 0, count);
-                        // TODO: we might want to local echo for easier debugging??
-                        //                            if( fd == IStream.FD_STD_OUT ) {
-                        //                                System.out.write(b);
-                        //                            } else if( fd == IStream.FD_STD_ERR ) {
-                        //                                System.err.write(b);
-                        //                            }
                         listener.write(fd, b);
                     }
 
                 }
+            } catch (EOFException expected) {
             } catch (Exception e) {
                 if (running.get()) {
                     System.out.println("ERROR: reading from process' output or  error stream.");
@@ -266,4 +213,4 @@ public class LocalProcessExecutor implements ProcessExecutor {
         }
     }
 
-}//private class RemoteProcess
+}//private class ProcessServer

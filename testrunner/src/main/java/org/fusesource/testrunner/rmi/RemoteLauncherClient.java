@@ -2,6 +2,7 @@ package org.fusesource.testrunner.rmi;
 
 import org.apache.activemq.command.ActiveMQQueue;
 import org.fusesource.rmiviajms.JMSRemoteObject;
+import org.fusesource.testrunner.LaunchDescription;
 
 import javax.jms.Destination;
 import java.rmi.RemoteException;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @author chirino
  */
-public class LauncherClient {
+public class RemoteLauncherClient {
 
     private long killTimeout;
     private long launchTimeout;
@@ -21,9 +22,9 @@ public class LauncherClient {
     private AtomicBoolean closed = new AtomicBoolean();
     private final String name;
 
-    private final HashMap<String, IProcessLauncher> boundAgents = new HashMap<String, IProcessLauncher>();
+    private final HashMap<String, IRemoteProcessLauncher> boundAgents = new HashMap<String, IRemoteProcessLauncher>();
 
-    public LauncherClient(String name) {
+    public RemoteLauncherClient(String name) {
         this.name = name;
     }
 
@@ -36,20 +37,20 @@ public class LauncherClient {
             return;
         }
 
-        IProcessLauncher agent = getAgent(agentName);
+        IRemoteProcessLauncher agent = getAgent(agentName);
         agent.bind(name);
     }
 
-    private IProcessLauncher getAgent(String agentName) throws RemoteException {
+    private IRemoteProcessLauncher getAgent(String agentName) throws RemoteException {
         Destination destination = new ActiveMQQueue(agentName);
-        IProcessLauncher agent = JMSRemoteObject.toProxy(destination, IProcessLauncher.class, null);
+        IRemoteProcessLauncher agent = JMSRemoteObject.toProxy(destination, IRemoteProcessLauncher.class, null);
         return agent;
     }
 
     public void releaseAgent(String agentName) throws Exception {
         checkNotClosed();
         agentName = agentName.toUpperCase();
-        IProcessLauncher agent = boundAgents.remove(agentName);
+        IRemoteProcessLauncher agent = boundAgents.remove(agentName);
         if (agent!=null) {
             agent.unbind(name);
         }
@@ -59,7 +60,7 @@ public class LauncherClient {
         checkNotClosed();
 
         ArrayList<String> failed = new ArrayList<String>();
-        for (Map.Entry<String, IProcessLauncher> entry : boundAgents.entrySet()) {
+        for (Map.Entry<String, IRemoteProcessLauncher> entry : boundAgents.entrySet()) {
             try {
                 entry.getValue().unbind(name);
             } catch (Exception ignore) {
@@ -88,16 +89,16 @@ public class LauncherClient {
     }
 
 
-    public IProcess launchProcess(String agentName, LaunchDescription trld, IProcessListener handler) throws Exception {
+    public IRemoteProcess launchProcess(String agentName, LaunchDescription trld, IRemoteProcessListener handler) throws Exception {
         checkNotClosed();
         agentName = agentName.toUpperCase();
 
-        IProcessLauncher agent = boundAgents.get(agentName);
+        IRemoteProcessLauncher agent = boundAgents.get(agentName);
         if( agent == null ) {
             agent = getAgent(agentName);
         }
         
-        return agent.launch(trld, (IProcessListener) JMSRemoteObject.exportObject(handler));
+        return agent.launch(trld, (IRemoteProcessListener) JMSRemoteObject.exportObject(handler));
     }
 
     public long getBindTimeout() {
@@ -124,8 +125,8 @@ public class LauncherClient {
         this.killTimeout = killTimeout;
     }
 
-    public void println(IProcess process, String line) throws RemoteException {
+    public void println(IRemoteProcess remoteProcess, String line) throws RemoteException {
         byte [] data = (line+"\n").getBytes();
-        process.write(IStream.FD_STD_IN, data);
+        remoteProcess.write(IRemoteStreamListener.FD_STD_IN, data);
     }
 }
