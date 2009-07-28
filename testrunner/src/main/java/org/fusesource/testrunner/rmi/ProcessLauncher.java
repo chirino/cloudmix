@@ -1,12 +1,15 @@
 package org.fusesource.testrunner.rmi;
 
-import org.fusesource.rmiviajms.JMSRemoteObject;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.fusesource.rmiviajms.JMSRemoteObject;
 
 import javax.jms.Destination;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
 import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author chirino
@@ -22,7 +25,7 @@ public class ProcessLauncher implements IProcessLauncher {
     private String dataDirectory = ".";
 
     //ProcessHandlers:
-    private final Map<Integer, RemoteProcess> processes = new HashMap<Integer, RemoteProcess>();
+    private final Map<Integer, ProcessExecutor> processes = new HashMap<Integer, ProcessExecutor>();
     int pidCounter = 0;
     private Thread shutdownHook;
     private IProcessLauncher proxy;
@@ -55,7 +58,7 @@ public class ProcessLauncher implements IProcessLauncher {
 
     synchronized public IProcess launch(LaunchDescription launchDescription, IProcessListener handler) throws Exception {
         int pid = pidCounter++;
-        RemoteProcess rc = new RemoteProcess(this, launchDescription, handler, pid);
+        ProcessExecutor rc = createProcessExecutor(launchDescription, handler, pid);
         processes.put(pid, rc);
         try {
             rc.start();
@@ -63,6 +66,11 @@ public class ProcessLauncher implements IProcessLauncher {
             processes.remove(pid);
         }
         return rc;
+    }
+
+    protected ProcessExecutor createProcessExecutor(LaunchDescription launchDescription, IProcessListener handler, int pid) throws RemoteException {
+        return new RmiProcessExecutor(this, launchDescription, handler, pid);
+        //return new LocalProcessExecutor(this, launchDescription, handler, pid);
     }
 
     public synchronized void start() throws Exception {
@@ -113,8 +121,13 @@ public class ProcessLauncher implements IProcessLauncher {
 
         started = false;
 
-        for (RemoteProcess process : processes.values()) {
-            process.kill();
+        for (ProcessExecutor process : processes.values()) {
+            try {
+                process.kill();
+            } catch (RemoteException e) {
+                System.out.println("Caught: " + e);
+                e.printStackTrace();
+            }
         }
         processes.clear();
 
@@ -158,7 +171,7 @@ public class ProcessLauncher implements IProcessLauncher {
         return processMonitor;
     }
 
-    public Map<Integer, RemoteProcess> getProcesses() {
+    public Map<Integer, ProcessExecutor> getProcesses() {
         return processes;
     }
 

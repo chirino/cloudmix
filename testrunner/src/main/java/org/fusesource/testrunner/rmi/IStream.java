@@ -2,9 +2,9 @@ package org.fusesource.testrunner.rmi;
 
 import org.fusesource.rmiviajms.Oneway;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.io.IOException;
 
 /**
  * @author chirino

@@ -7,20 +7,18 @@
  **************************************************************************************/
 package org.fusesource.testrunner.rmi;
 
-import org.fusesource.rmiviajms.JMSRemoteObject;
-
-import java.io.OutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.Map;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @version $Revision: 1.1 $
 */
-public class RemoteProcess extends JMSRemoteObject implements IProcess {
+public class LocalProcessExecutor implements ProcessExecutor {
 
     private final Object mutex = new Object();
     private final LaunchDescription ld;
@@ -36,7 +34,7 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
     AtomicBoolean running = new AtomicBoolean();
     private ProcessLauncher processLauncher;
 
-    public RemoteProcess(ProcessLauncher processLauncher, LaunchDescription ld, IProcessListener listener, int pid) throws RemoteException {
+    public LocalProcessExecutor(ProcessLauncher processLauncher, LaunchDescription ld, IProcessListener listener, int pid) throws RemoteException {
         this.processLauncher = processLauncher;
         this.ld = ld;
         this.listener = listener;
@@ -207,13 +205,11 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
 
         private final InputStream is;
         Thread m_thread;
-        private IProcessListener listener;
 
         public ProcessOutputHandler(InputStream is, String name, int fd) {
             this.is = is;
             this.name = name;
             this.fd = fd;
-            this.listener = RemoteProcess.this.listener;
         }
 
         public void start() {
@@ -239,7 +235,8 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
             try {
                 listener.open(fd);
             } catch (Throwable e) {
-                listener = null;
+                e.printStackTrace();
+                return;
             }
 
             try {
@@ -247,20 +244,16 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
                 while (true) {
 
                     int count = is.read(buffer);
-                    if (count > 0 && listener!=null) {
-                        try {
-                            byte b[] = new byte[count];
-                            System.arraycopy(buffer, 0, b, 0, count);
-                            // TODO: we might want to local echo for easier debugging??
-                            //                            if( fd == IStream.FD_STD_OUT ) {
-                            //                                System.out.write(b);
-                            //                            } else if( fd == IStream.FD_STD_ERR ) {
-                            //                                System.err.write(b);
-                            //                            }
-                            listener.write(fd, b);
-                        } catch (Throwable e) {
-                            listener = null;
-                        }
+                    if (count > 0) {
+                        byte b[] = new byte[count];
+                        System.arraycopy(buffer, 0, b, 0, count);
+                        // TODO: we might want to local echo for easier debugging??
+                        //                            if( fd == IStream.FD_STD_OUT ) {
+                        //                                System.out.write(b);
+                        //                            } else if( fd == IStream.FD_STD_ERR ) {
+                        //                                System.err.write(b);
+                        //                            }
+                        listener.write(fd, b);
                     }
 
                 }

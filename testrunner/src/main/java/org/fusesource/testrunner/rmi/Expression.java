@@ -1,10 +1,10 @@
 package org.fusesource.testrunner.rmi;
 
-import java.io.Serializable;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**

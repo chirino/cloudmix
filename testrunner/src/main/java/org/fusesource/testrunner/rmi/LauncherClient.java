@@ -1,14 +1,14 @@
 package org.fusesource.testrunner.rmi;
 
-import org.fusesource.rmiviajms.JMSRemoteObject;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.fusesource.rmiviajms.JMSRemoteObject;
 
 import javax.jms.Destination;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.rmi.RemoteException;
 
 /**
  * @author chirino
@@ -42,7 +42,7 @@ public class LauncherClient {
 
     private IProcessLauncher getAgent(String agentName) throws RemoteException {
         Destination destination = new ActiveMQQueue(agentName);
-        IProcessLauncher agent = (IProcessLauncher) JMSRemoteObject.toProxy(destination, IProcessLauncher.class, null);
+        IProcessLauncher agent = JMSRemoteObject.toProxy(destination, IProcessLauncher.class, null);
         return agent;
     }
 

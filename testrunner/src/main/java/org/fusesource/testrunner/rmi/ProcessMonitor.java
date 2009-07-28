@@ -9,6 +9,7 @@ package org.fusesource.testrunner.rmi;
 
 import java.io.File;
 import java.util.Map;
+import java.rmi.RemoteException;
 
 /**
  * @version $Revision: 1.1 $
@@ -57,7 +58,7 @@ public class ProcessMonitor implements Runnable {
 
     public void cleanUpTempFiles() {
         //If we aren't running anything cleanup: temp parts
-        Map<Integer,RemoteProcess> processes = processLauncher.getProcesses();
+        Map<Integer, ProcessExecutor> processes = processLauncher.getProcesses();
         if (processes == null || processes.size() == 0) {
             File tempDir = new File(tempDirectory);
             String[] subDirs = tempDir != null ? tempDir.list() : null;
@@ -75,8 +76,13 @@ public class ProcessMonitor implements Runnable {
     }
 
     public void checkForRogueProcesses(long timeout) {
-        for (RemoteProcess remoteProcess : processLauncher.getProcesses().values()) {
-            remoteProcess.ping(timeout);
+        for (ProcessExecutor remoteProcess : processLauncher.getProcesses().values()) {
+            try {
+                remoteProcess.ping(timeout);
+            } catch (RemoteException e) {
+                System.out.println("Caught: " + e);
+                e.printStackTrace();
+            }
         }
     }
 
