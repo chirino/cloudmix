@@ -16,6 +16,8 @@
         http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd   
                             http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+  
   <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.base}/data">
 
     <!-- The transport connectors ActiveMQ will listen to -->

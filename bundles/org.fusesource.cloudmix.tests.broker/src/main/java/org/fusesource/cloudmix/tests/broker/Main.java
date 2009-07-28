@@ -10,14 +10,24 @@ package org.fusesource.cloudmix.tests.broker;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @version $Revision: 1.1 $
  */
 public class Main {
     public static void main(String[] args) {
+        if (args.length > 0 && args[0].equals("-debug")) {
+            Map<Object, Object> properties = new TreeMap<Object, Object>();
+            properties.putAll(System.getProperties());
+            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                System.out.println(" " + entry.getKey() + " = " + entry.getValue());
+            }
+        }
+
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/spring/activemq.xml");
         applicationContext.start();
 

@@ -15,9 +15,9 @@
 
   <modules>
     <module>jersey</module>
-    <module>org.apache.activemq.broker.multicast</module>
-    <module>org.apache.activemq.producer</module>
-    <module>org.apache.activemq.consumer</module>
+    <module>org.fusesource.cloudmix.tests.broker</module>
+    <module>org.fusesource.cloudmix.tests.producer</module>
+    <module>org.fusesource.cloudmix.tests.consumer</module>
   </modules>
 
   <build>
