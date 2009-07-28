@@ -1,9 +1,9 @@
 package org.fusesource.testrunner.rmi;
 
-import org.fusesource.testrunner.LocalProcessLauncher;
+import org.fusesource.testrunner.ProcessLauncher;
 import org.fusesource.testrunner.LaunchDescription;
 import org.fusesource.testrunner.LocalProcess;
-import org.fusesource.testrunner.LocalProcessListener;
+import org.fusesource.testrunner.ProcessListener;
 import org.fusesource.rmiviajms.JMSRemoteObject;
 import org.apache.activemq.command.ActiveMQQueue;
 
@@ -19,8 +19,9 @@ import java.util.Map;
 public class RemoteProcessLauncher implements IRemoteProcessLauncher {
 
     private IRemoteProcessLauncher proxy;
-    private final LocalProcessLauncher processLauncher = new LocalProcessLauncher() {
-        protected LocalProcess createLocalProcess(LaunchDescription launchDescription, LocalProcessListener handler, int pid) throws RemoteException {
+    private final ProcessLauncher processLauncher = new ProcessLauncher() {
+        @Override
+        protected LocalProcess createLocalProcess(LaunchDescription launchDescription, ProcessListener handler, int pid) throws RemoteException {
             return new RemotedProcess(this, launchDescription, handler, pid);
         }
     };

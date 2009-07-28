@@ -1,14 +1,14 @@
 package org.fusesource.testrunner.rmi;
 
-import org.fusesource.testrunner.LocalProcessListener;
+import org.fusesource.testrunner.ProcessListener;
 
 import java.rmi.RemoteException;
 import java.io.IOException;
 
 /**
  * @author chirino
-*/
-class RemoteProcessListener implements LocalProcessListener {
+ */
+class RemoteProcessListener implements ProcessListener {
 
     private final IRemoteProcessListener listener;
 
@@ -16,7 +16,8 @@ class RemoteProcessListener implements LocalProcessListener {
         this.listener = handler;
     }
 
-    public void onExit(int exitCode) {
+    public void onProcessExit(int exitCode) {
+
         try {
             listener.onExit(exitCode);
         } catch (RemoteException e) {
@@ -24,7 +25,7 @@ class RemoteProcessListener implements LocalProcessListener {
         }
     }
 
-    public void onError(Throwable thrown) {
+    public void onProcessError(Throwable thrown){
         try {
             listener.onError(thrown);
         } catch (RemoteException e) {
@@ -32,7 +33,7 @@ class RemoteProcessListener implements LocalProcessListener {
         }
     }
 
-    public void onInfoLogging(String message) {
+    public void onProcessInfo(String message) {
         try {
             listener.onInfoLogging(message);
         } catch (RemoteException e) {
@@ -40,16 +41,12 @@ class RemoteProcessListener implements LocalProcessListener {
         }
     }
 
-    public void open(int fd) throws IOException {
-        listener.open(fd);
-    }
-
-    public void write(int fd, byte[] data) throws IOException {
-        listener.write(fd, data);
-    }
-
-    public void close(int fd) throws IOException {
-        listener.close(fd);
+    public void onProcessOutput(int fd, byte[] data)  {
+        try {
+            listener.onStreamOutput(fd, data);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public IRemoteProcessListener getListener() {

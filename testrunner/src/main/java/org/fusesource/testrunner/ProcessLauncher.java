@@ -1,6 +1,5 @@
 package org.fusesource.testrunner;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.File;
@@ -8,7 +7,7 @@ import java.io.File;
 /**
  * @author chirino
  */
-public class LocalProcessLauncher {
+public class ProcessLauncher {
     public static final long CLEANUP_TIMEOUT = 60000;
 
     private String exclusiveOwner;
@@ -41,7 +40,7 @@ public class LocalProcessLauncher {
         }
     }
 
-    synchronized public LocalProcess launch(LaunchDescription launchDescription, LocalProcessListener handler) throws Exception {
+    synchronized public Process launch(LaunchDescription launchDescription, ProcessListener handler) throws Exception {
         int pid = pidCounter++;
         LocalProcess rc = createLocalProcess(launchDescription, handler, pid);
         processes.put(pid, rc);
@@ -53,7 +52,7 @@ public class LocalProcessLauncher {
         return rc;
     }
 
-    protected LocalProcess createLocalProcess(LaunchDescription launchDescription, LocalProcessListener handler, int pid) throws RemoteException {
+    protected LocalProcess createLocalProcess(LaunchDescription launchDescription, ProcessListener handler, int pid) throws Exception {
         return new LocalProcess(this, launchDescription, handler, pid);
     }
 
@@ -76,8 +75,8 @@ public class LocalProcessLauncher {
 
         shutdownHook = new Thread(getAgentId() + "-Shutdown") {
             public void run() {
-                System.out.println("Executing Shutdown Hook for " + LocalProcessLauncher.this);
-                LocalProcessLauncher.this.stop();
+                System.out.println("Executing Shutdown Hook for " + ProcessLauncher.this);
+                ProcessLauncher.this.stop();
             }
         };
 
@@ -96,7 +95,11 @@ public class LocalProcessLauncher {
         started = false;
 
         for (LocalProcess process : processes.values()) {
-            process.kill();
+            try {
+                process.kill();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         processes.clear();
 

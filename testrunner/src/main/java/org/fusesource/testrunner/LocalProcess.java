@@ -7,8 +7,7 @@
  **************************************************************************************/
 package org.fusesource.testrunner;
 
-import org.fusesource.testrunner.LocalProcessLauncher;
-import org.fusesource.testrunner.rmi.*;
+import org.fusesource.testrunner.ProcessLauncher;
 
 import java.io.*;
 import java.util.Map;
@@ -17,23 +16,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * @version $Revision: 1.1 $
 */
-public class LocalProcess implements LocalStreamListener {
+public class LocalProcess implements Process {
 
+    int FD_STD_IN = 0;
+    int FD_STD_OUT = 1;
+    int FD_STD_ERR = 2;
+    
     private final Object mutex = new Object();
     private final LaunchDescription ld;
-    protected final LocalProcessListener listener;
+    protected final ProcessListener listener;
     private final int pid;
 
     Thread thread;
-    Process process;
+    java.lang.Process process;
     ProcessOutputHandler errorHandler;
     ProcessOutputHandler outputHandler;
     private OutputStream os;
 
     AtomicBoolean running = new AtomicBoolean();
-    private LocalProcessLauncher processLauncher;
+    private ProcessLauncher processLauncher;
 
-    public LocalProcess(LocalProcessLauncher processLauncher, LaunchDescription ld, LocalProcessListener listener, int pid) {
+    public LocalProcess(ProcessLauncher processLauncher, LaunchDescription ld, ProcessListener listener, int pid) {
         this.processLauncher = processLauncher;
         this.ld = ld;
         this.listener = listener;
@@ -88,7 +91,7 @@ public class LocalProcess implements LocalStreamListener {
         //Generate the launch string
         String msg = "Launching as: " + command_line + " [pid = " + pid + "] [workDir = " + workingDirectory + "]";
         System.out.println(msg);
-        listener.onInfoLogging(msg);
+        listener.onProcessInfo(msg);
 
         //Launch:
         synchronized (mutex) {
@@ -99,8 +102,8 @@ public class LocalProcess implements LocalStreamListener {
 
             // create error handler
             running.set(true);
-            errorHandler = new ProcessOutputHandler(process.getErrorStream(), "Process Error Handler for: " + pid, IRemoteStreamListener.FD_STD_ERR);
-            outputHandler = new ProcessOutputHandler(process.getInputStream(), "Process Output Handler for: " + pid, IRemoteStreamListener.FD_STD_OUT);
+            errorHandler = new ProcessOutputHandler(process.getErrorStream(), "Process Error Handler for: " + pid, FD_STD_ERR);
+            outputHandler = new ProcessOutputHandler(process.getInputStream(), "Process Output Handler for: " + pid, FD_STD_OUT);
             os = process.getOutputStream();
 
             thread = new Thread("Process Watcher for: " + pid) {
@@ -121,7 +124,7 @@ public class LocalProcess implements LocalStreamListener {
 
     protected void onExit(int exitValue) {
         running.set(false);
-        listener.onExit(exitValue);
+        listener.onProcessExit(exitValue);
     }
 
     public boolean isRunning() {
@@ -130,27 +133,27 @@ public class LocalProcess implements LocalStreamListener {
         }
     }
 
-    public void kill() {
+    public void kill() throws Exception {
         if ( running.compareAndSet(true, false) ) {
             try {
                 System.out.print("Killing process " + process + " [pid = " + pid + "]");
                 process.destroy();
                 System.out.println("...DONE.");
             } catch (Exception e) {
-                System.err.println("ERROR: destroying process.");
-                e.printStackTrace();
+                System.err.println("ERROR: destroying process " + process + " [pid = " + pid + "]");
+                throw e;
             }
         }
     }
 
     public void open(int fd) throws IOException {
-        if (fd != IRemoteStreamListener.FD_STD_IN) {
+        if (fd != FD_STD_IN) {
             throw new IOException("Only IRemoteProcessLauncher.FD_STD_IN is supported");
         }
     }
 
     public void write(int fd, byte[] data) throws IOException {
-        if (fd != IRemoteStreamListener.FD_STD_IN) {
+        if (fd != FD_STD_IN) {
             return;
         }
         os.write(data);
@@ -158,7 +161,7 @@ public class LocalProcess implements LocalStreamListener {
     }
 
     public void close(int fd) {
-        if (fd != IRemoteStreamListener.FD_STD_IN) {
+        if (fd != FD_STD_IN) {
             return;
         }
         try {
@@ -170,13 +173,11 @@ public class LocalProcess implements LocalStreamListener {
 
     // handle output or error data
     private class ProcessOutputHandler implements Runnable {
-        private final String name;
         private final int fd;
         private final InputStream is;
 
         public ProcessOutputHandler(InputStream is, String name, int fd) {
             this.is = is;
-            this.name = name;
             this.fd = fd;
             Thread m_thread = new Thread(this, name);
             m_thread.start();
@@ -184,12 +185,12 @@ public class LocalProcess implements LocalStreamListener {
 
 
         public void run() {
-            try {
-                listener.open(fd);
-            } catch (Throwable e) {
-                e.printStackTrace();
-                return;
-            }
+//            try {
+//                listener.open(fd);
+//            } catch (Throwable e) {
+//                e.printStackTrace();
+//                return;
+//            }
 
             try {
                 byte buffer[] = new byte[1024 * 4];
@@ -199,7 +200,7 @@ public class LocalProcess implements LocalStreamListener {
                     if (count > 0) {
                         byte b[] = new byte[count];
                         System.arraycopy(buffer, 0, b, 0, count);
-                        listener.write(fd, b);
+                        listener.onProcessOutput(fd, b);
                     }
 
                 }

@@ -2,9 +2,13 @@ package org.fusesource.testrunner.rmi;
 
 import org.apache.activemq.command.ActiveMQQueue;
 import org.fusesource.rmiviajms.JMSRemoteObject;
+import org.fusesource.testrunner.Process;
 import org.fusesource.testrunner.LaunchDescription;
+import org.fusesource.testrunner.ProcessListener;
 
 import javax.jms.Destination;
+
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +22,7 @@ public class RemoteLauncherClient {
 
     private long killTimeout;
     private long launchTimeout;
-    private long bindTimeout = 1000*30;
+    private long bindTimeout = 1000 * 30;
     private AtomicBoolean closed = new AtomicBoolean();
     private final String name;
 
@@ -27,7 +31,6 @@ public class RemoteLauncherClient {
     public RemoteLauncherClient(String name) {
         this.name = name;
     }
-
 
     public void bindAgent(String agentName) throws Exception {
         checkNotClosed();
@@ -51,7 +54,7 @@ public class RemoteLauncherClient {
         checkNotClosed();
         agentName = agentName.toUpperCase();
         IRemoteProcessLauncher agent = boundAgents.remove(agentName);
-        if (agent!=null) {
+        if (agent != null) {
             agent.unbind(name);
         }
     }
@@ -77,7 +80,7 @@ public class RemoteLauncherClient {
             releaseAll();
         } catch (Exception e) {
             e.printStackTrace();
-//            listener.onTRException("Error releasing agents.", e);
+            //            listener.onTRException("Error releasing agents.", e);
         }
         closed.set(true);
     }
@@ -88,17 +91,18 @@ public class RemoteLauncherClient {
         }
     }
 
-
-    public IRemoteProcess launchProcess(String agentName, LaunchDescription trld, IRemoteProcessListener handler) throws Exception {
+    public Process launchProcess(String agentName, LaunchDescription trld, ProcessListener listener) throws Exception {
         checkNotClosed();
         agentName = agentName.toUpperCase();
 
         IRemoteProcessLauncher agent = boundAgents.get(agentName);
-        if( agent == null ) {
+        if (agent == null) {
             agent = getAgent(agentName);
         }
-        
-        return agent.launch(trld, (IRemoteProcessListener) JMSRemoteObject.exportObject(handler));
+
+        RemotedProcessListener rpl = new RemotedProcessListener(listener);
+
+        return agent.launch(trld, rpl.getProxy());
     }
 
     public long getBindTimeout() {
@@ -126,7 +130,78 @@ public class RemoteLauncherClient {
     }
 
     public void println(IRemoteProcess remoteProcess, String line) throws RemoteException {
-        byte [] data = (line+"\n").getBytes();
-        remoteProcess.write(IRemoteStreamListener.FD_STD_IN, data);
+        byte[] data = (line + "\n").getBytes();
+        try {
+            remoteProcess.write(Process.FD_STD_IN, data);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private class RemotedProcessListener extends JMSRemoteObject implements IRemoteProcessListener {
+        private final ProcessListener server;
+        private final IRemoteProcessListener proxy;
+
+        public RemotedProcessListener(ProcessListener listener) throws RemoteException {
+            this.server = listener;
+            proxy = (IRemoteProcessListener) JMSRemoteObject.exportObject(this);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.rmi.IRemoteProcessListener#onError(java
+         * .lang.Throwable)
+         */
+        public void onError(Throwable thrown) throws RemoteException {
+            server.onProcessError(thrown);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.fusesource.testrunner.rmi.IRemoteProcessListener#onExit(int)
+         */
+        public void onExit(int exitCode) throws RemoteException {
+            server.onProcessExit(exitCode);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.rmi.IRemoteProcessListener#onInfoLogging
+         * (java.lang.String)
+         */
+        public void onInfoLogging(String message) throws RemoteException {
+            server.onProcessInfo(message);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.fusesource.testrunner.rmi.IRemoteProcessListener#onStreamOutput
+         * (int, byte[])
+         */
+        public void onStreamOutput(int fd, byte[] b) throws RemoteException {
+            server.onProcessOutput(fd, b);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.fusesource.testrunner.rmi.IRemoteProcessListener#ping()
+         */
+        public void ping() throws RemoteException {
+            //Yup, still here...
+        }
+
+        public IRemoteProcessListener getProxy() {
+            return proxy;
+        }
+
     }
 }

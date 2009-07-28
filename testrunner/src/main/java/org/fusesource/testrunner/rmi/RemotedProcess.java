@@ -1,9 +1,9 @@
 package org.fusesource.testrunner.rmi;
 
 import org.fusesource.testrunner.LocalProcess;
-import org.fusesource.testrunner.LocalProcessLauncher;
+import org.fusesource.testrunner.ProcessLauncher;
 import org.fusesource.testrunner.LaunchDescription;
-import org.fusesource.testrunner.LocalProcessListener;
+import org.fusesource.testrunner.ProcessListener;
 import org.fusesource.rmiviajms.JMSRemoteObject;
 
 import java.rmi.NoSuchObjectException;
@@ -22,7 +22,11 @@ class RemotedProcess extends LocalProcess {
             }
 
         public void kill() throws RemoteException {
-            RemotedProcess.this.kill();
+            try {
+                RemotedProcess.this.kill();
+            } catch (Exception e) {
+                throw new RemoteException(e.getMessage(), e);
+            }
         }
 
         public void open(int fd) throws IOException {
@@ -62,14 +66,24 @@ class RemotedProcess extends LocalProcess {
 
     }
 
-    public RemotedProcess(LocalProcessLauncher launcher, LaunchDescription launchDescription, LocalProcessListener handler, int pid) {
+    public RemotedProcess(ProcessLauncher launcher, LaunchDescription launchDescription, ProcessListener handler, int pid) {
         super(launcher, launchDescription, handler, pid);
     }
 
     @Override
     public void start() throws Exception {
-        super.start();
         proxy = (IRemoteProcess) JMSRemoteObject.exportObject(server);
+        try
+        {
+            super.start();
+        }
+        catch (Exception e)
+        {
+            try {
+                JMSRemoteObject.unexportObject(proxy, true);
+            } catch (NoSuchObjectException ne) {
+            }
+        }
     }
 
     @Override

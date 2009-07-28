@@ -7,7 +7,7 @@
  **************************************************************************************/
 package org.fusesource.testrunner.rmi;
 
-import org.fusesource.testrunner.LocalProcessLauncher;
+import org.fusesource.testrunner.ProcessLauncher;
 import org.fusesource.testrunner.LocalProcess;
 
 import java.io.File;
@@ -19,13 +19,13 @@ import java.util.Map;
 */
 public class RemoteListenerMonitor implements Runnable {
 
-    private final LocalProcessLauncher processLauncher;
+    private final ProcessLauncher processLauncher;
 
     Thread thread;
     private String tempDirectory;
     private boolean cleanupRequested = false;
 
-    public RemoteListenerMonitor(LocalProcessLauncher processLauncher) {
+    public RemoteListenerMonitor(ProcessLauncher processLauncher) {
         this.processLauncher = processLauncher;
     }
 
@@ -48,7 +48,7 @@ public class RemoteListenerMonitor implements Runnable {
         while (true) {
             synchronized (this) {
                 try {
-                    wait(LocalProcessLauncher.CLEANUP_TIMEOUT);
+                    wait(ProcessLauncher.CLEANUP_TIMEOUT);
                 } catch (InterruptedException ie) {
                     cleanupRequested = true;
                     return;

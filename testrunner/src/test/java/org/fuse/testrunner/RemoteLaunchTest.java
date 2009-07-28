@@ -16,19 +16,22 @@
  */
 package org.fuse.testrunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.rmi.RemoteException;
+import static org.fusesource.testrunner.Expression.file;
+import static org.fusesource.testrunner.Expression.path;
 
-import org.apache.activemq.broker.BrokerService;
-import static org.fusesource.testrunner.Expression.*;
-import org.fusesource.rmiviajms.JMSRemoteObject;
-import org.fusesource.testrunner.LaunchDescription;
-import org.fusesource.testrunner.rmi.*;
-import org.fusesource.testrunner.Expression.FileExpression;
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import junit.framework.TestCase;
+
+import org.apache.activemq.broker.BrokerService;
+import org.fusesource.testrunner.LaunchDescription;
+import org.fusesource.testrunner.Process;
+import org.fusesource.testrunner.ProcessListener;
+import org.fusesource.testrunner.Expression.FileExpression;
+import org.fusesource.testrunner.rmi.RemoteLauncherClient;
+import org.fusesource.testrunner.rmi.RemoteProcessLauncher;
 
 /**
  * RemoteLaunchTest
@@ -98,7 +101,7 @@ public class RemoteLaunchTest extends TestCase {
 
     }
 
-    public class DataOutputTester extends JMSRemoteObject implements IRemoteProcessListener {
+    public class DataOutputTester implements ProcessListener {
 
         private final int TEST_OUTPUT = 0;
         private final int TEST_ERROR = 1;
@@ -115,19 +118,19 @@ public class RemoteLaunchTest extends TestCase {
         public DataOutputTester() throws RemoteException {
         }
 
-        public synchronized void test(IRemoteProcess remoteProcess) throws Exception {
+        public synchronized void test(Process process) throws Exception {
 
             while (true) {
 
                 switch (state) {
                 case TEST_OUTPUT: {
                     System.out.println("Testing output");
-                    clientRemote.println(remoteProcess, "echo:" + EXPECTED_OUTPUT);
+                    process.write(Process.FD_STD_IN, new String("echo:" + EXPECTED_OUTPUT + "\n").getBytes());
                     break;
                 }
                 case TEST_ERROR: {
                     System.out.println("Testing error");
-                    clientRemote.println(remoteProcess, "error:" + EXPECTED_ERROR);
+                    process.write(Process.FD_STD_IN, new String("error:" + EXPECTED_ERROR + "\n").getBytes());
                     break;
                 }
                 case SUCCESS: {
@@ -155,11 +158,11 @@ public class RemoteLaunchTest extends TestCase {
         }
 
 
-        synchronized public void write(int fd, byte[] data) throws RemoteException {
+        synchronized public void onProcessOutput(int fd, byte[] data) {
             String output = new String(data);
             System.out.print(output);
 
-            if (fd == IRemoteStreamListener.FD_STD_OUT ) {
+            if (fd == Process.FD_STD_OUT ) {
                 if (state == TEST_OUTPUT && EXPECTED_OUTPUT.equals(output.trim())) {
                     state = TEST_ERROR;
                 } else {
@@ -167,7 +170,7 @@ public class RemoteLaunchTest extends TestCase {
                     state = FAIL;
                 }
                 notifyAll();
-            } else if (fd == IRemoteStreamListener.FD_STD_ERR ) {
+            } else if (fd == Process.FD_STD_ERR ) {
                 if (state == TEST_ERROR && EXPECTED_ERROR.equals(output.trim())) {
                     state = SUCCESS;
                 } else {
@@ -178,22 +181,13 @@ public class RemoteLaunchTest extends TestCase {
             }
         }
 
-        public void onExit(int exitCode) {
+        public void onProcessExit(int exitCode) {
         }
 
-        public void onError(Throwable thrown) {
+        public void onProcessError(Throwable thrown) {
         }
 
-        public void onInfoLogging(String message) {
-        }
-
-        public void ping() {
-        }
-
-        public void open(int fd) throws RemoteException, IOException {
-        }
-
-        public void close(int fd) throws RemoteException {
+        public void onProcessInfo(String message) {
         }
     }
 
