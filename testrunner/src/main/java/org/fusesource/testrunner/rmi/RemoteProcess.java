@@ -207,11 +207,13 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
 
         private final InputStream is;
         Thread m_thread;
+        private IProcessListener listener;
 
         public ProcessOutputHandler(InputStream is, String name, int fd) {
             this.is = is;
             this.name = name;
             this.fd = fd;
+            this.listener = RemoteProcess.this.listener;
         }
 
         public void start() {
@@ -237,8 +239,7 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
             try {
                 listener.open(fd);
             } catch (Throwable e) {
-                e.printStackTrace();
-                return;
+                listener = null;
             }
 
             try {
@@ -246,16 +247,20 @@ public class RemoteProcess extends JMSRemoteObject implements IProcess {
                 while (true) {
 
                     int count = is.read(buffer);
-                    if (count > 0) {
-                        byte b[] = new byte[count];
-                        System.arraycopy(buffer, 0, b, 0, count);
-                        // TODO: we might want to local echo for easier debugging??
-                        //                            if( fd == IStream.FD_STD_OUT ) {
-                        //                                System.out.write(b);
-                        //                            } else if( fd == IStream.FD_STD_ERR ) {
-                        //                                System.err.write(b);
-                        //                            }
-                        listener.write(fd, b);
+                    if (count > 0 && listener!=null) {
+                        try {
+                            byte b[] = new byte[count];
+                            System.arraycopy(buffer, 0, b, 0, count);
+                            // TODO: we might want to local echo for easier debugging??
+                            //                            if( fd == IStream.FD_STD_OUT ) {
+                            //                                System.out.write(b);
+                            //                            } else if( fd == IStream.FD_STD_ERR ) {
+                            //                                System.err.write(b);
+                            //                            }
+                            listener.write(fd, b);
+                        } catch (Throwable e) {
+                            listener = null;
+                        }
                     }
 
                 }
