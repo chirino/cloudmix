@@ -17,6 +17,7 @@
 package org.fuse.testrunner;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
@@ -25,50 +26,47 @@ import java.util.StringTokenizer;
  * <p>
  * Description:
  * </p>
- * 
+ *
  * @author cmacnaug
  * @version 1.0
  */
 public class DataInputTestApplication {
 
-    
-    
-    public void run()
-    {
-        while(true)
-        {
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            try
-            {
+    public static void main(String[] args) {
+        new DataInputTestApplication().run();
+    }
+
+    public void run() {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            while (true) {
                 String command = in.readLine();
+                if (command == null) {
+                    break;
+                }
                 StringTokenizer tok = new StringTokenizer(command, ":");
                 command = tok.nextToken();
-                
-                if(command.equalsIgnoreCase("exit"))
-                {
+
+                if (command.equalsIgnoreCase("exit")) {
                     System.exit(Integer.parseInt(tok.nextToken()));
-                }
-                else if(command.equalsIgnoreCase("echo"))
-                {
+                } else if (command.equalsIgnoreCase("echo")) {
                     System.out.println(tok.nextToken());
-                }
-                else if(command.equals("error"))
-                {
+                } else if (command.equals("error")) {
                     System.err.println(tok.nextToken());
-                }
-                else
-                {
+                } else {
                     System.err.println("Unknown command: " + command);
-                }   
+                }
             }
-            catch (Exception e)
-            {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                in.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-    
-    public static void main(String[] args) {
-        new DataInputTestApplication().run();
     }
 }
