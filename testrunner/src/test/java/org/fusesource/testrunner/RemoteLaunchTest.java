@@ -160,9 +160,10 @@ public class RemoteLaunchTest extends TestCase {
 
         synchronized public void onProcessOutput(int fd, byte[] data) {
             String output = new String(data);
-            System.out.print(output);
+            
 
             if (fd == Process.FD_STD_OUT) {
+                System.out.print("STDOUT: " + output);
                 if (state == TEST_OUTPUT && EXPECTED_OUTPUT.equals(output.trim())) {
                     state = TEST_ERROR;
                 } else {
@@ -171,6 +172,7 @@ public class RemoteLaunchTest extends TestCase {
                 }
                 notifyAll();
             } else if (fd == Process.FD_STD_ERR) {
+                System.out.print("STDERR: " + output);
                 if (state == TEST_ERROR && EXPECTED_ERROR.equals(output.trim())) {
                     state = SUCCESS;
                 } else {
