@@ -57,7 +57,7 @@
     <cloudmix.osgi._exportcontents>*</cloudmix.osgi._exportcontents>
   </properties>
 
-  <url>http://forge.fusesource.org/cloudmix/</url>
+  <url>http://cloudmix.fusesource.org/</url>
 
   <organization>
     <name>Fuse Source</name>
@@ -72,6 +72,26 @@
     </license>
   </licenses>
 
+  <mailingLists>
+    <mailingList>
+      <name>Development List</name>
+      <subscribe>cloudmix-dev-subscribe@fusesource.org</subscribe>
+      <unsubscribe>cloudmix-dev-unsubscribe@fusesource.org</unsubscribe>
+      <post>cloudmix-dev@fusesource.org</post>
+    </mailingList>
+    <mailingList>
+      <name>Commits List</name>
+      <subscribe>cloudmix-commits-subscribe@fusesource.org</subscribe>
+      <unsubscribe>cloudmix-commits-unsubscribe@fusesource.org</unsubscribe>
+      <post>cloudmix-commits@fusesource.org</post>
+    </mailingList>
+  </mailingLists>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://fusesource.com/issues/browse/CLOUDMIX</url>
+  </issueManagement>
+  
   <repositories>
     <!-- debug repo -->
     <!--repository>
