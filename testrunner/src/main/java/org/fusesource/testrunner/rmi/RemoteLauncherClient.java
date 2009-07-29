@@ -147,7 +147,7 @@ public class RemoteLauncherClient {
         }
     }
 
-    private class RemotedProcessListener extends JMSRemoteObject implements IRemoteProcessListener {
+    public class RemotedProcessListener extends JMSRemoteObject implements IRemoteProcessListener {
         private final ProcessListener server;
         private IRemoteProcessListener proxy;
         private int refs;

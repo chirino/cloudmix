@@ -1,10 +1,16 @@
 package org.fusesource.testrunner.rmi;
 
+import org.fusesource.rmiviajms.JMSRemoteObject;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQDestination;
+
+import javax.jms.Destination;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.jar.JarOutputStream;
@@ -78,7 +84,6 @@ public class RemoteClassLoader extends ClassLoader {
 
         List<PathElement> rc = new ArrayList<PathElement>();
         for (URL url : urls) {
-            System.out.println(url);
             PathElement element = new PathElement();
             element.url = url;
             if( "file".equals(url.getProtocol()) ) {
@@ -90,9 +95,7 @@ public class RemoteClassLoader extends ClassLoader {
 
                 // We have to jar up dirs..
                 if( file.isDirectory() ) {
-                    System.out.println("Jaring dir: "+file);
                     file = jar(file);
-                    System.out.println("Created jar: "+file);
                     file.deleteOnExit();
                     element.url = file.toURI().toURL();
                 }
@@ -181,6 +184,13 @@ public class RemoteClassLoader extends ClassLoader {
         }
     }
 
+    public static ClassLoader createRemoteClassLoader(String uri, File cacheDir, int depth, ClassLoader parent) throws IOException {
+        Destination queue = ActiveMQDestination.createDestination(uri, ActiveMQDestination.QUEUE_TYPE);
+        System.out.println("CL server at "+queue);
+        IClassLoaderServer cle = JMSRemoteObject.toProxy(queue, IClassLoaderServer.class);
+        return createRemoteClassLoader(cle, cacheDir, depth, parent);
+    }
+    
     /**
      * Builds a classloader tree to match remote classloader treee
      * exported by the IClassLoaderExporter.
@@ -220,9 +230,11 @@ public class RemoteClassLoader extends ClassLoader {
 
                 String name = new File(element.url.getPath()).getName();
                 File jarDirectory = new File(cacheDir, Long.toHexString(element.jarFileChecksum));
+                jarDirectory.mkdirs();
                 File file = new File(jarDirectory, name);
 
                 if ( !file.exists() ) {
+//                    System.out.println("Downloading "+file);
                     // We need to download it...
                     File tmp = null;
                     FileOutputStream out=null;

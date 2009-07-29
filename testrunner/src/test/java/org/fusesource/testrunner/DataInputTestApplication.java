@@ -48,7 +48,7 @@ public class DataInputTestApplication {
                 command = tok.nextToken();
 
                 if (command.equalsIgnoreCase("exit")) {
-                    System.exit(Integer.parseInt(tok.nextToken()));
+                    System.exit(Integer.parseInt(tok.nextToken().trim()));
                 } else if (command.equalsIgnoreCase("echo")) {
                     System.out.println(tok.nextToken());
                 } else if (command.equals("error")) {
