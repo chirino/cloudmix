@@ -69,6 +69,19 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>org.fusesource.cloudmix.tests.consumer.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
       <!--
        lets make an executable jar
        you can then start this up via
