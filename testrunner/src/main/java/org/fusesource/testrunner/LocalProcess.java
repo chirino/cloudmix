@@ -51,6 +51,11 @@ public class LocalProcess implements Process {
             throw new Exception("LaunchDescription command empty.");
         }
 
+        // Resolve resources (copy them locally:
+        for (LaunchResource resource : ld.getResources()) {
+            processLauncher.getResourceManager().locateResource(resource);
+        }
+
         // Evaluate the command...
         String[] cmd = new String[ld.getCommand().size()];
         StringBuilder command_line = new StringBuilder();
@@ -62,7 +67,7 @@ public class LocalProcess implements Process {
             }
             first = false;
 
-            String arg = expression.evaluate();
+            String arg = expression.evaluate(processLauncher.getProperties());
             cmd[i++] = arg;
 
             command_line.append('\'');
@@ -72,10 +77,10 @@ public class LocalProcess implements Process {
 
         // Evaluate the enviorment...
         String[] env = null;
-        if (ld.getEnviorment() != null) {
-            env = new String[ld.getEnviorment().size()];
+        if (ld.getEnvironment() != null) {
+            env = new String[ld.getEnvironment().size()];
             i = 0;
-            for (Map.Entry<String, Expression> entry : ld.getEnviorment().entrySet()) {
+            for (Map.Entry<String, Expression> entry : ld.getEnvironment().entrySet()) {
                 env[i++] = entry.getKey() + "=" + entry.getValue().evaluate();
             }
         }

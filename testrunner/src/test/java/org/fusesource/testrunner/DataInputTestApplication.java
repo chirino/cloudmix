@@ -17,8 +17,13 @@
 package org.fusesource.testrunner;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 /**
@@ -26,14 +31,42 @@ import java.util.StringTokenizer;
  * <p>
  * Description:
  * </p>
- *
+ * 
  * @author cmacnaug
  * @version 1.0
  */
 public class DataInputTestApplication {
 
+    private String dataFile;
+
     public static void main(String[] args) {
-        new DataInputTestApplication().run();
+
+        DataInputTestApplication app = new DataInputTestApplication();
+
+        LinkedList<String> aList = new LinkedList<String>(Arrays.asList(args));
+        while (!aList.isEmpty()) {
+            try {
+                String methodName = aList.removeFirst();
+                if (methodName.startsWith("-")) {
+                    methodName = methodName.substring(1);
+                } else {
+                    throw new IllegalArgumentException(methodName);
+                }
+                String arg = aList.removeFirst();
+
+                Method m = DataInputTestApplication.class.getMethod("set" + methodName, new Class[] { String.class });
+                m.invoke(app, new Object[] { arg });
+            } catch (Throwable thrown) {
+                thrown.printStackTrace();
+                System.exit(-1);
+            }
+        }
+
+        app.run();
+    }
+
+    public void setDataFile(String file) {
+        dataFile = file;
     }
 
     public void run() {
@@ -51,22 +84,39 @@ public class DataInputTestApplication {
                     System.exit(Integer.parseInt(tok.nextToken().trim()));
                 } else if (command.equalsIgnoreCase("echo")) {
                     System.out.println(tok.nextToken());
+                } else if (command.equalsIgnoreCase("echo-data-file")) {
+                    echoDataFile();
                 } else if (command.equals("error")) {
                     System.err.println(tok.nextToken());
                 } else {
                     System.err.println("Unknown command: " + command);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+    
+    private void echoDataFile() throws Exception
+    {
+        BufferedReader reader = new BufferedReader(new FileReader(new File(dataFile)));
+        while(true)
+        {
+            String line = reader.readLine();
+            if(line == null)
+            {
+                break;
+            }
+            System.out.print(line);
+            System.out.flush();
+        }
+        
+        
     }
 }

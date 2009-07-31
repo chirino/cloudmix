@@ -11,9 +11,10 @@ import java.util.HashMap;
 */
 public class LaunchDescription implements Serializable {
     ArrayList<Expression> command = new ArrayList<Expression>();
-    HashMap<String, Expression> enviorment;
+    HashMap<String, Expression> environment;
     Expression.FileExpression workingDirectory;
-
+    ArrayList<LaunchResource> resources = new ArrayList<LaunchResource>();
+    
     public LaunchDescription add(String value) {
         return add(Expression.string(value));
     }
@@ -28,11 +29,35 @@ public class LaunchDescription implements Serializable {
     }
 
     public LaunchDescription setEnv(String key, Expression value) {
-        if( enviorment == null ) {
-            enviorment = new HashMap<String, Expression>();
+        if( environment == null ) {
+            environment = new HashMap<String, Expression>();
         }
-        enviorment.put(key, value);
+        environment.put(key, value);
         return this;
+    }
+    
+    /**
+     * Adds a resource to the launch description. The receiving
+     * agent will resolve it, copying it to it's local resource
+     * cache. 
+     * 
+     * To refer to the Resource on the command line call {@link #add(Expression)}
+     * with {@link Expression#resource(LaunchResource)} e.g.
+     * 
+     * <code>
+     * LaunchDescription ld = new LaunchDescription();
+     * LaunchResource lr = new LauncResource();
+     * ... 
+     * ld.addResource(lr);
+     * ld.add(Expression.resource(lr);
+     * </code>
+     * 
+     * 
+     * @param resource
+     * @see Expression#resource(LaunchResource)
+     */
+    public void addResource(LaunchResource resource) {
+        resources.add(resource);
     }
 
     public Expression.FileExpression getWorkingDirectory() {
@@ -52,7 +77,11 @@ public class LaunchDescription implements Serializable {
         return command;
     }
 
-    public HashMap<String, Expression> getEnviorment() {
-        return enviorment;
+    public HashMap<String, Expression> getEnvironment() {
+        return environment;
+    }
+
+    public ArrayList<LaunchResource> getResources() {
+        return resources;
     }
 }

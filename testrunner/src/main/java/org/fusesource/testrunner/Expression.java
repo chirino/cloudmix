@@ -6,12 +6,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author chirino
-*/
+ */
 abstract public class Expression implements Serializable {
-    abstract public String evaluate();
+
+    public final String evaluate() {
+        return evaluate(System.getProperties());
+    }
+
+    abstract public String evaluate(java.util.Properties context);
 
     public static PropertyExpression property(String name) {
         return new PropertyExpression(name, null);
@@ -36,6 +42,7 @@ abstract public class Expression implements Serializable {
     public static PathExpression path(List<FileExpression> list) {
         return new PathExpression(list);
     }
+
     public static PathExpression path(FileExpression... value) {
         List<FileExpression> list = Arrays.asList(value);
         return path(list);
@@ -44,19 +51,24 @@ abstract public class Expression implements Serializable {
     public static AppendExpression append(List<Expression> list) {
         return new AppendExpression(list);
     }
+
     public static AppendExpression append(Expression... value) {
         List<Expression> list = Arrays.asList(value);
         return append(list);
     }
 
+    public static FileExpression resource(LaunchResource resource) {
+        return new FileExpression(append(property(ProcessLauncher.LOCAL_REPO_PROP, string("local-repo")), file(File.separator + resource.getRepoPath())));
+    }
 
     public static class StringExpression extends Expression {
         String value;
+
         public StringExpression(String value) {
             this.value = value;
         }
 
-        public String evaluate() {
+        public String evaluate(Properties p) {
             return value;
         }
     }
@@ -70,10 +82,10 @@ abstract public class Expression implements Serializable {
             this.defaultExpression = defaultExpression;
         }
 
-        public String evaluate() {
-            String rc =  System.getProperty(name);
-            if( rc == null && defaultExpression !=null ) {
-                rc = defaultExpression.evaluate();
+        public String evaluate(Properties p) {
+            String rc = System.getProperty(name);
+            if (rc == null && defaultExpression != null) {
+                rc = defaultExpression.evaluate(p);
             }
             return rc;
         }
@@ -81,13 +93,14 @@ abstract public class Expression implements Serializable {
 
     public static class FileExpression extends Expression {
         Expression name;
+
         public FileExpression(Expression name) {
             this.name = name;
         }
 
-        public String evaluate() {
-            String t = name.evaluate();
-            if( '/' != File.separatorChar ) {
+        public String evaluate(Properties p) {
+            String t = name.evaluate(p);
+            if ('/' != File.separatorChar) {
                 t.replace('/', File.separatorChar);
             } else {
                 t.replace('\\', File.separatorChar);
@@ -98,19 +111,20 @@ abstract public class Expression implements Serializable {
 
     public static class PathExpression extends Expression {
         final ArrayList<FileExpression> files = new ArrayList<FileExpression>();
+
         public PathExpression(Collection<FileExpression> files) {
             this.files.addAll(files);
         }
 
-        public String evaluate() {
+        public String evaluate(Properties p) {
             StringBuilder sb = new StringBuilder();
-            boolean first=true;
+            boolean first = true;
             for (FileExpression file : files) {
-                if( !first ) {
+                if (!first) {
                     sb.append(File.pathSeparatorChar);
                 }
-                first=false;
-                sb.append(file.evaluate());
+                first = false;
+                sb.append(file.evaluate(p));
             }
             return sb.toString();
         }
@@ -118,18 +132,19 @@ abstract public class Expression implements Serializable {
 
     public static class AppendExpression extends Expression {
         final ArrayList<Expression> parts = new ArrayList<Expression>();
+
         public AppendExpression(Collection<Expression> parts) {
             this.parts.addAll(parts);
         }
-        public String evaluate() {
+
+        public String evaluate(Properties p) {
             StringBuilder sb = new StringBuilder();
             for (Expression expression : parts) {
-                sb.append(expression.evaluate());
+                sb.append(expression.evaluate(p));
             }
             return sb.toString();
         }
     }
-
 
     public String toString() {
         return evaluate();

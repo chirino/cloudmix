@@ -2,24 +2,34 @@ package org.fusesource.testrunner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author chirino
  */
 public class ProcessLauncher {
     public static final long CLEANUP_TIMEOUT = 60000;
+    public static final String LOCAL_REPO_PROP = "org.fusesource.testrunner.localRepoDir";
 
     private String exclusiveOwner;
 
     private String agentId; //The unique identifier for this agent (specified in ini file);
     private boolean started = false;
     private File dataDirectory = new File(".");
+    private File localRepoDirectory;
 
     //ProcessHandlers:
     private final Map<Integer, LocalProcess> processes = new HashMap<Integer, LocalProcess>();
     int pidCounter = 0;
     private Thread shutdownHook;
+
+    private ResourceManager resourceManager;
+
+    private String commonResourceRepoUrl;
+
+    private Properties properties = System.getProperties();
 
     synchronized public void bind(String owner) throws Exception {
         if (exclusiveOwner == null) {
@@ -59,6 +69,19 @@ public class ProcessLauncher {
     public synchronized void start() throws Exception {
         if (started) {
             return;
+        }
+
+        if (localRepoDirectory == null) {
+            localRepoDirectory = new File(dataDirectory, "local-repo");
+            properties.setProperty(LOCAL_REPO_PROP, localRepoDirectory.getCanonicalPath());
+        }
+
+        if (resourceManager == null) {
+            resourceManager = new ResourceManager();
+            resourceManager.setLocalRepoDir(localRepoDirectory);
+            if (commonResourceRepoUrl != null) {
+                resourceManager.setCommonRepo(commonResourceRepoUrl);
+            }
         }
 
         started = true;
@@ -103,6 +126,30 @@ public class ProcessLauncher {
         }
         processes.clear();
 
+        if (resourceManager != null) {
+            try {
+                resourceManager.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public ResourceManager getResourceManager() {
+        return resourceManager;
+    }
+
+    /**
+     * Clears the launchers local resource cache.
+     * 
+     * @throws IOException
+     *             If there is an error purging the cache.
+     */
+    public void purgeResourceRepository() throws IOException {
+        if (resourceManager != null) {
+            resourceManager.purgeLocalRepo();
+        }
     }
 
     /**
@@ -118,6 +165,25 @@ public class ProcessLauncher {
     }
 
     /**
+     * Sets the url of common resources accessible to this agent. This can be
+     * used to pull down things like jvm images from a central location.
+     * 
+     * @param url
+     */
+    public void setCommonResourceRepoUrl(String url) {
+        commonResourceRepoUrl = url;
+    }
+
+    /**
+     * Gets the url of common resources accessible to this agent.
+     * 
+     * @return
+     */
+    public String getCommonResourceRepoUrl() {
+        return commonResourceRepoUrl;
+    }
+
+    /**
      * Sets the base directory where the agent puts it's data.
      * 
      * @param dataDirectory
@@ -128,6 +194,10 @@ public class ProcessLauncher {
 
     public File getDataDirectory() {
         return dataDirectory;
+    }
+
+    public Properties getProperties() {
+        return properties;
     }
 
     /**
@@ -141,9 +211,7 @@ public class ProcessLauncher {
         return processes;
     }
 
-
     public String toString() {
         return "ProcessLauncer-" + getAgentId();
     }
-
 }

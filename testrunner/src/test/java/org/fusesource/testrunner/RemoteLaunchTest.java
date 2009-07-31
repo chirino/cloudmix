@@ -18,14 +18,19 @@ package org.fusesource.testrunner;
 
 import static org.fusesource.testrunner.Expression.file;
 import static org.fusesource.testrunner.Expression.path;
+import static org.fusesource.testrunner.Expression.resource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
 import org.apache.activemq.broker.BrokerService;
+import org.fusesource.rmiviajms.JMSRemoteObject;
 import org.fusesource.testrunner.LaunchDescription;
 import org.fusesource.testrunner.Process;
 import org.fusesource.testrunner.ProcessListener;
@@ -47,24 +52,34 @@ public class RemoteLaunchTest extends TestCase {
     BrokerService controlBroker;
     RemoteProcessLauncher agent;
     RemoteLauncherClient clientRemote;
+    ResourceManager commonResourceManager;
 
     protected void setUp() throws Exception {
+
+        String dataDir = "target" + File.separator + "remote-launch-test-data";
+        String commonRepo = new File(dataDir + File.separator + "common-repo").toURI().toString();
+
         controlBroker = new BrokerService();
         controlBroker.setBrokerName("RemoteLauncherBroker");
         controlBroker.setPersistent(false);
         controlBroker.addConnector("tcp://localhost:61616");
         controlBroker.start();
-
+        
         //Set up a launch agent:
         agent = new RemoteProcessLauncher();
-        agent.setDataDirectory(new File("target" + File.separator + "testrunner-data"));
+        agent.setDataDirectory(new File(dataDir + File.separator + "testrunner-data"));
+        agent.setCommonResourceRepoUrl(commonRepo);
         agent.start();
+        agent.purgeResourceRepository();
 
         clientRemote = new RemoteLauncherClient("client1");
         clientRemote.setBindTimeout(5000);
         clientRemote.setLaunchTimeout(10000);
         clientRemote.setKillTimeout(5000);
         clientRemote.bindAgent(agent.getAgentId());
+
+        commonResourceManager = new ResourceManager();
+        commonResourceManager.setCommonRepo(commonRepo);
 
     }
 
@@ -79,6 +94,10 @@ public class RemoteLaunchTest extends TestCase {
         }
         System.out.println("Shutting down control broker");
         controlBroker.stop();
+        controlBroker.waitUntilStopped();
+        
+        JMSRemoteObject.resetSystem();
+        
     }
 
     public void testDataOutput() throws Exception {
@@ -96,6 +115,127 @@ public class RemoteLaunchTest extends TestCase {
 
         DataOutputTester tester = new DataOutputTester();
         tester.test(clientRemote.launchProcess(agent.getAgentId(), ld, tester));
+
+    }
+
+    public void testResource() throws Exception {
+        LaunchDescription ld = new LaunchDescription();
+        ld.add("java");
+        ld.add("-cp");
+
+        ArrayList<FileExpression> files = new ArrayList<FileExpression>();
+        for (String file : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            files.add(file(file));
+        }
+
+        ld.add(path(files));
+        ld.add("org.fusesource.testrunner.DataInputTestApplication");
+
+        LaunchResource resource = new LaunchResource();
+        resource.setType(LaunchResource.FILE);
+        resource.setRepoName("common");
+        resource.setRepoPath("test/file.dat");
+        byte[] data = new String("Test Data").getBytes();
+        commonResourceManager.deployFile(resource, data);
+        ld.addResource(resource);
+
+        ld.add("-DataFile");
+        ld.add(resource(resource));
+
+        DataFileTester tester = new DataFileTester();
+        tester.test(clientRemote.launchProcess(agent.getAgentId(), ld, tester), data);
+
+    }
+
+    public class DataFileTester implements ProcessListener {
+
+        private final int TESTING = 1;
+        private final int SUCCESS = 2;
+        private final int FAIL = 3;
+
+        private int state = TESTING;
+        private Exception failure;
+
+        private ByteArrayOutputStream output = new ByteArrayOutputStream();
+        private byte[] expected;
+
+        public synchronized void test(Process process, byte[] data) throws Exception {
+
+            expected = data;
+            try {
+                process.write(Process.FD_STD_IN, "echo-data-file\n".getBytes());
+                while (true) {
+                    if (state == FAIL) {
+                        throw failure;
+                    } else if (state == SUCCESS) {
+                        return;
+                    }
+
+                    wait(10000);
+                    if (state == TESTING) {
+                        failure = new Exception("Timed out");
+                        state = FAIL;
+                    }
+                }
+
+            } finally {
+                process.kill();
+            }
+        }
+
+        public synchronized void onProcessExit(int exitCode) {
+            if (state == TESTING) {
+                state = FAIL;
+                notifyAll();
+            }
+        }
+
+        public synchronized void onProcessError(Throwable thrown) {
+            failure = new Exception("Unexpected process error", thrown);
+            state = FAIL;
+            notifyAll();
+        }
+
+        public void onProcessInfo(String message) {
+            System.out.println("PROCESS INFO: " + message);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.fusesource.testrunner.ProcessListener#onProcessOutput(int,
+         * byte[])
+         */
+        public synchronized void onProcessOutput(int fd, byte[] pOut) {
+            if (fd == Process.FD_STD_ERR) {
+                System.err.println(new String(pOut));
+                failure = new Exception("Error: " + new String(pOut));
+                state = FAIL;
+                notifyAll();
+                return;
+            }
+            try {
+                output.write(pOut);
+                if (output.size() < expected.length) {
+                    return;
+                }
+
+                byte[] actual = output.toByteArray();
+
+                if (!Arrays.equals(actual, expected)) {
+                    failure = new Exception("Received data doesn't match: " + new String(actual) + new String(expected));
+                    state = FAIL;
+                } else {
+                    state = SUCCESS;
+                }
+                notifyAll();
+
+            } catch (IOException e) {
+                failure = e;
+                state = FAIL;
+                notifyAll();
+            }
+        }
 
     }
 
@@ -160,7 +300,6 @@ public class RemoteLaunchTest extends TestCase {
 
         synchronized public void onProcessOutput(int fd, byte[] data) {
             String output = new String(data);
-            
 
             if (fd == Process.FD_STD_OUT) {
                 System.out.print("STDOUT: " + output);
@@ -183,13 +322,22 @@ public class RemoteLaunchTest extends TestCase {
             }
         }
 
-        public void onProcessExit(int exitCode) {
+        public synchronized void onProcessExit(int exitCode) {
+            if (state < SUCCESS) {
+                failure = new Exception("Premature process exit");
+                state = FAIL;
+                notifyAll();
+            }
         }
 
-        public void onProcessError(Throwable thrown) {
+        public synchronized void onProcessError(Throwable thrown) {
+            failure = new Exception("Unexpected process error", thrown);
+            state = FAIL;
+            notifyAll();
         }
 
         public void onProcessInfo(String message) {
+            System.out.println("PROCESS INFO: " + message);
         }
     }
 

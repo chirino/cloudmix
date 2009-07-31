@@ -56,11 +56,11 @@ REM ---------------------------------------------------------------------------
 REM CLASSES contains the classpath required by a testrunner agent. Relative
 REM paths are relative to the testrunner\bin directory.
 REM ---------------------------------------------------------------------------
-set CLASSES=..\lib\testrunner.jar;%JMS_PROVIDER_CLASSPATH%
+set CLASSES=..\lib\testrunner.jar;..\lib\rmiviajms.jar;%JMS_PROVIDER_CLASSPATH%
 
 echo ------- Starting Agent -------
-echo %JAVA_EXE% -Dtestrunner.jms.provider=%JMS_PROVIDER_CONNECTION_FACTORY% -classpath %CLASSES% org.fusesource.testrunner.TRAgent TRA.ini
-%JAVA_EXE% -Dtestrunner.jms.provider=%JMS_PROVIDER_CONNECTION_FACTORY% -classpath %CLASSES% org.fusesource.testrunner.TRAgent TRA.ini
+echo %JAVA_EXE% -Dtestrunner.jms.provider=%JMS_PROVIDER_CONNECTION_FACTORY% -classpath %CLASSES% org.fusesource.testrunner.rmi.RemoteProcessLauncher
+%JAVA_EXE% -Dtestrunner.jms.provider=%JMS_PROVIDER_CONNECTION_FACTORY% -classpath %CLASSES% org.fusesource.testrunner.rmi.RemoteProcessLauncher
 
 :END
 echo Paused to catch any errors. Press any key to continue.

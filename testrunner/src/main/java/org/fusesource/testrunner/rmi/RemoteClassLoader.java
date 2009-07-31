@@ -1,7 +1,6 @@
 package org.fusesource.testrunner.rmi;
 
 import org.fusesource.rmiviajms.JMSRemoteObject;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQDestination;
 
 import javax.jms.Destination;
@@ -10,10 +9,8 @@ import java.rmi.RemoteException;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.jar.JarOutputStream;
 import java.util.zip.*;
 
 /**
