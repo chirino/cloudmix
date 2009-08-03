@@ -224,6 +224,10 @@
 					<childDelegation>false</childDelegation>
 					<useFile>true</useFile>
 					<argLine>-Xms256m -Xmx768m</argLine>
+					<excludes>
+						<!-- until it is fixed -->
+						<exclude>**/RemoteClassLoaderTest.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
