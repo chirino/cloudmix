@@ -11,13 +11,13 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.testing.TestController;
 import org.junit.Test;
 
-import java.util.Properties;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @version $Revision: 1.1 $
  */
-public class ActiveMQTest extends TestController {
+public class ActiveMQMopTest extends TestController {
 
     @Test
     public void testScenarioDeploys() throws Exception {
@@ -34,13 +34,13 @@ public class ActiveMQTest extends TestController {
         }
         String version = "1.3-SNAPSHOT";
 
-        FeatureDetails broker = createFeatureDetails("org.apache.activemq.broker.multicast",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/" + version + "/xml/features!/org.apache.activemq.broker.multicast").ownsMachine().maximumInstances("1");
+        FeatureDetails broker = createFeatureDetails("amq-test-broker",
+                "mop:exec org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).maximumInstances("1");
 
-        FeatureDetails producer = createFeatureDetails("org.apache.activemq.producer",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.producer/" + version + "/xml/features!/org.apache.activemq.producer").depends(broker).maximumInstances("2");
-        FeatureDetails consumer = createFeatureDetails("org.apache.activemq.consumer",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/" + version + "/xml/features!/org.apache.activemq.consumer").depends(broker).maximumInstances("3");
+        FeatureDetails producer = createFeatureDetails("amq-test-producer",
+                "mop:exec org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).depends(broker).maximumInstances("2");
+        FeatureDetails consumer = createFeatureDetails("amq-test-consumer",
+                "mop:exec org.fusesource.cloudmix:org.fusesource.cloudmix.tests.consumer:" + version).depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
     }

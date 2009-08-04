@@ -27,4 +27,21 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>pertest</forkMode>
+          <childDelegation>false</childDelegation>
+          <useFile>true</useFile>
+          <argLine>-Xms256m -Xmx768m</argLine>
+          <excludes>
+            <!-- TODO - disable until we have a working set of OSGi agents -->
+            <exclude>**/ActiveMQOsgiFeatureTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
