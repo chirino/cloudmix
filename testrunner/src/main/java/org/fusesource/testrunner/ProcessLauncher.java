@@ -133,7 +133,6 @@ public class ProcessLauncher {
                 e.printStackTrace();
             }
         }
-
     }
 
     public ResourceManager getResourceManager() {
