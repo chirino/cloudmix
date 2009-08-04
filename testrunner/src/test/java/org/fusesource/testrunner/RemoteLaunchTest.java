@@ -79,7 +79,7 @@ public class RemoteLaunchTest extends TestCase {
         clientRemote.bindAgent(agent.getAgentId());
 
         commonResourceManager = new ResourceManager();
-        commonResourceManager.setCommonRepo(commonRepo);
+        commonResourceManager.setCommonRepo(commonRepo, null);
 
     }
 

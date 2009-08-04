@@ -80,7 +80,7 @@ public class ProcessLauncher {
             resourceManager = new ResourceManager();
             resourceManager.setLocalRepoDir(localRepoDirectory);
             if (commonResourceRepoUrl != null) {
-                resourceManager.setCommonRepo(commonResourceRepoUrl);
+                resourceManager.setCommonRepo(commonResourceRepoUrl, null);
             }
         }
 

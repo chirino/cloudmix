@@ -102,6 +102,17 @@
     	<artifactId>wagon-ftp</artifactId>
     	<version>1.0-beta-6</version>
     </dependency>
+    <dependency>
+    	<groupId>org.apache.maven.wagon</groupId>
+    	<artifactId>wagon-webdav-jackrabbit</artifactId>
+    	<version>1.0-beta-6</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-api</artifactId>
+    	<version>1.5.8</version>
+    	<scope>runtime</scope>
+    </dependency>
   </dependencies>
     
   <build>
