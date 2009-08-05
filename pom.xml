@@ -146,7 +146,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-  -->
     <repository>
       <id>apache.snapshots2</id>
       <name>Apache Development Snapshot Repository</name>
@@ -158,6 +157,8 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    -->
+    
     <repository>
       <id>open.iona.m2-snapshot</id>
       <name>FuseSource Community Dependency Snapshots Repository</name>
