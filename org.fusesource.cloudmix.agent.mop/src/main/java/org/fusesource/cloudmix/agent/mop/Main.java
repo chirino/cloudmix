@@ -26,7 +26,7 @@ public class Main {
         try {
             String controllerUrl = "http://localhost:8181/";
             String profile = Constants.WILDCARD_PROFILE_NAME;
-            String directory = "";
+            String directory = "cloudmix-data";
 
             if (args.length > 0) {
                 String arg0 = args[0];
