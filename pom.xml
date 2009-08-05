@@ -134,6 +134,7 @@
       <name>Apache Incubating Release Distribution Repository</name>
       <url>http://people.apache.org/repo/m2-incubating-repository</url>
     </repository>
+    <!--
     <repository>
       <id>apache.snapshots</id>
       <name>Apache Development Snapshot Repository</name>
@@ -145,10 +146,11 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+  -->
     <repository>
       <id>apache.snapshots2</id>
       <name>Apache Development Snapshot Repository</name>
-      <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <url>http://repository.apache.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
