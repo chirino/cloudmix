@@ -224,7 +224,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
     }
         
     @Override
-    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
+    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) throws Exception {
 
         log("");
         log("installing feature \"" + feature.getName() + "\" {");
@@ -266,7 +266,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
     }
 
     @Override
-    protected void uninstallFeature(Feature feature) {
+    protected void uninstallFeature(Feature feature) throws Exception {
         
         log("");
         log("uninstalling feature \"" + feature.getName() + "\" {");

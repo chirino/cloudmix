@@ -26,12 +26,12 @@ public class Main {
         try {
             String controllerUrl = "http://localhost:8181/";
             String profile = Constants.WILDCARD_PROFILE_NAME;
-            String directory = "cloudmix-data";
+            String directory = null;
 
             if (args.length > 0) {
                 String arg0 = args[0];
                 if (arg0.startsWith("?") || arg0.startsWith("-")) {
-                    System.out.println("Usage: DirectoryInstallerAgent [controllerURL] [profile]");
+                    System.out.println("Usage: DirectoryInstallerAgent [controllerURL] [profile] [workingDirectory]");
                     return;
                 } else {
                     controllerUrl = arg0;
@@ -42,6 +42,10 @@ public class Main {
                 if (args.length > 2) {
                     directory = args[2];
                 }
+            }
+
+            if (directory == null) {
+                directory = createDirectoryName();
             }
             LOG.info("Connecting to Cloudmix controller at: " + controllerUrl + " with profile: " + profile + " with working directory: " + directory);
 
@@ -57,5 +61,20 @@ public class Main {
         } catch (Exception e) {
             LOG.error("Caught: " + e, e);
         }
+    }
+
+    protected static String createDirectoryName() {
+        File parentDir = new File("cloudmix-data");
+        parentDir.mkdirs();
+        int counter = 0;
+        while (true) {
+            String name = "agent-" + (++counter);
+            File dir = new File(parentDir, name);
+            if (!dir.exists()) {
+                dir.mkdirs();
+                return dir.toString();
+            }
+        }
+        
     }
 }

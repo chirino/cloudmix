@@ -555,7 +555,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     }
 
 
-    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
+    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) throws Exception {
 
         LOGGER.info("Installing feature " + feature.getName());
         installProperties(feature, featureCfgOverrides);
@@ -572,7 +572,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     }
 
 
-    protected void uninstallFeature(Feature feature) {
+    protected void uninstallFeature(Feature feature) throws Exception {
         LOGGER.info("Uninstalling feature " + feature);
         
         for (Bundle bundle : feature.getBundles()) {
@@ -752,7 +752,6 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 Feature feature = features.get(fn);
                 try {
                     uninstallFeature(feature);
-                    
                 } catch (Exception e) {
                     LOGGER.error("Exception uninstalling feature " + feature, e);
                 }

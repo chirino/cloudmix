@@ -16,7 +16,7 @@
 
   <properties>
     <profile>*</profile>
-    <workingDir>${basedir}/target/provisioning</workingDir>
+    <workingDir></workingDir>
 
     <cloudmix.osgi.import.pkg>
       org.apache.commons.logging; version=1.1.1,

@@ -7,14 +7,15 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
-import org.fusesource.cloudmix.agent.InstallerAgent;
-import org.fusesource.cloudmix.agent.Feature;
-import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
-import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.agent.Feature;
+import org.fusesource.cloudmix.agent.InstallerAgent;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Revision: 1.1 $
@@ -22,21 +23,52 @@ import java.util.List;
 public class MopAgent extends InstallerAgent {
     private static final transient Log LOG = LogFactory.getLog(MopAgent.class);
 
+    private Map<String, MopProcess> processes = Maps.newHashMap();
+    public static final String MOP_URI_PREFIX = "mop:";
+
+    /**
+     * Returns the currently active processes this agent is running
+     */
+    public ImmutableMap<String, MopProcess> getProcesses() {
+        synchronized (processes) {
+            return ImmutableMap.copyOf(processes);
+        }
+    }
+
     @Override
     protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
         System.out.println("Installing FEATURES: " + resource);
-        //super.installFeatures(action, credentials, resource);
+
+        if (resource.startsWith(MOP_URI_PREFIX)) {
+            String commandLine = resource.substring(MOP_URI_PREFIX.length());
+            MopProcess process = new MopProcess(action, credentials, commandLine);
+
+            String id = process.getId();
+            synchronized (processes) {
+                MopProcess oldProcess = processes.get(id);
+                if (oldProcess != null) {
+                    oldProcess.stop();
+                }
+                processes.put(id, process);
+            }
+
+            process.start();
+        }
     }
 
-    @Override
-    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {
-        System.out.println("Installing FEATURE: " + feature);
-        super.installFeature(feature, featureCfgOverrides);
-    }
 
     @Override
-    protected void uninstallFeature(Feature feature) {
+    protected void uninstallFeature(Feature feature) throws Exception {
         System.out.println("Uninstalling FEATURE: " + feature);
+
+        String id = feature.getName();
+        synchronized (processes) {
+            MopProcess oldProcess = processes.get(id);
+            if (oldProcess != null) {
+                oldProcess.stop();
+            }
+        }
+
         super.uninstallFeature(feature);
     }
 }

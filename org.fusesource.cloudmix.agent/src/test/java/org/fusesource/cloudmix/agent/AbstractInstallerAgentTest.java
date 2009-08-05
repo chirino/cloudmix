@@ -56,7 +56,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         }
         
         @Override
-        protected void installFeature(Feature feature, List<ConfigurationUpdate> cfg) {
+        protected void installFeature(Feature feature, List<ConfigurationUpdate> cfg) throws Exception {
 
             super.installFeature(feature, cfg);
             featureList = feature.getFeatureList().toString();            
