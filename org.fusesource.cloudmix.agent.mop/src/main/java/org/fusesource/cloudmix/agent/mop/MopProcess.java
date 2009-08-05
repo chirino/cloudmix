@@ -9,6 +9,7 @@ package org.fusesource.cloudmix.agent.mop;
 
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.mop.MOP;
+import org.fusesource.mop.ProcessRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
+import com.google.common.base.Objects;
 
 /**
  * @version $Revision: 1.1 $
@@ -62,6 +65,15 @@ public class MopProcess {
                 argList.add(iter.nextToken());
             }
         }
+        if (argList.isEmpty()) {
+            throw new IllegalArgumentException("No arguments specified");
+        }
+
+        // lets ensure the first statement is a fork to ensure we spin off into a separate child process
+        String first = argList.get(0);
+        if (!first.startsWith("fork")) {
+            argList.add(0, "fork");
+        }
 
         // lets run in a background thread
         thread = new Thread("Feature: " + getId() + "MOP " + argList) {
@@ -70,7 +82,7 @@ public class MopProcess {
                 LOG.info("Starting feature: " + getId() + " via MOP: " + argList);
                 String[] args = argList.toArray(new String[argList.size()]);
                 try {
-                    statusCode = mop.execute(args);
+                    statusCode = mop.executeAndWait(args);
                     LOG.info("Stopped feature: " + getId() + " with status code: " + statusCode);
                 } catch (Exception e) {
                     LOG.error("Failed running feature: " + getId() + ". Reason: " + e, e);
@@ -84,8 +96,10 @@ public class MopProcess {
     }
 
     public void stop() throws Exception {
-        // TODO we've currently no easy way to kill a process!
-        // for exec we should be able to kill the pid; for embedded, all we can do is remove references and hope!
+        ProcessRunner processRunner = mop.getProcessRunner();
+        if (processRunner != null) {
+            processRunner.kill();
+        }
         mop = null;
         thread = null;
     }

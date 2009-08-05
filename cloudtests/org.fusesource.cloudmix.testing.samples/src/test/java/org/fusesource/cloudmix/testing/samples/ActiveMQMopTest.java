@@ -35,12 +35,12 @@ public class ActiveMQMopTest extends TestController {
         String version = "1.3-SNAPSHOT";
 
         FeatureDetails broker = createFeatureDetails("amq-test-broker",
-                "mop:execjar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).maximumInstances("1");
+                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).maximumInstances("1");
 
         FeatureDetails producer = createFeatureDetails("amq-test-producer",
-                "mop:execjar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).depends(broker).maximumInstances("2");
+                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).depends(broker).maximumInstances("2");
         FeatureDetails consumer = createFeatureDetails("amq-test-consumer",
-                "mop:execjar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.consumer:" + version).depends(broker).maximumInstances("3");
+                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.consumer:" + version).depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
     }
