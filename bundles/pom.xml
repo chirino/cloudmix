@@ -15,7 +15,7 @@
   <description>CloudMix Bundles</description>
 
   <modules>
-    <module>jersey</module>
+    <!--<module>jersey</module>-->
     <module>org.fusesource.cloudmix.tests.broker</module>
     <module>org.fusesource.cloudmix.tests.producer</module>
     <module>org.fusesource.cloudmix.tests.consumer</module>
