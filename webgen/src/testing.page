@@ -61,9 +61,12 @@ To do this the simplest way is to boot up a number of agents using the [MOP](htt
     
 Or if you have [MOP](http://mop.fusesource.org) installed you can just type
 
-    mop cloudmix-agent [connectionUrl] [profile] [workingDirectory]
+    mop cloudmix-agent[:version] [connectionUrl] [profile] [workingDirectory]
     
-    
+So the following example works using the current snapshot release using the [http://localhost:8181](http://localhost:8181) controller URL and <b>*</b> as the profile
+
+    mop cloudmix-agent:1.3-SNAPSHOT
+        
     
     
 
