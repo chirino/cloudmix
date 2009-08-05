@@ -134,7 +134,6 @@
       <name>Apache Incubating Release Distribution Repository</name>
       <url>http://people.apache.org/repo/m2-incubating-repository</url>
     </repository>
-    <!--
     <repository>
       <id>apache.snapshots</id>
       <name>Apache Development Snapshot Repository</name>
@@ -156,9 +155,7 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
-    -->
-    
+    </repository>    
     <repository>
       <id>open.iona.m2-snapshot</id>
       <name>FuseSource Community Dependency Snapshots Repository</name>
