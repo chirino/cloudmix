@@ -34,6 +34,8 @@ public class AgentDetails extends IdentifiedType {
     private String profile = "default";
     @XmlAttribute
     private String hostname = "localhost";
+    @XmlAttribute(required = false)
+    private String href =  null;
     @XmlAttribute
     private int pid = -1;
     @XmlAttribute
@@ -90,6 +92,17 @@ public class AgentDetails extends IdentifiedType {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    /**
+     * Returns the link to the agents web site if it supports such a thing
+     */
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 
     public Set<String> getCurrentFeatures() {

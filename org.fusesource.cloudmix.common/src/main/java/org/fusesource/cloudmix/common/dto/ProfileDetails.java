@@ -7,23 +7,25 @@
  */
 package org.fusesource.cloudmix.common.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ProfileDetails extends IdentifiedType {    
+public class ProfileDetails extends IdentifiedType {
     @XmlElement(name = "dependency")
     private List<Dependency> features = new ArrayList<Dependency>();
-    
-    public ProfileDetails() { }
-    
+    @XmlElement(name = "profileDescription")
+    private String description = "";
+
+    public ProfileDetails() {
+    }
+
     public ProfileDetails(String id) {
         super(id);
     }
@@ -39,17 +41,17 @@ public class ProfileDetails extends IdentifiedType {
     public ProfileDetails addFeature(String featureId, Map<String, String> cfgOverrideProps) {
         Dependency answer = new Dependency();
         answer.setFeatureId(featureId);
-        
+
         if (cfgOverrideProps != null && cfgOverrideProps.size() > 0) {
             for (String key : cfgOverrideProps.keySet()) {
                 answer.addCfgOverride(new ConfigurationUpdate(key, cfgOverrideProps.get(key)));
             }
         }
-        
+
         features.add(answer);
         return this;
     }
-    
+
     // Properties
     //-------------------------------------------------------------------------
 
@@ -59,5 +61,13 @@ public class ProfileDetails extends IdentifiedType {
 
     public void setFeatures(List<Dependency> features) {
         this.features = features;
-    }       
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

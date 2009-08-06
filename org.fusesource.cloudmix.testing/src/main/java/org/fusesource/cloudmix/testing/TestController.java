@@ -29,6 +29,8 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import junit.framework.TestCase;
+
 
 /**
  * Creates a new temporary environment for a distributed test,
@@ -36,7 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @version $Revision: 1.1 $
  */
-public abstract class TestController {
+public abstract class TestController extends TestCase {   // TODO any neater way to get access to current test name?
     private static final transient Log LOG = LogFactory.getLog(TestController.class);
 
     /**
@@ -112,6 +114,8 @@ public abstract class TestController {
             controller.addFeature(feature);
         }
 
+        profile.setDescription(createProfileDescription(profile));
+
         controller.addProfile(profile);
 
 
@@ -120,6 +124,10 @@ public abstract class TestController {
         provisioned = true;
 
         System.out.println("All features provisioned!!");
+    }
+
+    protected String createProfileDescription(ProfileDetails profile) {
+        return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getName() + "</b>";
     }
 
     /**
