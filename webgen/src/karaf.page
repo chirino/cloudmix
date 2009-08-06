@@ -1,0 +1,19 @@
+---
+title: Karaf Agent
+in_menu: false
+sort_info: 10
+--- name:overview
+# Karaf Agent
+
+Using Apache Karaf to create Agents
+
+--- name:content
+
+To use [Apache Karaf](http://felix.apache.org/site/karaf-users-guide.html) as an Agent in the Test Cloud you will need to get a build or distro. 
+
+Then you need to install the cloudmix agent feature.
+
+    bin/karaf
+    features:addUrl mvn:org.fusesource.cloudmix/features/1.3-SNAPSHOT/xml/features
+    features:install cloudmix.agent 
+
