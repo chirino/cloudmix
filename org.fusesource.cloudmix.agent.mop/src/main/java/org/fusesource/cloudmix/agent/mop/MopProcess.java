@@ -94,9 +94,11 @@ public class MopProcess {
     }
 
     public void stop() throws Exception {
-        ProcessRunner processRunner = mop.getProcessRunner();
-        if (processRunner != null) {
-            processRunner.kill();
+        if (mop != null) {
+            ProcessRunner processRunner = mop.getProcessRunner();
+            if (processRunner != null) {
+                processRunner.kill();
+            }
         }
         mop = null;
         thread = null;
