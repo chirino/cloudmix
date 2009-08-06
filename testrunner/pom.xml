@@ -1,44 +1,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <artifactId>cloudmix</artifactId>
     <groupId>org.fusesource.cloudmix</groupId>
     <version>1.3-SNAPSHOT</version>
   </parent>
-    
+
   <groupId>org.fusesource.testrunner</groupId>
   <artifactId>testrunner</artifactId>
   <packaging>jar</packaging>
   <version>1.3-SNAPSHOT</version>
   <name>testrunner</name>
 
-    <repositories>
-      <!-- for the rmiviajms dependency -->
-      <repository>
-        <id>rmiviajms.release.m2</id>
-        <name>rmiviajms Release Repository</name>
-        <url>http://rmiviajms.fusesource.org/repo/release</url>
-        <snapshots>
-          <enabled>false</enabled>
-        </snapshots>
-        <releases>
-          <enabled>true</enabled>
-        </releases>
-      </repository>
-      <repository>
-        <id>rmiviajms.snapshot.m2</id>
-        <name>rmiviajms Release Repository</name>
-        <url>http://rmiviajms.fusesource.org/repo/snapshot</url>
-        <snapshots>
-          <enabled>true</enabled>
-        </snapshots>
-        <releases>
-          <enabled>false</enabled>
-        </releases>
-      </repository>
-    </repositories>
+  <repositories>
+    <!-- for the rmiviajms dependency -->
+    <repository>
+      <id>rmiviajms.release.m2</id>
+      <name>rmiviajms Release Repository</name>
+      <url>http://rmiviajms.fusesource.org/repo/release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>rmiviajms.snapshot.m2</id>
+      <name>rmiviajms Release Repository</name>
+      <url>http://rmiviajms.fusesource.org/repo/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -48,9 +48,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.apache.activemq</groupId>
-    	<artifactId>activemq-all</artifactId>
-    	<version>5.2.0</version>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-all</artifactId>
+      <version>5.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.fusesource.rmiviajms</groupId>
@@ -64,183 +64,185 @@
     </dependency>
 
     <dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-    <dependency>
-    	<groupId>org.apache.maven.wagon</groupId>
-    	<artifactId>wagon-http</artifactId>
-    	<version>1.0-beta-6</version>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-    	<groupId>org.apache.maven.wagon</groupId>
-    	<artifactId>wagon-file</artifactId>
-    	<version>1.0-beta-6</version>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
+      <version>1.0-beta-6</version>
     </dependency>
     <dependency>
-    	<groupId>org.apache.maven.wagon</groupId>
-    	<artifactId>wagon-http</artifactId>
-    	<version>1.0-beta-6</version>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-file</artifactId>
+      <version>1.0-beta-6</version>
     </dependency>
     <dependency>
-    	<groupId>org.apache.maven.wagon</groupId>
-    	<artifactId>wagon-ftp</artifactId>
-    	<version>1.0-beta-6</version>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
+      <version>1.0-beta-6</version>
     </dependency>
     <dependency>
-    	<groupId>org.apache.maven.wagon</groupId>
-    	<artifactId>wagon-webdav-jackrabbit</artifactId>
-    	<version>1.0-beta-6</version>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-ftp</artifactId>
+      <version>1.0-beta-6</version>
     </dependency>
     <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>slf4j-api</artifactId>
-    	<version>1.5.8</version>
-    	<scope>runtime</scope>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-webdav-jackrabbit</artifactId>
+      <version>1.0-beta-6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.8</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
-    
+
   <build>
-	<defaultGoal>install</defaultGoal>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-       		<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>filter</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>resources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.activemq</groupId>
-                                    <artifactId>activemq-all</artifactId>
-                                    <outputDirectory>target/dependencies</outputDirectory>
-                                    <destFileName>activemq-all.jar</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.fusesource.rmiviajms</groupId>
-                                    <artifactId>rmiviajms</artifactId>
-                                    <outputDirectory>target/dependencies</outputDirectory>
-                                    <destFileName>rmiviajms.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-           	<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-3</version>
-                <executions>
-                    <execution>
-                        <id>unix-bin</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly/src/main/descriptors/unix-bin.xml</descriptor>
-                            </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
-                            <tarLongFileMode>gnu</tarLongFileMode>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>windows-bin</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly/src/main/descriptors/windows-bin.xml</descriptor>
-                            </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
-                            <appendAssemblyId>true</appendAssemblyId>
-                            <assemblyId/>
-                        </configuration>
-                    </execution>
-                    <!--execution>
-                        <id>unix-src</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly/src/main/descriptors/unix-src.xml</descriptor>
-                            </descriptors>
-                            <tarLongFileMode>gnu</tarLongFileMode>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>windows-src</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly/src/main/descriptors/windows-src.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution-->
-                </executions>
-            </plugin>
-            <plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<forkMode>pertest</forkMode>
-					<childDelegation>false</childDelegation>
-					<useFile>true</useFile>
-					<argLine>-Xms256m -Xmx768m</argLine>
-					<excludes>
-						<!-- until it is fixed -->
-						<exclude>**/RemoteClassLoaderTest.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-   </build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>filter</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.activemq</groupId>
+                  <artifactId>activemq-all</artifactId>
+                  <outputDirectory>target/dependencies</outputDirectory>
+                  <destFileName>activemq-all.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.fusesource.rmiviajms</groupId>
+                  <artifactId>rmiviajms</artifactId>
+                  <outputDirectory>target/dependencies</outputDirectory>
+                  <destFileName>rmiviajms.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-3</version>
+        <executions>
+          <execution>
+            <id>unix-bin</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly/src/main/descriptors/unix-bin.xml</descriptor>
+              </descriptors>
+              <finalName>${pom.artifactId}-${pom.version}</finalName>
+              <tarLongFileMode>gnu</tarLongFileMode>
+            </configuration>
+          </execution>
+          <execution>
+            <id>windows-bin</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly/src/main/descriptors/windows-bin.xml</descriptor>
+              </descriptors>
+              <finalName>${pom.artifactId}-${pom.version}</finalName>
+              <appendAssemblyId>true</appendAssemblyId>
+              <assemblyId/>
+            </configuration>
+          </execution>
+          <!--execution>
+              <id>unix-src</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>single</goal>
+              </goals>
+              <configuration>
+                  <descriptors>
+                      <descriptor>assembly/src/main/descriptors/unix-src.xml</descriptor>
+                  </descriptors>
+                  <tarLongFileMode>gnu</tarLongFileMode>
+              </configuration>
+          </execution>
+          <execution>
+              <id>windows-src</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>single</goal>
+              </goals>
+              <configuration>
+                  <descriptors>
+                      <descriptor>assembly/src/main/descriptors/windows-src.xml</descriptor>
+                  </descriptors>
+              </configuration>
+          </execution-->
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>pertest</forkMode>
+          <childDelegation>false</childDelegation>
+          <useFile>true</useFile>
+          <argLine>-Xms256m -Xmx768m</argLine>
+          <excludes>
+            <!-- TODO FIXME ASAP-->
+            <exclude>**/RemoteLaunchTest.java</exclude>
+            <exclude>**/ResourceTest.java</exclude>
+            <exclude>**/RemoteClassLoaderTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
