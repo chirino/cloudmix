@@ -18,6 +18,8 @@ import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 
+import java.util.Set;
+
 public class GridAgentWebapp {
 
     public static final String IMAGES_ROOT = "images/";
@@ -132,8 +134,8 @@ public class GridAgentWebapp {
                 .append("</table>\n")
                 .append("<h2>Features</h2>");
                         
-            String[] features = details.getCurrentFeatures();
-            if (features.length == 0) {
+            Set<String> features = details.getCurrentFeatures();
+            if (features == null || features.isEmpty()) {
                 sb.append("<i>No features installed</i>\n");
             } else {
                 sb.append("<table>\n");

@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -119,7 +120,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         assertNothingInstalled();        
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
         assertEquals(null, details.getAgentLink());
         assertEquals(null, details.getContainerType());
         assertEquals(0, details.getSupportPackageTypes().length);
@@ -139,7 +140,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         assertNothingInstalled();        
         details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);       
+        assertEquals(0, details.getCurrentFeatures().size());       
     }
 
     public void testInstallSimple() throws Exception {
@@ -149,18 +150,22 @@ public class AbstractInstallerAgentTest extends TestCase {
             
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertInstalledNames("r_1.txt");
         assertInstalled("http://example.com/r1.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(1, details.getCurrentFeatures().length);
-        assertEquals("f1", details.getCurrentFeatures()[0]);
+        assertEquals(1, details.getCurrentFeatures().size());
+        assertContains(details.getCurrentFeatures(), "f1");
     }
-    
-    
+
+    protected <T> void assertContains(Collection<T> collection, T element) {
+        assertTrue("collection " + collection + " does not contain " + element, collection.contains(element));
+    }
+
+
     // TODO: Enable when CM-2 is fixed.
     /*
     public void testInstallRestart() throws Exception {        
@@ -171,7 +176,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         assertNothingInstalled();
         
         AgentDetails details = installer.getAgentDetails();   
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
     }
     */
    
@@ -183,7 +188,7 @@ public class AbstractInstallerAgentTest extends TestCase {
             
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
 
         installer.asyncOnProvisioningHistoryChanged(ph);
@@ -193,8 +198,8 @@ public class AbstractInstallerAgentTest extends TestCase {
         assertInstalled("http://example.com/r1.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(1, details.getCurrentFeatures().length);
-        assertEquals("f1", details.getCurrentFeatures()[0]);
+        assertEquals(1, details.getCurrentFeatures().size());
+        assertContains(details.getCurrentFeatures(), "f1");
     }
 
     
@@ -205,7 +210,7 @@ public class AbstractInstallerAgentTest extends TestCase {
             
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertInstalledNames("r2.txt");
@@ -214,8 +219,8 @@ public class AbstractInstallerAgentTest extends TestCase {
                         "http://example.com/r4.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(1, details.getCurrentFeatures().length);
-        assertEquals("f2", details.getCurrentFeatures()[0]);
+        assertEquals(1, details.getCurrentFeatures().size());
+        assertContains(details.getCurrentFeatures(), "f2");
     }
     
     
@@ -227,7 +232,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertInstalled("http://example.com/r1.txt", 
@@ -237,11 +242,11 @@ public class AbstractInstallerAgentTest extends TestCase {
         
 
         details = installer.getAgentDetails();   
-        assertEquals(2, details.getCurrentFeatures().length);
+        assertEquals(2, details.getCurrentFeatures().size());
         assertTrue(contains("f1", details.getCurrentFeatures()));
         assertTrue(contains("f2", details.getCurrentFeatures()));
     }
-   
+
     public void testInstallUninstall() throws Exception {
         
         assertNothingInstalled();        
@@ -250,7 +255,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         ph.addAction(createUninstallAction("f3"));
         
         AgentDetails details = installer.getAgentDetails();
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertInstalled("http://example.com/r1.txt", 
@@ -259,7 +264,7 @@ public class AbstractInstallerAgentTest extends TestCase {
                         "http://example.com/r4.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(2, details.getCurrentFeatures().length);
+        assertEquals(2, details.getCurrentFeatures().size());
         assertTrue(contains("f1", details.getCurrentFeatures()));
         assertTrue(contains("f2", details.getCurrentFeatures()));
         assertTrue(!contains("f3", details.getCurrentFeatures()));
@@ -273,7 +278,7 @@ public class AbstractInstallerAgentTest extends TestCase {
                         "http://example.com/r4.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(2, details.getCurrentFeatures().length);
+        assertEquals(2, details.getCurrentFeatures().size());
         assertTrue(contains("f1", details.getCurrentFeatures()));
         assertTrue(contains("f2", details.getCurrentFeatures()));
         assertTrue(!contains("f3", details.getCurrentFeatures()));
@@ -287,7 +292,7 @@ public class AbstractInstallerAgentTest extends TestCase {
                         "http://example.com/r4.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(1, details.getCurrentFeatures().length);
+        assertEquals(1, details.getCurrentFeatures().size());
         assertTrue(!contains("f1", details.getCurrentFeatures()));
         assertTrue(contains("f2", details.getCurrentFeatures()));
         assertTrue(!contains("f3", details.getCurrentFeatures()));
@@ -310,13 +315,13 @@ public class AbstractInstallerAgentTest extends TestCase {
         ph.addAction(createInstallAction("f3", "/features_3.xml"));
             
         AgentDetails details = installer.getAgentDetails();
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertInstalled();
 
         details = installer.getAgentDetails();   
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
     }
 
     
@@ -327,7 +332,7 @@ public class AbstractInstallerAgentTest extends TestCase {
             
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertNotInstalled("https://example.com/r2.txt", 
@@ -337,8 +342,8 @@ public class AbstractInstallerAgentTest extends TestCase {
                         "http://example.com/r3.txt");
 
         details = installer.getAgentDetails();   
-        assertEquals(1, details.getCurrentFeatures().length);
-        assertEquals("f4", details.getCurrentFeatures()[0]);
+        assertEquals(1, details.getCurrentFeatures().size());
+        assertContains(details.getCurrentFeatures(), "f4");
     }
 
     
@@ -353,7 +358,7 @@ public class AbstractInstallerAgentTest extends TestCase {
         
         String initialAgentId = installer.getAgentId();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertEquals("bob", details.getName());
@@ -369,7 +374,7 @@ public class AbstractInstallerAgentTest extends TestCase {
             
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertEquals("Application cfg 1", System.getProperty("appProp1"));
@@ -385,7 +390,7 @@ public class AbstractInstallerAgentTest extends TestCase {
             
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
 
         installer.onProvisioningHistoryChanged(ph);
         assertEquals("Application cfg 1", System.getProperty("appProp1"));
@@ -450,6 +455,10 @@ public class AbstractInstallerAgentTest extends TestCase {
             }
         }
         assertEquals(names.length, count);
+    }
+
+    protected <T> boolean contains(T element, Collection<T> collection) {
+        return collection.contains(element);
     }
 
 

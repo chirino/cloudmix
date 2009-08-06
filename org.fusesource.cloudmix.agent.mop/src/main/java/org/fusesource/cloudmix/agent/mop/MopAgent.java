@@ -53,6 +53,15 @@ public class MopAgent extends InstallerAgent {
             }
 
             process.start();
+
+
+            // now lets update the current features
+
+            Feature feature = new Feature(id);
+            addAgentFeature(feature);
+
+            // TODO also need to update the current features!
+            
         }
     }
 
@@ -70,5 +79,6 @@ public class MopAgent extends InstallerAgent {
         }
 
         super.uninstallFeature(feature);
+        removeFeatureId(id);
     }
 }

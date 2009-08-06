@@ -28,8 +28,12 @@ public class Feature implements Serializable {
     public Feature(String name, FeatureList fl) {
         featureName = name;
         featureList = fl;
-    }    
-    
+    }
+
+    public Feature(String featureId) {
+        this(featureId, null);
+    }
+
     public FeatureList getFeatureList() {
         return featureList;
     }

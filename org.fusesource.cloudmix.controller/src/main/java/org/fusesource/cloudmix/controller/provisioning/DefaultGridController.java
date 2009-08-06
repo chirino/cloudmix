@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.sun.jersey.api.NotFoundException;
@@ -253,7 +254,7 @@ public class DefaultGridController implements GridController, GridClient {
                 boolean addFeature = false;
                 if (onlyIfDeployed) {
                     // Restrict to deployed features reported back by the agent
-                    String[] installedFeatures = agent.getDetails().getCurrentFeatures();
+                    Set<String> installedFeatures = agent.getDetails().getCurrentFeatures();
                     if (installedFeatures != null) {
                         for (String f : installedFeatures) {
                             if (f.equals(featureId)) {

@@ -18,12 +18,15 @@ import junit.framework.Assert;
 
 import org.fusesource.cloudmix.agent.AgentPoller;
 import org.fusesource.cloudmix.agent.InstallerAgent;
+import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.util.CompositeCallable;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A helper class for testing which represents a cluster of Agents to test out the provisioning
@@ -31,6 +34,8 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Revision: 1.1 $
  */
 public class AgentCluster implements InitializingBean, DisposableBean {
+    private static final transient Log LOG = LogFactory.getLog(AgentCluster.class);
+    
     private List<InstallerAgent> agents = new ArrayList<InstallerAgent>();
     
     class TestInstallerAgent extends InstallerAgent {
@@ -42,8 +47,8 @@ public class AgentCluster implements InitializingBean, DisposableBean {
             features = new HashSet<String>();
         }
         
-        public String[] getInstalledFeatures() {
-            return (String[])features.toArray(new String[features.size()]);            
+        public Set<String> getInstalledFeatures() {
+            return features;
         }
        
         @Override
@@ -52,17 +57,27 @@ public class AgentCluster implements InitializingBean, DisposableBean {
             List<ProvisioningAction> actions = aProvisioningHistory.getActions();
             if (actions != null) {
                 for (ProvisioningAction action : actions) {
+                    String featureId = action.getFeature();
+                    if (featureId == null) {
+                        LOG.warn("Igmored null feature ID for " + action);
+                        continue;
+                    }
+
                     if (ProvisioningAction.INSTALL_COMMAND.equals(action.getCommand())) {
-                        features.add(action.getFeature());
+                        features.add(featureId);
+                        addAgentFeature(new Feature(featureId));
                     } else if (ProvisioningAction.UNINSTALL_COMMAND.equals(action.getCommand())) {
-                        features.remove(action.getFeature());
+                        features.remove(featureId);
+                        removeFeatureId(featureId);
                     } else {
                         throw new RuntimeException("Unknown action");
                     }
                 }
             }
-            updateAgentDetails();
+            //updateAgentDetails();
         }   
+
+/*
         @Override
         public AgentDetails updateAgentDetails() {
             AgentDetails details = super.updateAgentDetails();
@@ -75,6 +90,7 @@ public class AgentCluster implements InitializingBean, DisposableBean {
             }
             return details;
         }
+*/
     }
     
 
@@ -171,7 +187,7 @@ public class AgentCluster implements InitializingBean, DisposableBean {
                                + " " + action.getResource());
         }
         System.out.println("Features installed: ");
-        String[] currentFeatures = agent.getAgentDetails().getCurrentFeatures();
+        Set<String> currentFeatures = agent.getAgentDetails().getCurrentFeatures();
         if (currentFeatures != null) {
             for (String f : currentFeatures) {
                 System.out.println("      " + f);

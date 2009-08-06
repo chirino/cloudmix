@@ -10,6 +10,8 @@ package org.fusesource.cloudmix.common.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,7 +47,7 @@ public class AgentDetails extends IdentifiedType {
     @XmlAttribute
     private int maximumFeatures = 1;
     @XmlElement(required = false)
-    private String [] currentFeatures;
+    private Set<String> currentFeatures = new HashSet<String>();
     @XmlElement(required = false)
     private ProcessList processes;
 //  @XmlElement(required = false) davidb TODO why do I have to comment this out to make it work?
@@ -89,13 +91,13 @@ public class AgentDetails extends IdentifiedType {
     public void setHostname(String hostname) {
         this.hostname = hostname;
     }
-    
-    public String [] getCurrentFeatures() {
-        return currentFeatures;        
+
+    public Set<String> getCurrentFeatures() {
+        return currentFeatures;
     }
-    
-    public void setCurrentFeatures(String [] features) {
-        this.currentFeatures = features;
+
+    public void setCurrentFeatures(Set<String> currentFeatures) {
+        this.currentFeatures = new HashSet<String>(currentFeatures);
     }
 
     public int getMaximumFeatures() {

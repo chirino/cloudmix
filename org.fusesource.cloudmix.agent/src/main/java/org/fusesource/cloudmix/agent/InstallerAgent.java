@@ -86,7 +86,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     protected boolean addedToClient;
      
-    private String[] initialFeatures;
+    private Set<String> initialFeatures;
     private File workDirectory;
     
     private GridClient client;
@@ -355,16 +355,13 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         return supportPackageTypes;
     }
 
-    protected String[] getFeatures() {
-
-        Set<String> features = agentState.getAgentFeatures().keySet();
-        return features.toArray(new String[features.size()]);
+    protected Set<String> getFeatures() {
+        return agentState.getAgentFeatures().keySet();
     }
 
 
     /**
      * persist the agents details locally so they can be retrieved later after a shutdown
-     * @param details the details to persist
      * @return true if the details were persisted successfully, false otherwise
      */
     public boolean persistAgentDetails() {
@@ -397,7 +394,6 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     /**
      * load the persisted agents details from local storage
-     * @param details the details object to populate with the retrieved data
      * @return true if the details were loaded successfully, false otherwise
      */
     public boolean loadPersistedAgentDetails() {
@@ -568,9 +564,27 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             }
         }
         featureProperties.put(TIMESTAMP_KEY, new Date());
-        agentState.getAgentFeatures().put(feature.getName(), feature);
+        addAgentFeature(feature);
     }
 
+    // TODO must we use Feature class???
+    // TODO rename to better name
+    protected void addAgentFeature(Feature feature) {
+        String name = feature.getName();
+        if (name == null) {
+            throw new NullPointerException("Feature name is null!");
+        }
+        agentState.getAgentFeatures().put(name, feature);
+        getAgentDetails().getCurrentFeatures().add(name);
+        updateAgentDetails();
+    }
+
+    // TODO rename to better name
+    protected void removeFeatureId(String featureId) {
+        agentState.getAgentFeatures().remove(featureId);
+        getAgentDetails().getCurrentFeatures().remove(featureId);
+        updateAgentDetails();
+    }
 
     protected void uninstallFeature(Feature feature) throws Exception {
         LOGGER.info("Uninstalling feature " + feature);
@@ -580,7 +594,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 LOGGER.info("Successfully removed bundle " + bundle);
             }
         }
-        agentState.getAgentFeatures().remove(feature.getName());
+        String featureId = feature.getName();
+        removeFeatureId(featureId);
     }
 
     protected void installProperties(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) {

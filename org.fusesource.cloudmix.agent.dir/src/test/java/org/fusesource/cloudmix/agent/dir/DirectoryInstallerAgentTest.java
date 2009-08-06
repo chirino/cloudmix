@@ -79,7 +79,7 @@ public class DirectoryInstallerAgentTest extends TestCase {
         assertNull(installer.getTempSuffix());
         AgentDetails details = installer.getAgentDetails();
         assertEquals("default", details.getProfile());
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
         
     }
     
