@@ -7,13 +7,13 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.mop.common.collect.ImmutableMap;
+import org.fusesource.mop.common.collect.Maps;
 
 import java.util.Map;
 

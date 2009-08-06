@@ -7,19 +7,17 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.mop.MOP;
 import org.fusesource.mop.ProcessRunner;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.fusesource.mop.common.collect.Lists;
 
-import java.util.StringTokenizer;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Iterables;
-import com.google.common.base.Objects;
 
 /**
  * @version $Revision: 1.1 $
