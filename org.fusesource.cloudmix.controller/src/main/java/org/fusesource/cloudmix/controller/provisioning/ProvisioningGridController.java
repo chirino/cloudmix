@@ -44,6 +44,11 @@ public class ProvisioningGridController extends DefaultGridController implements
     AgentPoller poller;
     private long startupProvisioningDelay = 5000L;
 
+    @Override
+    public String toString() {
+        return "ProvisioningGridController[agentTimout: " + getAgentTimeout() + "]";
+    }
+
     public void afterPropertiesSet() throws Exception {
         poller = new AgentPoller(this);
         poller.setInitialPollingDelay(getStartupProvisioningDelay());
@@ -109,10 +114,10 @@ public class ProvisioningGridController extends DefaultGridController implements
 
 
                 if (agent == null) {
-                    LOG.info("No Agent Selected from possible agents " + agentTrackers.size());
+                    LOG.info("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
 
                 } else {
-                    LOG.info("ProvisioningGridController, found adequate agent: "
+                    LOG.info("for feature: " + featureId + " found adequate agent: "
                             + agent.getDetails());
 
                     Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile,

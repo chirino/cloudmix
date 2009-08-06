@@ -198,4 +198,11 @@ public class AgentDetails extends IdentifiedType {
         }
         return exists;
     }
+
+    /**
+     * Returns true if this ID is the wildcard or matches the given profile id
+     */
+    public boolean matchesProfile(String profileId) {
+        return profile != null && (profile.equals(profileId) || profile.equals(Constants.WILDCARD_PROFILE_NAME));
+    }
 }

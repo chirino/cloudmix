@@ -243,7 +243,9 @@ public class DefaultGridController implements GridController, GridClient {
 
         // Return all the agents that have not timed out and that have the feature assigned.
         for (AgentController agent : agentTrackers()) {
-            if (profileId != null && !profileId.equals(agent.getDetails().getProfile())) {
+            // TODO check for wildcard profile!!!
+            //if (profileId != null && !profileId.equals(agent.getDetails().getProfile())) {
+            if (profileId != null && !agent.getDetails().matchesProfile(profileId)) {
                 continue;
             }                
             
