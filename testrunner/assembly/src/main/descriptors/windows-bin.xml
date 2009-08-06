@@ -84,7 +84,7 @@
     
     <files>
         <file>
-        	<source>${basedir}/target/${artifact.artifactId}-${artifact.baseVersion}.jar</source>
+        	<source>${basedir}/target/${artifact.artifactId}-${artifact.version}.jar</source>
             <outputDirectory>/lib/</outputDirectory>
             <destName>testrunner.jar</destName>
         </file>
