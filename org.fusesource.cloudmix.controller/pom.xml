@@ -168,7 +168,9 @@
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
         <configuration>
+          <useFile>true</useFile>
           <excludes>
             <!--<exclude>**/RuntimeFailingTest.java</exclude>-->
           </excludes>
