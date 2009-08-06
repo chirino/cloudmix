@@ -1,0 +1,33 @@
+<lift:surround with="default" at="content">
+  <lift:profiles.index>
+    <head>
+      <title>Profile</title>
+    </head>
+
+    <h2>Profile:
+      <profile:name/>
+    </h2>
+
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th>Provisioned?</th>
+      </tr>
+
+      <profile:feature>
+        <tr>
+          <td>
+            <a class='feature' feature:link="na">
+              <feature:name/>
+            </a>
+          </td>
+          <td>
+            <feature:provisioned/>
+          </td>
+        </tr>
+      </profile:feature>
+    </table>
+  </lift:profiles.index>
+</lift:surround>
+
+

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -10,7 +11,7 @@
   <artifactId>org.fusesource.cloudmix.jersey.webapp</artifactId>
   <packaging>war</packaging>
   <name>CloudMix :: Jersey - WebApp version</name>
-  
+
   <properties>
   </properties>
 
@@ -24,12 +25,12 @@
       <artifactId>org.fusesource.cloudmix.controller</artifactId>
       <!-- <version>${project.version}</version> -->
     </dependency>
-<!--
-    <dependency>
-      <groupId>jersey-debug</groupId>
-      <artifactId>jersey</artifactId>
-    </dependency>
--->
+    <!--
+        <dependency>
+          <groupId>jersey-debug</groupId>
+          <artifactId>jersey</artifactId>
+        </dependency>
+    -->
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>jsr250-api</artifactId>
@@ -45,7 +46,25 @@
       <artifactId>spring</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-lift</artifactId>
+      <version>${jersey-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.liftweb</groupId>
+      <artifactId>lift-webkit</artifactId>
+      <version>${lift-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-jaxrs</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+
     <!-- optional stuff -->
+    <!--
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
@@ -75,15 +94,18 @@
       <artifactId>mail</artifactId>
       <optional>true</optional>
     </dependency>
+    -->
 
 
     <!-- enunciate client -->
+    <!--
        <dependency>
          <groupId>org.codehaus.enunciate</groupId>
       <artifactId>enunciate-rt</artifactId>
       <version>${enunciate-version}</version>
     </dependency>
-    
+    -->
+
     <!-- testing -->
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>
@@ -119,11 +141,46 @@
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>specs</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>scalacheck</artifactId>
+      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>scalatest</artifactId>
+      <version>0.9.5</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 
   <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+
     <plugins>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+      </plugin>
+
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -137,6 +194,7 @@
         </configuration>
       </plugin>
 
+      <!--
       <plugin>
         <groupId>org.codehaus.enunciate</groupId>
         <artifactId>maven-enunciate-plugin</artifactId>
@@ -146,18 +204,12 @@
               <goal>assemble</goal>
             </goals>
             <configuration>
-              <!--<addXFireClientSourcesToTestClasspath>true</addXFireClientSourcesToTestClasspath>-->
-              <!--
-                        <configFile>enunciate.xml</configFile>
-                        <exports>
-                          <client.jdk14.library.binaries>client.jar</client.jdk14.library.binaries>
-                        </exports>
-              -->
             </configuration>
           </execution>
         </executions>
       </plugin>
-     
+      -->
+
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
@@ -177,14 +229,21 @@
             <!-- enable easy connection to JConsole -->
             <systemProperty>
               <name>com.sun.management.jmxremote</name>
-              <value />
+              <value/>
             </systemProperty>
           </systemProperties>
-          <scanIntervalSeconds>2</scanIntervalSeconds>
+          <!--
+          use JavaRebel if you want hot-redeployment via the run script
+
+           install it from here http://www.zeroturnaround.com/download/
+
+           then set your JAVAREBEL_HOME environment variable to point to the install
+          -->
+          <scanIntervalSeconds>0</scanIntervalSeconds>
         </configuration>
       </plugin>
 
-              <plugin>
+      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>

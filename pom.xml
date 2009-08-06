@@ -25,12 +25,15 @@
     <felix-version>1.4.0</felix-version>
     <karaf-version>1.2.0-SNAPSHOT</karaf-version>
     <javax-persistence-version>1.0.2</javax-persistence-version>
-    <jersey-version>1.1.0-ea</jersey-version>
+    <jersey-version>1.1.1-ea</jersey-version>
     <jetty.port>8181</jetty.port>
     <jetty-version>6.1.8</jetty-version>
     <jna-version>3.0.5</jna-version>
     <jsr250-version>1.0</jsr250-version>
     <jsr311-version>1.1</jsr311-version>
+    <lift-version>1.1-M3</lift-version>
+    <scala.version>2.7.5</scala.version>
+    <scala-plugin-version>2.9.1</scala-plugin-version>
     <slf4j-version>1.3.0</slf4j-version>
     <servlet-version>2.5</servlet-version>
     <smx3-version>3.3.1.9-fuse</smx3-version>
@@ -241,6 +244,19 @@
       <name>JLine Project Repository</name>
       <url>http://jline.sourceforge.net/m2repo</url>
     </repository>
+
+    <!-- scala stuff -->
+    <repository>
+      <id>scala-tools.org</id>
+      <name>Scala Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+    <repository>
+      <id>scala-tools-snapshots.org</id>
+      <name>Scala Tools Maven2 Snapshot Repository</name>
+      <url>http://scala-tools.org/repo-snapshots</url>
+    </repository>
+
   </repositories>
 
   <pluginRepositories>
@@ -311,6 +327,12 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
+    </pluginRepository>
+
+    <pluginRepository>
+      <id>scala-tools.org</id>
+      <name>Scala Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -835,6 +857,32 @@
           </configuration>
         </plugin>
 
+        <plugin>
+          <groupId>org.scala-tools</groupId>
+          <artifactId>maven-scala-plugin</artifactId>
+          <version>2.10.1</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <jvmArgs>
+              <jvmArg>-Xmx1024m</jvmArg>
+            </jvmArgs>
+            <args>
+              <!-- arg>-unchecked</arg -->
+              <arg>-deprecation</arg>
+              <arg>-Xno-varargs-conversion</arg>
+            </args>
+            <scalaVersion>${scala.version}</scalaVersion>
+          </configuration>
+        </plugin>
+
+        
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-idea-plugin</artifactId>
