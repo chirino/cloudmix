@@ -35,13 +35,10 @@ class Agents {
 
     ResourceBean.get match {
       case agents: AgentsResource =>
-        // TODO cleaner way to do this???
+        // TODO shame there's not a standard conversion to scala list for Collection
+        // wonder if we can zap this in Scala 2.8?
         def agentList = new ArrayList[AgentDetails](agents.getAgents)
-        //def agentList : List[AgentDetails] = List.fromIterator(agents.getAgents.iterator)
-        //agentList ++ 
 
-        //agentList.addAll(agents.getAgents)
-        
         agentList.flatMap {
           agent: AgentDetails =>
                   bind("agent", xhtml,
