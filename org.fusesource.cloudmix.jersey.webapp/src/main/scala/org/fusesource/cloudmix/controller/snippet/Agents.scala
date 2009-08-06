@@ -9,6 +9,8 @@ import _root_.com.sun.jersey.lift.Requests.uri
 import _root_.scala.xml._
 import _root_.scala.collection.jcl.Conversions._
 import _root_.java.util.ArrayList
+import _root_.java.util.Map.Entry
+import _root_.java.util.TreeMap
 
 /**
  * Snippets for viewing agents
@@ -26,6 +28,12 @@ object Agents {
     uri("/agents/" + agentId)
   }
 
+  def asText(value: AnyRef): String = {
+    if (value != null)
+      value.toString
+    else
+      ""
+  }
 }
 
 import Agents._
@@ -53,8 +61,26 @@ class Agents {
   def index(xhtml: Group): NodeSeq = {
     ResourceBean.get match {
       case agent: AgentResource =>
+        val details = agent.get
+        val systemProperties = new TreeMap[String,String](details.getSystemProperties)
+        
         bind("agent", xhtml,
-          "name" -> Text(agent.get.getId))
+          "containerType" -> asText(details.getContainerType),
+          "hostname" -> asText(details.getHostname),
+          "maximumFeatures" -> asText("" + details.getMaximumFeatures),
+          "name" -> asText(details.getName),
+          "id" -> asText(details.getId),
+          "os" -> asText(details.getOs),
+          "pid" -> asText("" + details.getPid),
+          "profile" -> asText(details.getProfile),
+          "systemProperty" -> systemProperties.entrySet.flatMap {
+            //case (key : String, value : String) =>
+            case entry : Entry[String,String] =>
+              bind("systemProperty", chooseTemplate("agent", "systemProperty", xhtml),
+                "name" -> asText(entry.getKey),
+                "value" -> asText(entry.getValue))
+          }.toSeq
+        )
 
       case _ =>
         <p> <b>Warning</b>No Agent resources found!</p>
