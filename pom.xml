@@ -343,8 +343,8 @@
     <module>org.fusesource.cloudmix.common</module>
     <module>org.fusesource.cloudmix.agent</module>
     <module>org.fusesource.cloudmix.agent.dir</module>
-    <!-- TODO lets disable smx4 agent for now until gshell/karaf are more stable -->
     <module>org.fusesource.cloudmix.agent.mop</module>
+    <!-- TODO lets disable smx4 agent for now until gshell/karaf are more stable -->
     <module>org.fusesource.cloudmix.agent.logging</module>
     <module>org.fusesource.cloudmix.agent.webapp</module>
     <module>org.fusesource.cloudmix.agent.jbi</module>
@@ -356,7 +356,6 @@
     <module>features</module>
     <module>cloudtests</module>
     <module>assembly</module>
-    <module>systests</module>
     <module>testrunner</module>
   </modules>
 
@@ -1267,7 +1266,9 @@
     <profile>
       <id>osgi</id>
       <modules>
+        <!-- TODO lets disable smx4 agent for now until gshell/karaf are more stable -->
         <module>org.fusesource.cloudmix.agent.smx4</module>
+        <module>systests</module>
       </modules>
     </profile>
     <profile>
