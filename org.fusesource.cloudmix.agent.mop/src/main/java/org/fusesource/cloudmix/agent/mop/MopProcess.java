@@ -87,6 +87,7 @@ public class MopProcess {
                 }
                 finally {
                     completed.set(true);
+                    clear();
                 }
             }
         };
@@ -100,6 +101,10 @@ public class MopProcess {
                 processRunner.kill();
             }
         }
+        clear();
+    }
+
+    private void clear() {
         mop = null;
         thread = null;
     }
