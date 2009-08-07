@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreResourceNotFound">
+      <value>true</value>
+    </property>
+<!--
+    <property name="location">
+      <value>file:${catalina.home}/conf/agent.properties</value>
+    </property>
+-->
+    <property name="properties">
+      <props>
+        <prop key="agent.user">Agent</prop>
+        <prop key="agent.profile">*</prop>
+        <prop key="agent.workdir">cloudmix-data</prop>
+<!--
+        <prop key="agent.installdir">webapps</prop>
+-->
+        <prop key="agent.controller.uri">http://localhost:8181</prop>
+        <prop key="agent.max.features">25</prop>
+        <prop key="agent.initial.polling.delay">1000</prop>
+        <prop key="agent.polling.period">1000</prop>
+        <prop key="agent.type">mop</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- use the following password provider for a pop-up dialog -->
+  <!--
+  <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.DialogPasswordProvider">
+      <property name="username" value="Agent" />
+  </bean>
+  -->
+
+  <!-- use the following password provider for file based password-->
+  <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.FilePasswordProvider">
+    <property name="passwordFile" value="${agent.workdir}/conf/agent.password"/>
+  </bean>
+
+  <!-- use the following password provider for raw password -->
+  <!--
+<bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.SimplePasswordProvider">
+  <property name="rawPassword" value="agent"/>
+</bean>
+  -->
+
+  <bean id="restGridClient" class="org.fusesource.cloudmix.agent.RestGridClient">
+    <property name="rootUri" value="${agent.controller.uri}"/>
+    <property name="username" value="${agent.user}"/>
+    <property name="passwordProvider" ref="passwordProvider"/>
+  </bean>
+
+
+  <bean id="directoryAgent" class="org.fusesource.cloudmix.agent.mop.MopAgent">
+    <property name="client" ref="restGridClient"/>
+    <property name="profile" value="${agent.profile}"/>
+    <property name="maxFeatures" value="${agent.max.features}"/>
+    <property name="detailsPropertyFilePath" value="${agent.workdir}/conf/agent.properties"/>
+    <property name="workDirectory" value="${agent.workdir}/cloudmix"/>
+    <property name="containerType" value="${agent.type}"/>
+<!--
+    <property name="installDirectory" value="${agent.workdir}/${agent.installdir}"/>
+    <property name="tempSuffix" value=".tmp"/>
+-->
+  </bean>
+
+  <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller">
+    <property name="agent" ref="directoryAgent"/>
+    <property name="initialPollingDelay" value="${agent.initial.polling.delay}"/>
+    <property name="pollingPeriod" value="${agent.polling.period}"/>
+  </bean>
+</beans>
