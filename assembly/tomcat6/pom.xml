@@ -81,7 +81,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.fusesource.cloudmix</groupId>
-                                    <artifactId>org.fusesource.cloudmix.agent.webapp</artifactId>
+                                    <artifactId>org.fusesource.cloudmix.agent.dir.webapp</artifactId>
                                     <type>war</type>
                                     <version>${project.version}</version>
                                 </artifactItem>

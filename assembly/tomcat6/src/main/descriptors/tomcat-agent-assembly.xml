@@ -36,7 +36,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>${basedir}/target/webapp/org.fusesource.cloudmix.agent.webapp-${project.version}.war</source>
+            <source>${basedir}/target/webapp/org.fusesource.cloudmix.agent.dir.webapp-${project.version}.war</source>
             <outputDirectory>tomcat6/webapps</outputDirectory>
             <destName>agent.war</destName>
         </file>
