@@ -1,0 +1,28 @@
+<lift:surround with="default" at="content">
+  <head>
+    <title>Profiles</title>
+  </head>
+  <h2>Profiles</h2>
+
+  
+  <table>
+    <tr>
+      <th>Profile</th>
+      <th>Description</th>
+    </tr>
+    <lift:profiles.list>
+      <tr>
+        <td>
+          <a class='profile' profile:link="na">
+            <profile:name/>
+          </a>
+        </td>
+        <td>
+          <profile:description/>
+        </td>
+      </tr>
+    </lift:profiles.list>
+  </table>
+</lift:surround>
+
+
