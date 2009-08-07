@@ -24,7 +24,7 @@ The following instructions walk you through running a distributed test case from
 
 Now we need to run the Test Cloud on a machine somewhere. For now lets run it on your local machine
 
-    cd org.fusesource.cloudmix.jersey.webapp
+    cd org.fusesource.cloudmix.controller.webapp
     mvn jetty:run
     
 You should be able to see the currently active profiles (i.e. distributed tests running) by pointing your web browser at
@@ -55,18 +55,22 @@ you should see, after about a minute, an error that the broker feature could not
 You need some agents (or slaves) in the Test Cloud to actually run the various features used in your test. 
 
 To do this the simplest way is to boot up a number of agents using the [MOP](http://mop.fusesource.org) agent as follows
-
-    cd org.fusesource.cloudmix.agent.mop
-    mvn compile exec:java
     
-Or if you have [MOP](http://mop.fusesource.org) installed you can just type
+    cd org.fusesource.cloudmix.agent.mop.web
+    mvn jetty:run
+
+You can then look at the web application of the agent to see what its running and access any log files etc. The agent web application will also register its URL with the controller web application, so from the controller URL you can navigate to each agents website.
+
+If you have [MOP](http://mop.fusesource.org) installed you can just type the following instead
 
     mop cloudmix-agent[:version] [connectionUrl] [profile] [workingDirectory]
-    
+
 So the following example works using the current snapshot release using the [http://localhost:8181](http://localhost:8181) controller URL and <b>*</b> as the profile
 
     mop cloudmix-agent:1.3-SNAPSHOT
-        
-    
-    
 
+If you don't want to expose any agent specific details RESTfully then you can just run a stand alone agent as follows - though the above are recommended.
+    
+    cd org.fusesource.cloudmix.agent.mop
+    mvn compile exec:java
+    
