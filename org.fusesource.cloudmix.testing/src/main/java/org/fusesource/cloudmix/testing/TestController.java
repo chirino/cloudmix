@@ -18,7 +18,8 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,8 +30,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import junit.framework.TestCase;
-
 
 /**
  * Creates a new temporary environment for a distributed test,
@@ -38,7 +37,12 @@ import junit.framework.TestCase;
  *
  * @version $Revision: 1.1 $
  */
-public abstract class TestController {// } extends TestCase {   // TODO any neater way to get access to current test name?
+
+/**
+ * TODO uncomment when we have junit 4.7
+@RunWith(Interceptors.class)
+ */
+public abstract class TestController {
     private static final transient Log LOG = LogFactory.getLog(TestController.class);
 
     /**
@@ -66,6 +70,20 @@ public abstract class TestController {// } extends TestCase {   // TODO any neat
     protected String profileId;
     protected boolean provisioned;
     protected boolean destroyProfileAfter = true;
+
+    /**
+     * TODO uncomment me when we have junit 4.7 in a maven repo!!!
+     *
+    @Interceptor protected TestName testName = new TestName();
+
+    protected String getTestName() {
+        return testName.getName();
+    }
+    */
+
+    protected String getTestName() {
+        return "n/a until junit 4.7";
+    }
 
     /**
      * Registers any features which are required for this system test
@@ -128,13 +146,7 @@ public abstract class TestController {// } extends TestCase {   // TODO any neat
     }
 
     protected String createProfileDescription(ProfileDetails profile) {
-        //return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getName() + "</b>";
-        return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getName() + "</b>";
-    }
-
-    protected String getName() {
-        // TODO how to get the current test method??
-        return "default";
+        return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getTestName() + "</b>";
     }
 
     /**

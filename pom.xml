@@ -31,6 +31,8 @@
     <jna-version>3.0.5</jna-version>
     <jsr250-version>1.0</jsr250-version>
     <jsr311-version>1.1</jsr311-version>
+    <!-- TODO move to 4.7 ASAP so we can expose the test method too in TestController --> 
+    <junit-version>4.6</junit-version>
     <lift-version>1.1-M3</lift-version>
     <scala.version>2.7.5</scala.version>
     <scala-plugin-version>2.9.1</scala-plugin-version>

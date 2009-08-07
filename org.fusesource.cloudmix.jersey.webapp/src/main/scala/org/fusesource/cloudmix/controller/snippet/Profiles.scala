@@ -33,7 +33,7 @@ class Profiles {
           profile: ProfileDetails =>
                   bind("profile", xhtml,
                     "name" -> asText(profile.getId),
-                    "description" -> asText(profile.getDescription),
+                    "description" -> asMarkup(profile.getDescription),
                     AttrBindParam("link", Text(profileLink(profile)), "href"))
         }
 
@@ -49,7 +49,7 @@ class Profiles {
 
         bind("profile", xhtml,
           "name" -> asText(profile.getProfileId),
-          "description" -> asText(profile.getProfileDetails.getDescription),
+          "description" -> asMarkup(profile.getProfileDetails.getDescription),
 
           "feature" -> features.flatMap {
             feature: DependencyStatus =>
