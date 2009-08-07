@@ -7,9 +7,10 @@
     <version>1.3-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.fusesource.cloudmix.agent.webapp</artifactId>
+  <artifactId>org.fusesource.cloudmix.agent.dir.webapp</artifactId>
   <packaging>war</packaging>
-  <name>CloudMix :: Agent - WebApp</name>
+  <name>CloudMix :: Agent - Directory Installer - WebApp</name>
+  <description>A CloudMix agent web application using the directory agent to deploy artifacts to Tomcat</description>
   
   <properties>
     <jetty.port>8080</jetty.port>
