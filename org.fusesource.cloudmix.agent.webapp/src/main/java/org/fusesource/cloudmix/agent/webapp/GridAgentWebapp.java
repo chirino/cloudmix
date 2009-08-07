@@ -88,6 +88,10 @@ public class GridAgentWebapp {
 
 
     public String getStatus() {
+        // TODO this code is a bit sick! :)
+        // its better to use a template engine instead for doing HTML representions!
+        // see Jersey implicit views or the controller web application's HTML templates
+
         AgentDetails details = agent.getAgentDetails();
         StringBuilder sb = new StringBuilder()
             .append("<html><head>\n")
