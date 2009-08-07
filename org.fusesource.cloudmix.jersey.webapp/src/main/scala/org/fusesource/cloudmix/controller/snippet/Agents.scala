@@ -28,15 +28,18 @@ object Agents {
     uri("/agents/" + agentId)
   }
 
-  def asText(value: AnyRef): String = {
-    if (value != null)
-      value.toString
+  def siteLink(agent: AgentDetails): NodeSeq = {
+    val href = agent.getHref
+    if (href != null)
+      <a href={href} class='site'>{agent.getId}</a>
     else
-      ""
+      Text("")
   }
+
 }
 
 import Agents._
+import Helpers._
 
 class Agents {
   def list(xhtml: Group): NodeSeq = {
@@ -51,6 +54,7 @@ class Agents {
           agent: AgentDetails =>
                   bind("agent", xhtml,
                     "name" -> Text(agent.getId),
+                    "site" -> siteLink(agent),
                     AttrBindParam("link", Text(agentLink(agent)), "href"))}
 
       case _ =>

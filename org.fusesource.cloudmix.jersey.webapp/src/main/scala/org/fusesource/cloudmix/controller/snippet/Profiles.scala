@@ -20,6 +20,7 @@ object Profiles {
   }
 }
 
+import Helpers._
 import Features._
 import Profiles._
 
@@ -31,7 +32,8 @@ class Profiles {
         profiles.getProfiles.flatMap {
           profile: ProfileDetails =>
                   bind("profile", xhtml,
-                    "name" -> Text(profile.getId),
+                    "name" -> asText(profile.getId),
+                    "description" -> asText(profile.getDescription),
                     AttrBindParam("link", Text(profileLink(profile)), "href"))
         }
 
@@ -46,13 +48,14 @@ class Profiles {
         val features = profile.getStatus.getStatus.getFeatures
 
         bind("profile", xhtml,
-          "name" -> Text(profile.getProfileId),
+          "name" -> asText(profile.getProfileId),
+          "description" -> asText(profile.getProfileDetails.getDescription),
 
           "feature" -> features.flatMap {
             feature: DependencyStatus =>
               bind("feature", chooseTemplate("profile", "feature", xhtml),
-                "name" -> Text(feature.getFeatureId),
-                "provisioned" -> Text(if (feature.isProvisioned) "true" else "false"),
+                "name" -> asText(feature.getFeatureId),
+                "provisioned" -> asText(feature.isProvisioned),
                 AttrBindParam("link", Text(featureLink(feature)), "href"))
           })
 

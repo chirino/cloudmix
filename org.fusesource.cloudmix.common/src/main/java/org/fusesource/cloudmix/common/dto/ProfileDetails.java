@@ -20,8 +20,8 @@ import java.util.Map;
 public class ProfileDetails extends IdentifiedType {
     @XmlElement(name = "dependency")
     private List<Dependency> features = new ArrayList<Dependency>();
-    @XmlElement(name = "profileDescription")
-    private String description = "";
+    @XmlElement(name = "profileDescription", required = false)
+    private String description;
 
     public ProfileDetails() {
     }

@@ -23,7 +23,7 @@ public class ActiveMQMopTest extends TestController {
     public void testScenarioDeploys() throws Exception {
         destroyProfileAfter = false;
         System.out.println("Worked!!!");
-        Thread.sleep(10000);
+        Thread.sleep(1000000);
     }
 
 

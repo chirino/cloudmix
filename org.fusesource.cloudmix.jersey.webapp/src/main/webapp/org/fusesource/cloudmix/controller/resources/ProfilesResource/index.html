@@ -4,16 +4,25 @@
   </head>
   <h2>Profiles</h2>
 
-  <ul>
+  
+  <table>
+    <tr>
+      <th>Profile</th>
+      <th>Description</th>
+    </tr>
     <lift:profiles.list>
-      <li>
-        <a class='profile' profile:link="na">
-          <profile:name/>
-        </a>
-      </li>
+      <tr>
+        <td>
+          <a class='profile' profile:link="na">
+            <profile:name/>
+          </a>
+        </td>
+        <td>
+          <profile:description/>
+        </td>
+      </tr>
     </lift:profiles.list>
-  </ul>
-
+  </table>
 </lift:surround>
 
 

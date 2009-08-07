@@ -251,7 +251,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     public void addProfile(ProfileDetails profile) throws URISyntaxException {
         String id = profile.getId();
         WebResource.Builder resource = resource(append(getProfilesUri(), "/", id)).type("application/xml");
-        getTemplate().put(resource, profile);
+        int status = getTemplate().put(resource, profile);
+        System.out.println("updating profile " + profile + " status " + status);
     }
 
     public void removeProfile(ProfileDetails profile) throws URISyntaxException {

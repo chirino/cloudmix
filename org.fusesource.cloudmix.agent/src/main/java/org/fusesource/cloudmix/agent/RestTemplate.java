@@ -96,31 +96,40 @@ public class RestTemplate {
         return null;
     }
 
-    public void put(WebResource.Builder resource, Object body) {
+    public int put(WebResource.Builder resource, Object body) {
+        int status = -1;
         for (int i = 0; i < retryAttempts; i++) {
             ClientResponse response = resource.put(ClientResponse.class, body);
-            if (response.getStatus() < 300) {
+            status = response.getStatus();
+            if (status < 300) {
                 break;
             }
         }
+        return status;
     }
 
-    public void put(WebResource.Builder resource) {
+    public int put(WebResource.Builder resource) {
+        int status = -1;
         for (int i = 0; i < retryAttempts; i++) {
             ClientResponse response = resource.put(ClientResponse.class);
-            if (response.getStatus() < 300) {
+            status = response.getStatus();
+            if (status < 300) {
                 break;
             }
         }
+        return status;
     }
 
-    public void delete(WebResource.Builder resource) {
+    public int delete(WebResource.Builder resource) {
+        int status = -1;
         for (int i = 0; i < retryAttempts; i++) {
             ClientResponse response = resource.delete(ClientResponse.class);
-            if (response.getStatus() < 300) {
+            status = response.getStatus();
+            if (status < 300) {
                 break;
             }
         }
+        return status;
     }
 
     public long getDelayBetweenAttempts() {

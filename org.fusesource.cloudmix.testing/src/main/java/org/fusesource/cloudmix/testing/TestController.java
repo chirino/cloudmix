@@ -38,7 +38,7 @@ import junit.framework.TestCase;
  *
  * @version $Revision: 1.1 $
  */
-public abstract class TestController extends TestCase {   // TODO any neater way to get access to current test name?
+public abstract class TestController {// } extends TestCase {   // TODO any neater way to get access to current test name?
     private static final transient Log LOG = LogFactory.getLog(TestController.class);
 
     /**
@@ -81,6 +81,7 @@ public abstract class TestController extends TestCase {   // TODO any neater way
         ensureFeatureIdLocalToProfile(answer);
         return answer;
     }
+
 
     @Before
     public void checkProvisioned() throws URISyntaxException, IOException {
@@ -127,7 +128,13 @@ public abstract class TestController extends TestCase {   // TODO any neater way
     }
 
     protected String createProfileDescription(ProfileDetails profile) {
+        //return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getName() + "</b>";
         return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getName() + "</b>";
+    }
+
+    protected String getName() {
+        // TODO how to get the current test method??
+        return "default";
     }
 
     /**

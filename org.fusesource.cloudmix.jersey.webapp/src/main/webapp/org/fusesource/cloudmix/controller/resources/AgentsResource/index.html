@@ -4,15 +4,25 @@
   </head>
   <h2>Agents</h2>
 
-  <ul>
+
+  <table>
+    <tr>
+      <th>Agent</th>
+      <th>Site</th>
+    </tr>
     <lift:agents.list>
-      <li>
-        <a class='agent' agent:link="na">
-          <agent:name/>
-        </a>
-      </li>
+      <tr>
+        <td>
+          <a class='agent' agent:link="na">
+            <agent:name/>
+          </a>
+        </td>
+        <td>
+          <agent:site/>
+        </td>
+      </tr>
     </lift:agents.list>
-  </ul>
+  </table>
 
 </lift:surround>
 

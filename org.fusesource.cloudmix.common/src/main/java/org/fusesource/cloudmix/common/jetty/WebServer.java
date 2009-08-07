@@ -71,7 +71,7 @@ public final class WebServer {
             else {
                 webAppDir = defaultDirectory + "/" + defaultWebAppDir;
             }
-            LOG.info("Defauling the web app dir to: " + webAppDir);
+            LOG.info("Defaulting the web app dir to: " + webAppDir);
         }
         context.setResourceBase(webAppDir);
         context.setContextPath(webAppContext);
