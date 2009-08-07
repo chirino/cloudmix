@@ -15,7 +15,7 @@ class Boot {
   def boot {
     // where to search snippet
     LiftRules.addToPackages("org.fusesource.restmix")
-    LiftRules.addToPackages("org.fusesource.cloudmix.controller")
+    LiftRules.addToPackages("org.fusesource.cloudmix.agent")
 
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) :: Nil

@@ -69,6 +69,7 @@ class Agents {
         val systemProperties = new TreeMap[String,String](details.getSystemProperties)
         
         bind("agent", xhtml,
+          "site" -> siteLink(details),
           "containerType" -> asText(details.getContainerType),
           "hostname" -> asText(details.getHostname),
           "maximumFeatures" -> asText("" + details.getMaximumFeatures),

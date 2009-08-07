@@ -47,9 +47,11 @@
   -->
 
   <!-- use the following password provider for file based password-->
+<!--
   <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.FilePasswordProvider">
     <property name="passwordFile" value="${agent.workdir}/conf/agent.password"/>
   </bean>
+-->
 
   <!-- use the following password provider for raw password -->
   <!--
@@ -60,8 +62,10 @@
 
   <bean id="restGridClient" class="org.fusesource.cloudmix.agent.RestGridClient">
     <property name="rootUri" value="${agent.controller.uri}"/>
+<!--
     <property name="username" value="${agent.user}"/>
     <property name="passwordProvider" ref="passwordProvider"/>
+-->
   </bean>
 
 

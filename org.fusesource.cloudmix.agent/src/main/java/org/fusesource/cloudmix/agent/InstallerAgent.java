@@ -7,6 +7,20 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import com.sun.jersey.api.NotFoundException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
+import org.fusesource.cloudmix.common.dto.ProcessList;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.util.FileUtils;
+import org.fusesource.cloudmix.common.util.ObjectHelper;
+import org.springframework.beans.factory.InitializingBean;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -14,8 +28,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -31,80 +45,67 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.sun.jersey.api.NotFoundException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.GridClient;
-import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
-import org.fusesource.cloudmix.common.dto.ProcessList;
-import org.fusesource.cloudmix.common.dto.ProvisioningAction;
-import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.common.util.FileUtils;
-import org.springframework.beans.factory.InitializingBean;
-
 /**
  * Polls for features that should be installed/uninstalled and executes those installations.
  *
  * @version $Revision: 1.1 $
  */
-public class InstallerAgent implements Callable<Object>, InitializingBean  {
-
+public class InstallerAgent implements Callable<Object>, InitializingBean {
+    private static final transient Log LOG = LogFactory.getLog(InstallerAgent.class);
 
     public static final String PERSISTABLE_PROPERTY_AGENT_ID = "agent.id";
     public static final String PERSISTABLE_PROPERTY_AGENT_NAME = "agent.name";
     public static final String PERSISTABLE_PROPERTY_PROFILE_ID = "agent.profile";
-    
+
     public static final String CREATED_KEY = InstallerAgent.class.getName() + ".created";
     public static final String STARTED_KEY = InstallerAgent.class.getName() + ".started";
     public static final String TIMESTAMP_KEY = InstallerAgent.class.getName() + ".timestamp";
-    
+
     public static final String PROP_ACCESS_LOCK = "agent.profile";
 
     private static final transient Log LOGGER = LogFactory.getLog(InstallerAgent.class);
     private static final String AGENT_STATE_FILE = "agent-state.dat";
-    
+
     // Persistent properties.
     protected AgentState agentState = new AgentState();
-    
+
     //private DomDriver dd = new DomDriver(); 
     //private XStream xstream= new XStream(dd);
 
     protected String propertyFilePath;
- 
+
     protected String agentId;
     protected String agentName;
     protected String profile = "default";
     protected String agentType;
     protected String[] supportPackageTypes = {};
-    protected String agentLink;    
+    protected String agentLink;
 
 
     protected AgentDetails agentDetails;
 
     protected boolean addedToClient;
-     
+
     private Set<String> initialFeatures;
     private File workDirectory;
-    
+
     private GridClient client;
     private String hostName;
     private int maxFeatures = 1;
-    
+
     private ProvisioningHistory provisioningHistory;
     private Date lastAppliedHistory;
     private int lastActionsCount;
+    private URI baseUri;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private BlockingQueue<ProvisioningHistory> historyQueue = new LinkedBlockingQueue<ProvisioningHistory>();
 
-    
+
     public InstallerAgent() {
-        
+
         lastActionsCount = 0;
-        
+
         Runnable r = new Runnable() {
             public void run() {
                 try {
@@ -112,15 +113,15 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                         // TODO: could ignore all but the last entry in the queue.
                         ProvisioningHistory history = historyQueue.take();
                         onProvisioningHistoryChanged(history);
-                    } 
+                    }
                 } catch (InterruptedException e) {
                     // TODO: do something?
-                }                
+                }
             }
         };
         executor.execute(r);
     }
-    
+
     @Override
     public String toString() {
         return "InstallerAgent[id: " + agentId + " hostName: " + hostName + " profile: " + profile + "]";
@@ -128,9 +129,9 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     public Object call() throws Exception {
         String theAgentId = getAgentId();
-        
+
         addToClient(getAgentDetails());
-        
+
         if (theAgentId != null) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Polling agent: " + theAgentId);
@@ -153,14 +154,14 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             historyQueue.put(value);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }        
-    }    
+        }
+    }
 
-    
+
     public void setWorkDirectory(File d) {
         workDirectory = d;
     }
-    
+
     public File getWorkDirectory() {
         return workDirectory;
     }
@@ -180,11 +181,14 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public void setAgentDetails(AgentDetails agentDetails) {
         this.agentDetails = agentDetails;
     }
-    
+
     public AgentDetails updateAgentDetails() {
-        
-        agentDetails = null;
+
+        // TODO why would we flush the agent details each time???
+        //agentDetails = null;
         agentDetails = getAgentDetails();
+        loadPersistedAgentDetails();
+        populateInitialAgentDetails(agentDetails);
 
         try {
             getClient().updateAgentDetails(getAgentId(), getAgentDetails());
@@ -205,19 +209,19 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public void setClient(GridClient gridControlerClient) {
         this.client = gridControlerClient;
     }
-    
+
     public int getMaxFeatures() {
         return maxFeatures;
     }
-    
+
     public void setMaxFeatures(int max) {
         maxFeatures = max;
     }
-    
+
     public String getProfile() {
         return profile;
     }
-    
+
     public void setProfile(String p) {
         profile = p;
         if (agentDetails != null) {
@@ -225,17 +229,48 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         }
     }
 
+    public URI getBaseUri() {
+        return baseUri;
+    }
+
+    /**
+     * Sets the base URI of this agent if it is hosted inside a web application.
+     * <p/>
+     * If this is a different URI to the previously registered one then this will
+     * be updated on the controller
+     */
+    public void setBaseUri(URI baseUri) {
+        this.baseUri = baseUri;
+
+        LOG.info("Setting baseURI to " + baseUri);
+
+        if (baseUri != null) {
+            // lets tell the controller about it!
+            String newHref = baseUri.toString();
+
+            AgentDetails details = getAgentDetails();
+            String oldHref = details.getHref();
+            if (!ObjectHelper.equal(oldHref, newHref)) {
+                details.setHref(newHref);
+
+                LOG.info("updating href to " + newHref);
+                updateAgentDetails();
+                LOG.info("href is now " + getAgentDetails().getHref());
+            }
+        }
+    }
+
     public String getAgentName() {
         return agentName;
     }
-    
+
     public void setAgentName(String aName) {
         agentName = aName;
         if (agentDetails != null) {
             agentDetails.setName(aName);
         }
     }
-    
+
     public ProvisioningHistory getProvisioningHistory() {
         return provisioningHistory;
     }
@@ -247,24 +282,24 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         return agentId;
     }
 
-    
+
     protected synchronized String addToClient(AgentDetails details) throws URISyntaxException {
         if (addedToClient) {
             return details.getId();
         }
-        
+
         if (provisioningHistory != null) {
             ProcessList processList = new ProcessList();
             provisioningHistory.populate(processList);
             details.setProcesses(processList);
         }
-        
+
         String generatedId = getClient().addAgentDetails(details);
         agentId = generatedId;
         details.setId(generatedId);
-        
+
         persistAgentDetails();
-        
+
         addedToClient = true;
         return generatedId;
     }
@@ -284,22 +319,23 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public void setHostName(String hn) {
         hostName = hn;
     }
-    
+
     /**
      * sets the path to the property file storing the properties of the agent modifiable remotely
+     *
      * @param path to the Java property file
      */
     public void setDetailsPropertyFilePath(String path) {
         propertyFilePath = path;
     }
-    
+
     /**
      * gets the path to the property file storing the properties of the agent modifiable remotely
      */
     public String getDetailsPropertyFilePath() {
         return propertyFilePath;
     }
-    
+
     // Implementation methods
     //-------------------------------------------------------------------------
     protected void populateInitialAgentDetails(AgentDetails details) {
@@ -309,22 +345,22 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         details.setProfile(getProfile());
         details.setName(getAgentName());
         details.setOs(System.getProperty("os.name"));
-        
+
         details.setAgentLink(null);
         details.setContainerType(null);
-        details.setSupportPackageTypes(new String[] {});
-        
+        details.setSupportPackageTypes(new String[]{});
+
         Map<String, String> m = new HashMap<String, String>(System.getProperties().size());
         for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
             m.put(entry.getKey().toString(), entry.getValue().toString());
         }
         details.setSystemProperties(m);
-        
-        
+
+
         details.setContainerType(getContainerType());
         details.setSupportPackageTypes(getSupportPackageTypes());
         details.setAgentLink(getAgentLink());
-        
+
         initialFeatures = getFeatures();
         details.setCurrentFeatures(initialFeatures);
 
@@ -346,7 +382,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public String getContainerType() {
         return agentType;
     }
-    
+
     public void setSupportPackageTypes(String[] supportPackageTypes) {
         this.supportPackageTypes = supportPackageTypes;
     }
@@ -362,14 +398,15 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     /**
      * persist the agents details locally so they can be retrieved later after a shutdown
+     *
      * @return true if the details were persisted successfully, false otherwise
      */
     public boolean persistAgentDetails() {
-        
+
         if (getDetailsPropertyFilePath() == null) {
             return false;
         }
-        
+
         synchronized (PROP_ACCESS_LOCK) {
             Properties props = loadProperties(getDetailsPropertyFilePath());
             if (props == null) {
@@ -379,80 +416,81 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             if (agentName != null) {
                 props.setProperty(PERSISTABLE_PROPERTY_AGENT_NAME, agentName);
             }
-            
+
             if (profile != null) {
                 props.setProperty(PERSISTABLE_PROPERTY_PROFILE_ID, profile);
             }
-            
+
             if (agentId != null && agentId.trim().length() > 0) {
                 props.setProperty(PERSISTABLE_PROPERTY_AGENT_ID, agentId);
             }
-            
+
             return persistProperties(props, getDetailsPropertyFilePath());
         }
     }
 
     /**
      * load the persisted agents details from local storage
+     *
      * @return true if the details were loaded successfully, false otherwise
      */
     public boolean loadPersistedAgentDetails() {
         if (agentDetails == null) {
             agentDetails = new AgentDetails();
         }
-        
+
         Properties props = loadProperties(getDetailsPropertyFilePath());
         if (props == null) {
             return false;
         }
 
-        synchronized (PROP_ACCESS_LOCK) {    
+        synchronized (PROP_ACCESS_LOCK) {
             String prop = props.getProperty(PERSISTABLE_PROPERTY_AGENT_ID);
             agentId = prop != null ? prop : agentId;
             agentDetails.setId(prop != null ? prop : agentDetails.getId());
-    
+
             prop = readProp(props, PERSISTABLE_PROPERTY_AGENT_NAME);
             setAgentName(prop != null ? prop : agentName);
-    
+
             prop = readProp(props, PERSISTABLE_PROPERTY_PROFILE_ID);
             setProfile(prop != null ? prop : profile);
-    
+
             return true;
         }
     }
 
     private String readProp(Properties props, String propName) {
         String value = props.getProperty(propName);
-        return (value == null || value.trim().length() == 0) ? null : value; 
+        return (value == null || value.trim().length() == 0) ? null : value;
     }
 
     protected void onProvisioningHistoryChanged(ProvisioningHistory aProvisioningHistory) {
-        
+
         //logProvisioningHistory(aProvisioningHistory);
-        
+
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("timestamp of previous provisioning history: " + lastAppliedHistory);
             LOGGER.debug("timestamp of current provisioning history: "
-                         + (aProvisioningHistory != null ? aProvisioningHistory.getLastModified() : "???"));
+                    + (aProvisioningHistory != null ? aProvisioningHistory.getLastModified() : "???"));
         }
-        
+
         if (aProvisioningHistory != null
-            && (lastAppliedHistory == null
+                && (lastAppliedHistory == null
                 || (lastAppliedHistory.getTime() != aProvisioningHistory.getLastModified().getTime()))) {
-            
+
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("provisioning instructions changed since last poll: " + aProvisioningHistory);
             }
-            
+
             if (!validateAgent()) {
                 return;
             }
-    
+
             provisioningHistory = aProvisioningHistory;
-            
+
             List<AgentCfgUpdate> cfgUpdates = aProvisioningHistory.getCfgUpdates();
             if (cfgUpdates != null && cfgUpdates.size() > 0) {
-                
+
                 boolean cfgUpdated = false;
                 for (AgentCfgUpdate update : cfgUpdates) {
                     if (AgentCfgUpdate.PROPERTY_AGENT_NAME.equals(update.getProperty())
@@ -460,38 +498,38 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                         setAgentName(update.getValue());
                         getAgentDetails().setName(update.getValue());
                         cfgUpdated = true;
-                        
+
                     } else if (AgentCfgUpdate.PROPERTY_PROFILE_ID.equals(update.getProperty())
                             && changed(getAgentDetails().getProfile(), update.getValue())) {
                         setProfile(update.getValue());
                         getAgentDetails().setProfile(update.getValue());
                         cfgUpdated = true;
-                    
+
                     } else if (AgentCfgUpdate.PROPERTY_AGENT_FORCE_REGISTER.equals(update.getProperty())
                             && "true".equals(update.getValue())) {
                         forceAgentReregistration();
                         cfgUpdated = true;
                     }
-                    
+
                 }
-                
+
                 if (cfgUpdated) {
                     persistAgentDetails();
                 }
             }
-        
-        
+
+
             if (lastActionsCount != aProvisioningHistory.getActions().size()) {
-                
+
                 LOGGER.debug("provisioning actions changed since last poll (was " + lastActionsCount
-                             + " and now " + aProvisioningHistory.getActions().size());
+                        + " and now " + aProvisioningHistory.getActions().size());
                 try {
                     Map<String, ProvisioningAction> installActions =
-                        new HashMap<String, ProvisioningAction>();
+                            new HashMap<String, ProvisioningAction>();
                     Map<String, ProvisioningAction> uninstallActions =
-                        new HashMap<String, ProvisioningAction>();
+                            new HashMap<String, ProvisioningAction>();
                     getEffectiveActions(installActions, uninstallActions);
-                    
+
                     LOGGER.debug("onProvisioningHistoryChanged - uninstall " + uninstallActions);
                     for (ProvisioningAction action : uninstallActions.values()) {
                         String featureName = action.getFeature();
@@ -502,7 +540,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                             LOGGER.warn("Cannot find installed feature " + featureName + " to uninstall");
                         }
                     }
-                    
+
                     LOGGER.debug("onProvisioningHistoryChanged - install: " + installActions);
                     for (ProvisioningAction action : installActions.values()) {
                         String credentials = null;
@@ -512,8 +550,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                         String resource = action.getResource();
                         if (resource == null) {
                             LOGGER.debug("Action has no resource! " + action);
-                        }
-                        else {
+                        } else {
                             installFeatures(action, credentials, resource);
                         }
                     }
@@ -523,17 +560,17 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                     persistState();
                     updateAgentDetails();
                 }
-                
+
                 lastActionsCount = aProvisioningHistory.getActions().size();
             }
             lastAppliedHistory = aProvisioningHistory.getLastModified();
-        
+
         } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("No new instructions... ");
             }
         }
-        
+
     }
 
     protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
@@ -588,7 +625,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
 
     protected void uninstallFeature(Feature feature) throws Exception {
         LOGGER.info("Uninstalling feature " + feature);
-        
+
         for (Bundle bundle : feature.getBundles()) {
             if (uninstallBundle(feature, bundle)) {
                 LOGGER.info("Successfully removed bundle " + bundle);
@@ -602,7 +639,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
         Properties applicationProperties = feature.getProperties("applicationProperties");
         Properties systemProperties = System.getProperties();
         boolean changed = false;
-        
+
         // time to apply the application's configuration overrides
         if (featureCfgOverrides != null && featureCfgOverrides.size() > 0) {
             if (applicationProperties == null) {
@@ -612,18 +649,18 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 applicationProperties.put(cfgUpdate.getProperty(), cfgUpdate.getValue());
             }
         }
-        
+
         if (applicationProperties != null) {
             systemProperties.putAll(applicationProperties);
             changed = true;
             LOGGER.info(" ===>> adding app props to system");
         }
-        
+
         if (changed) {
             System.setProperties(systemProperties);
             LOGGER.info(" ===>> applying props updates");
         }
-        
+
     }
 
     public List<Bundle> getFeatureBundles(String featureName) {
@@ -639,7 +676,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     protected String createHostName() {
         try {
             return Inet4Address.getLocalHost().getCanonicalHostName();
-        
+
         } catch (UnknownHostException e) {
             LOGGER.warn("Could not find out the host name: " + e, e);
             return "localhost";
@@ -651,22 +688,23 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
      * history. The history could instruct to install a feature and then uninstall it
      * later, in that case the net effect is 0. This method walks the history and computes
      * the effective actions for install and uninstall.
-     * @param installActions This map will be filled with the install actions to perform
+     *
+     * @param installActions   This map will be filled with the install actions to perform
      * @param uninstallActions This map will be fille with the uninstall actions to perform
      */
-    public void getEffectiveActions(Map<String, ProvisioningAction> installActions, 
+    public void getEffectiveActions(Map<String, ProvisioningAction> installActions,
                                     Map<String, ProvisioningAction> uninstallActions) {
-        
+
         ProvisioningHistory history = getProvisioningHistory();
         if (history == null) {
             return;
         }
-        
+
         List<ProvisioningAction> actions = history.getActions();
         if (actions == null) {
             return;
         }
-        
+
         for (ProvisioningAction action : actions) {
             if (ProvisioningAction.INSTALL_COMMAND.equals(action.getCommand())) {
                 LOGGER.debug("install action :" + action.getFeature());
@@ -678,8 +716,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 installActions.remove(action.getFeature());
             }
         }
-    }  
-    
+    }
+
     // convenience
     private synchronized Properties loadProperties(String filePath) {
 
@@ -709,8 +747,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 }
                 propFile.createNewFile();
             }
-                        
-            props.store(new FileOutputStream(propFile), "agent details as of "  + new Date());
+
+            props.store(new FileOutputStream(propFile), "agent details as of " + new Date());
             return true;
         } catch (Exception e) {
             LOGGER.warn("error storing properties file " + filePath, e);
@@ -725,11 +763,11 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     protected boolean uninstallBundle(Feature feature, Bundle bundle) {
         return true;
     }
-    
+
     protected boolean validateAgent() {
         return true;
     }
-    
+
 
     protected boolean changed(String oldValue, String newValue) {
         return !((oldValue == null && newValue == null) || (oldValue != null && oldValue.equals(newValue)));
@@ -738,7 +776,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
     public void afterPropertiesSet() throws Exception {
         init();
     }
-    
+
     public void init() throws Exception {
 
         File dir = getWorkDirectory();
@@ -752,14 +790,14 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             }
             loadState();
             agentState.getAgentProperties().put(STARTED_KEY, new Date());
-            
+
             // TODO: (CM-2) Clean up previously installed features.  This is currently
             // disabled as there are problems related to the order in which the agent 
             // and its deployed features are started when restarting servicemix.
             // cleanInstalledFeatures();
         }
     }
- 
+
     protected void cleanInstalledFeatures() {
         Map<String, Feature> features = agentState.getAgentFeatures();
         if (features != null) {
@@ -787,7 +825,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             File stateFile = new File(dir, AGENT_STATE_FILE);
             LOGGER.info("Saving agent state to " + stateFile);
             OutputStream os = new FileOutputStream(stateFile);
-            
+
             ObjectOutputStream oos = new ObjectOutputStream(os);
             oos.writeObject(agentState);
             // TODO: (CM-4) Use XStream for serializing agent state.  Currently disabled
@@ -795,13 +833,13 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             //xstream.toXML(agentState, os);
             oos.close();
             os.close();
-            
+
         } catch (Throwable t) {
             LOGGER.error("Error persisting agent state", t);
             LOGGER.debug(t);
-        }        
+        }
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void loadState() throws Exception {
 
@@ -817,7 +855,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             persistState();
             return;
         }
-        
+
         try {
             InputStream is = new FileInputStream(stateFile);
             // TODO: (CM-4) Use XStream for serializing agent state.  Currently disabled
@@ -826,14 +864,14 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             ObjectInputStream ois = new ObjectInputStream(is);
             Object o = ois.readObject();
             agentState = (AgentState) o;
-            
+
             is.close();
         } catch (Exception e) {
             LOGGER.error("Error reading agent state", e);
             throw e;
         }
     }
-    
+
     private void showAgentProperties() {
         if (LOGGER.isInfoEnabled()) {
             StringBuilder sb = new StringBuilder();
@@ -844,15 +882,15 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
             LOGGER.info(sb.toString());
         }
     }
-    
-    private void addProperties(StringBuilder sb, Map<String, Object> properties, String prefix) {        
+
+    private void addProperties(StringBuilder sb, Map<String, Object> properties, String prefix) {
         for (String k : properties.keySet()) {
             sb.append(prefix).append(k).append(" = ");
             sb.append(properties.get(k)).append("\n");
-        }        
+        }
     }
 
-    private void addFeatures(StringBuilder sb, Map<String, Feature> properties, String prefix) {        
+    private void addFeatures(StringBuilder sb, Map<String, Feature> properties, String prefix) {
         for (String k : properties.keySet()) {
             sb.append(prefix).append(k).append(" = ");
             Feature f = properties.get(k);
@@ -865,6 +903,6 @@ public class InstallerAgent implements Callable<Object>, InitializingBean  {
                 addProperties(sb, b.getAgentProperties(), prefix + "    ");
             }
             sb.append("\n");
-        }        
+        }
     }
 }

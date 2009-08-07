@@ -35,7 +35,7 @@
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.fusesource.cloudmix.controller.resources;org.fusesource.cloudmix.common.jaxrs</param-value>
+      <param-value>org.fusesource.cloudmix.agent.resources;org.fusesource.cloudmix.common.jaxrs</param-value>
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.feature.Redirect</param-name>
@@ -47,7 +47,7 @@
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-      <param-value>/(|index.*|(images|css|js|classpath|styles)/.*)</param-value>
+      <param-value>/(images|css|js|classpath|styles)/.*</param-value>
     </init-param>
   </filter>
 
