@@ -47,7 +47,7 @@ sort_info: 1
   </tr></table>
 </div>
 --- name:content
-*CloudMix* is a framework for deploying, provisioning, testing and managing Java bundles and applications on a _Cloud_ of computing resources whether it is on
+*CloudMix* is a framework for deploying, provisioning, <a href="testing.html">testing</a> and managing Java bundles and applications on a _Cloud_ of computing resources whether it is on
 * a collection of machines/JVMs
 * Amazon EC2
 * an internal cloud
