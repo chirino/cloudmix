@@ -23,6 +23,13 @@
       <artifactId>commons-logging-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -30,6 +37,7 @@
       <version>${junit-version}</version>
       <scope>test</scope>
     </dependency>
+
 
   </dependencies>
 
