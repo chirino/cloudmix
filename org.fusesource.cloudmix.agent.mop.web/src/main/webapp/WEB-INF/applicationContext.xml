@@ -14,10 +14,14 @@
 
   <bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="ignoreResourceNotFound">
-      <value>true</value>
-    </property>
+
+    <!-- lets use system properties by default -->
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
 <!--
+    <property name="ignoreResourceNotFound" value="true"/>
+-->
+
+ <!--
     <property name="location">
       <value>file:${catalina.home}/conf/agent.properties</value>
     </property>
@@ -69,7 +73,7 @@
   </bean>
 
 
-  <bean id="directoryAgent" class="org.fusesource.cloudmix.agent.mop.MopAgent">
+  <bean id="mopAgent" class="org.fusesource.cloudmix.agent.mop.MopAgent">
     <property name="client" ref="restGridClient"/>
     <property name="profile" value="${agent.profile}"/>
     <property name="maxFeatures" value="${agent.max.features}"/>
@@ -83,7 +87,7 @@
   </bean>
 
   <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller">
-    <property name="agent" ref="directoryAgent"/>
+    <property name="agent" ref="mopAgent"/>
     <property name="initialPollingDelay" value="${agent.initial.polling.delay}"/>
     <property name="pollingPeriod" value="${agent.polling.period}"/>
   </bean>

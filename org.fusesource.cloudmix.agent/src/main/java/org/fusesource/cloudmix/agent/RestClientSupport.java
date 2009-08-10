@@ -35,6 +35,12 @@ public class RestClientSupport {
     public RestClientSupport() {
     }
 
+    @Override
+    public String toString() {
+        return "RestClient[rootUri: " + rootUri + "]";
+
+    }
+
     public Client getClient(String credentials) {
         if (client == null) {
             DefaultClientConfig config = new DefaultClientConfig();

@@ -15,9 +15,6 @@
   <description>CloudMix MOP Agent Bundle</description>
 
   <properties>
-    <profile>*</profile>
-    <workingDir></workingDir>
-
     <cloudmix.osgi.import.pkg>
       org.apache.commons.logging; version=1.1.1,
       com.sun.jersey.core.impl.provider.header; version=0.0.0,
@@ -152,7 +149,7 @@
           <mainClass>org.fusesource.cloudmix.agent.mop.Main</mainClass>
           <classpathScope>compile</classpathScope>
           <arguments>
-            <argument>http://localhost:${jetty.port}</argument>
+            <argument>${cloudmixUrl}</argument>
             <argument>${profile}</argument>
             <argument>${workingDir}</argument>
           </arguments>

@@ -60,6 +60,11 @@
     <cloudmix.osgi.embed.directory/>
     <cloudmix.osgi.unpack.bundle>false</cloudmix.osgi.unpack.bundle>
     <cloudmix.osgi._exportcontents>*</cloudmix.osgi._exportcontents>
+
+    <!-- default arguments when running agents -->
+    <profile>*</profile>
+    <workingDir></workingDir>
+    <cloudmixUrl>http://localhost:${jetty.port}</cloudmixUrl>
   </properties>
 
   <url>http://cloudmix.fusesource.org/</url>
