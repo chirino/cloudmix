@@ -1,5 +1,5 @@
 ---
-title: MyProject User Guide
+title: CloudMix User Guide
 --- name:head pipeline:tags
 <link href="{relocatable: book.css}" rel="stylesheet" type="text/css" />
 
@@ -8,7 +8,7 @@ title: MyProject User Guide
 {title:}
 ====================
 James Strachan
-Author: Initials: JAS
+:Author Initials: JAS
 {project_version:}, 2009
 
 *CloudMix* is a framework for deploying, provisioning, link:/testing.html[testing] and managing Java bundles and applications on a _Cloud_ of computing resources whether it is on
