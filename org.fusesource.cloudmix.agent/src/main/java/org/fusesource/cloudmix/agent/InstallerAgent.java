@@ -778,8 +778,10 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     }
 
     public void init() throws Exception {
-
         File dir = getWorkDirectory();
+
+        LOG.info("Starting CloudMix Agent with client: " + getClient() + " profile: " + getProfile() + " workingDir: " + dir);
+
         if (dir == null) {
             LOGGER.warn("No work directory specified.  Not persisting agent state.");
             return;
