@@ -7,21 +7,128 @@ title: MyProject User Guide
 
 {title:}
 ====================
-Hiram Chirino
-v1.0, Dec 2003
+James Strachan
+Author: Initials: JAS
+{project_version:}, 2009
 
-Preface
--------
+*CloudMix* is a framework for deploying, provisioning, link:/testing.html[testing] and managing Java bundles and applications on a _Cloud_ of computing resources whether it is on
 
-This user guide is currently under active development!
+* a collection of machines/JVMs
+* Amazon EC2
+* an internal cloud
 
-Chapter 1
----------
+CloudMix can use the available machines you have to run your software; load balancing features across machines and keeping things working. If features stop working on a machine then CloudMix can ensure that features are provisioned on other available machines.
 
-TODO!
+[Architecture]
+== Architecture
 
-Index
------
+CloudMix consists of the following components
+
+* a single *Controller* process
+* one or more *Agents* possibly running on a range of machines, maybe as VMWare images on EC2
+
+The _controller_ is responsible for deciding what features get provisioned on what agents. A _feature_ can be anything; it could be a specific application, some Java code inside a jar, war, ear, OSGi bundle or JBI deployment unit.
+
+CloudMix supports multiple environments such as development, testing, production and so forth. We use the term _profile_ to refer to an environment. When doing <<DistributedTesting,distributed testing>> a profile could map to a specific distributed JUnit test case for example.
+
+You can define _provisioning rules_ and dependencies of features within a profile so that if a machine is removed from the network or suffers a hardware failure, the controller can create a new instance of the missing features on another machine.
+
+
+[[API]]
+=== RESTful API 
+
+CloudMix is designed around a clean RESTful protocol so that its easy to interact and integrate clients and agents with the controller. If you try <<RunController,running the controller>> you can browse the CloudMix API by pointing your web browser at your controller.
+
+For example if you are running the controller on its default port of _8181_ then on the machine that is running the controller you can point your browser at http://localhost:8181/api to browse the REST API.
+
+The API allows clients to interact with the controller to see the state of the various profiles and features, to modify configurations or to add or remove features to profiles.
+
+The REST API is also used by agents; on start-up each agent registers itself with the controller giving details of its properties such as operating system. The controller then uses the REST API to instruct agents to provision different features. 
+
+Agents POST their registration with the controller; they are then given their own unique URL (in the Location header returned) which they then use an efficient REST poll (using etags and last modified date) to await instructions from the controller to start or stop running features.
+
+=== Failover
+
+The controller is a single point of failure; however CloudMix is designed to handle failure of the controller. 
+
+If the controller is down for any length of time, the agents carry on doing what they were told to do by the controller. When a new controller is started (either manually or hopefully using some kind of IP load balancer or virtual IP tool or just a simple restart daemontools type mechanism), each agent re-registers themselves with the new controller and describes what it is running so that the controller can decide if any other actions are required (such as spinning up new instances of a feature).
+
+Failover usually only takes a few seconds; so its not normally an issue for having a highly clustered controller; just having a way of restarting a controller on failure is often enough; since the controller is only used to make changes to what is running in a cloud; its not actually used typically by the features running on the cloud itself.
+
+[[DistributedTesting]]
+=== Distributed Testing
+
+Distributed testing in general is hard. We wanted a framework that would allow us to 
+
+* on a number of available machines create a configured number of instances of arbitrary bits of software, be they message brokers, ESBs, blobs of Spring beans or custom Java code
+* wire the instances together so they know where their requirements are. For example producers and consumers need to connect to the message brokers
+* we use either a fixed number of available test machines; or let machines be spun up dynamically on EC2
+* let users develop distributed tests using JUnit so that they can run and debug a distributed test case on their machines; while still reusing a test cloud of machines to spread the load.
+
+We use CloudMix to achieve this by using a JUnit test case, _TestController_ which performs the following features
+
+* connects to the local CloudMix controller
+* creates a new _profile_ for the unit test case (class and method)
+* configures the features required for the test case (for example the exact versions of software we require, their dependencies and number of instances required)
+* waits for the profile to get provisioned - or fail the test if the profile could not be provisioned
+* interact with the test in some way (the JUnit test case typically triggers behaviour and performs assertions based on results inside the Test Cloud)
+* destroy the profile and all its associated processes
+
+
+== Using CloudMix
+
+Probably the easiest way to get started with CloudMix is to run a controller, one or more agents and then run a distributed test case and watch what happens. 
+
+[[RunController]]
+=== Running the Controller
+
+The easiest way to run the controller is currently by link:/source.html[getting the source code] and link:/building.html[building it] then running the following commands
+
+----
+cd org.fusesource.cloudmix.controller.webapp
+mvn jetty:run
+----
+
+you should now be able to see the controller running by pointing your web browser at http://localhost:8181/
+
+If you want to change the port number which its running on you can try
+
+----
+mvn -Djetty.port=8080 jetty:run
+----
+
+then the controller should be available at http://localhost:8080/
+
+[[RunAgent]]
+=== Running an Agent
+
+The easiest way to run an agent is currently by link:/source.html[getting the source code] and link:/building.html[building it] then running the following commands
+
+----
+cd org.fusesource.cloudmix.agent.mop.web
+mvn jetty:run
+----
+
+You should then be able to browse the Agent's web application by pointing your browser at the default port at http://localhost:8080/. You can override this port by specifying the port you require on the command line
+
+----
+mvn -Djetty.port=8282 jetty:run
+----
+
+Then you can view the new web application at http://localhost:8282/
+
+[[RunTest]]
+=== Running a distributed test case
+
+The easiest way to get started is by link:/source.html[getting the source code] and link:/building.html[building it] then running the sample unit test cases as follows
+
+----
+mvn test -Pit
+----
+
+This will then create a _profile_ for each JUnit test case which you can view if you browse the controller via http://localhost:8181/. You should also be able to navigate to the agent's web application and see each individual process and its log files and so forth.
+
+== Index
 ////////////////////////////////////////////////////////////////
 Empty for now.
 ////////////////////////////////////////////////////////////////

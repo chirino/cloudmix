@@ -19,6 +19,7 @@
   project_name: "Cloudmix"
   project_slogan: 'a framework for deploying, provisioning and testing Java code in a cloud'
   project_id: 'cloudmix'
+  project_version: '1.0-SNAPSHOT'
   project_jira_key: 'CLOUDMIX'
   project_issue_url: 'http://fusesource.com/issues/browse/CLOUDMIX'
   project_forums_url: 'http://fusesource.com/forums'
