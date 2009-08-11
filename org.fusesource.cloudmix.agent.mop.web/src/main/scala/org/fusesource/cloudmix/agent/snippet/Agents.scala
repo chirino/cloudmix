@@ -2,7 +2,7 @@ package org.fusesource.cloudmix.agent.snippet
 
 import cloudmix.common.dto.AgentDetails
 import mop.MopProcess
-import resources.AgentResource
+import resources.{ResourceSupport, AgentResource}
 import scalautil.TextFormatting._
 
 import _root_.com.sun.jersey.lift.Requests.uri
@@ -76,7 +76,7 @@ class Agents {
 
   def index(xhtml: Group): NodeSeq = {
     ResourceBean.get match {
-      case agent: AgentResource =>
+      case agent: ResourceSupport =>
         val details = agent.details
         val systemProperties = new TreeMap[String, String](details.getSystemProperties)
         val processes = new TreeMap[String, MopProcess](agent.processes)
