@@ -11,14 +11,12 @@ import mop.MopAgent
 class ProcessesResource(val agent: MopAgent) extends ResourceSupport {
   @Path("{id}")
   def processResource(@PathParam("id") id: String) = {
-    log.info("Looking up id " + id)
     def process = processes.get(id)
     if (processes == null) {
-      log.info("not Found!!!")
+      log.debug("could not find process for id: " + id)
       null
     }
     else {
-      log.info("Found!!!")
       new ProcessResource(agent, id, process)
     }
   }

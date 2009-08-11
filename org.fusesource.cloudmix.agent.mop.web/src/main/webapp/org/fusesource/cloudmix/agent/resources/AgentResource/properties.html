@@ -1,10 +1,10 @@
 <lift:surround with="default" at="content">
   <lift:agents.index>
     <head>
-      <title>CloudMix Agent</title>
+      <title>CloudMix Agent System Properties</title>
     </head>
 
-    <h2>Agent:
+    <h2>System Properties
       <agent:name/>
     </h2>
 
@@ -50,18 +50,20 @@
         <td colspan="4">
           <table>
             <tr>
-              <th>Processes</th>
+              <th>System Property</th>
+              <th>Value</th>
             </tr>
 
-            <agent:process>
+            <agent:systemProperty>
               <tr>
                 <td>
-                  <a class='process' process:link="na">
-                    <process:id/>
-                  </a>
+                  <systemProperty:name/>
+                </td>
+                <td>
+                  <systemProperty:value/>
                 </td>
               </tr>
-            </agent:process>
+            </agent:systemProperty>
           </table>
         </td>
       </tr>

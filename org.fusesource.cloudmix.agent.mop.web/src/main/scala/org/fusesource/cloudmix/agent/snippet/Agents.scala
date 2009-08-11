@@ -2,7 +2,7 @@ package org.fusesource.cloudmix.agent.snippet
 
 import cloudmix.common.dto.AgentDetails
 import mop.MopProcess
-import resources.{ResourceSupport, AgentResource}
+import resources.{ProcessResource, ResourceSupport}
 import scalautil.TextFormatting._
 
 import _root_.com.sun.jersey.lift.Requests.uri
@@ -52,36 +52,12 @@ object Agents {
 import Agents._
 
 class Agents {
-  /*
-  def list(xhtml: Group): NodeSeq = {
-
-    ResourceBean.get match {
-      case agents: AgentsResource =>
-        // TODO shame there's not a standard conversion to scala list for Collection
-        // wonder if we can zap this in Scala 2.8?
-        def agentList = new ArrayList[AgentDetails](agents.getAgents)
-
-        agentList.flatMap {
-          agent: AgentDetails =>
-                  bind("agent", xhtml,
-                    "name" -> Text(agent.getId),
-                    "site" -> siteLink(agent),
-                    AttrBindParam("link", Text(agentLink(agent)), "href"))}
-
-      case _ =>
-        <p> <b>Warning</b>No Agent resources found!</p>
-    }
-  }
-  */
-
   def index(xhtml: Group): NodeSeq = {
     ResourceBean.get match {
       case agent: ResourceSupport =>
         val details = agent.details
         val systemProperties = new TreeMap[String, String](details.getSystemProperties)
         val processes = new TreeMap[String, MopProcess](agent.processes)
-
-        println("agent href " + details.getHref)
 
         bind("agent", xhtml,
           "site" -> siteLink(details),
@@ -112,6 +88,25 @@ class Agents {
                 AttrBindParam("link", Text(processLink(process)), "href"))
           }.toSeq
           )
+
+      case _ =>
+        <p>
+          <b>Warning</b>
+          No Agent resources found!</p>
+    }
+  }
+
+  def process(xhtml: Group): NodeSeq = {
+    ResourceBean.get match {
+      case processResource: ProcessResource =>
+        val process = processResource.process
+
+        // TODO can we share bindings with the above??
+        bind("process", xhtml,
+          "id" -> asText(process.getId),
+          "site" -> processLink(process.getId),
+          "commandLine" -> asText(process.getCommandLine),
+          "credentials" -> asText(process.getCredentials))
 
       case _ =>
         <p>
