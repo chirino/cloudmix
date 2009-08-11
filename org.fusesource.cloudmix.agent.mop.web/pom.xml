@@ -17,6 +17,7 @@
   <properties>
     <profile>*</profile>
     <workingDir></workingDir>
+    <cloudmixUrl>http://localhost:8181</cloudmixUrl>
     <jetty.port>8080</jetty.port>
   </properties>
 

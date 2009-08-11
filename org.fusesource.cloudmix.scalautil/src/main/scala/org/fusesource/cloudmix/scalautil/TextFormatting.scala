@@ -16,7 +16,7 @@ object TextFormatting extends Logging {
       ""
   }
 
-  def asText(value: boolean): String = {
+  def asText(value: Boolean): String = {
     if (value)
       "true"
     else

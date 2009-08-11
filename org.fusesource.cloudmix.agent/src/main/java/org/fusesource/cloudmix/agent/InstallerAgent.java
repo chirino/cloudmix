@@ -96,10 +96,10 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     private ProvisioningHistory provisioningHistory;
     private Date lastAppliedHistory;
     private int lastActionsCount;
-    private URI baseUri;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private BlockingQueue<ProvisioningHistory> historyQueue = new LinkedBlockingQueue<ProvisioningHistory>();
+    private String baseHref;
 
 
     public InstallerAgent() {
@@ -229,33 +229,28 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
         }
     }
 
-    public URI getBaseUri() {
-        return baseUri;
+    public String getBaseHref() {
+        return baseHref;
     }
 
     /**
-     * Sets the base URI of this agent if it is hosted inside a web application.
+     * Sets the base link to this agent's web application.
      * <p/>
-     * If this is a different URI to the previously registered one then this will
+     * If this is a different link to the previously registered one then this will
      * be updated on the controller
      */
-    public void setBaseUri(URI baseUri) {
-        this.baseUri = baseUri;
+    public void setBaseHref(String baseHref) {
+        this.baseHref = baseHref;
 
-        LOG.info("Setting baseURI to " + baseUri);
-
-        if (baseUri != null) {
-            // lets tell the controller about it!
-            String newHref = baseUri.toString();
-
+        if (baseHref != null) {
             AgentDetails details = getAgentDetails();
             String oldHref = details.getHref();
-            if (!ObjectHelper.equal(oldHref, newHref)) {
-                details.setHref(newHref);
+            if (!ObjectHelper.equal(oldHref, baseHref)) {
+                details.setHref(baseHref);
 
-                LOG.info("updating href to " + newHref);
+                LOG.debug("updating agent href to " + baseHref);
                 updateAgentDetails();
-                LOG.info("href is now " + getAgentDetails().getHref());
+                LOG.debug("href is now " + getAgentDetails().getHref());
             }
         }
     }

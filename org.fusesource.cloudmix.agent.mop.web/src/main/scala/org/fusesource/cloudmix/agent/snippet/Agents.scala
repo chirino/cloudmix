@@ -83,7 +83,7 @@ class Agents {
           "profile" -> asText(details.getProfile),
           "systemProperty" -> systemProperties.entrySet.flatMap {
             //case (key : String, value : String) =>
-            case entry : Entry[String,String] =>
+            case entry : Entry[_,_] =>
               bind("systemProperty", chooseTemplate("agent", "systemProperty", xhtml),
                 "name" -> asText(entry.getKey),
                 "value" -> asText(entry.getValue))

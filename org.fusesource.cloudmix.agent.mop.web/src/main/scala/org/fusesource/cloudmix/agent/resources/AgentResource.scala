@@ -18,9 +18,9 @@ import scalautil.Logging
  */
 @Path("/")
 //@Singleton
-@ImplicitProduces(Array("text/html;qs=5"))
-@Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
-class AgentResource extends Logging {
+//@ImplicitProduces(Array("text/html;qs=5"))
+//@Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
+class AgentResource extends ResourceSupport {
   @Inject
   var agent : MopAgent = null
   @Context
@@ -42,7 +42,7 @@ class AgentResource extends Logging {
       // this only needs to be done once on startup
       // but we can't use a singleton as
       // then we cannot get injected the uriInfo
-      agent.setBaseUri(uriInfo.getBaseUri);
+      agent.setBaseHref(uriInfo.getBaseUri().toString);
     }
   }
 
