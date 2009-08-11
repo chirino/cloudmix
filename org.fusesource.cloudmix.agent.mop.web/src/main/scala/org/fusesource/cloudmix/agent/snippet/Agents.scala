@@ -1,6 +1,7 @@
 package org.fusesource.cloudmix.agent.snippet
 
 import cloudmix.common.dto.AgentDetails
+import mop.MopProcess
 import resources.AgentResource
 import scalautil.TextFormatting._
 
@@ -27,10 +28,20 @@ object Agents {
     uri("/agents/" + agentId)
   }
 
+  def processLink(process: MopProcess): String = {
+    processLink(process.getId)
+  }
+
+  def processLink(processId: String): String = {
+    uri("/processes/" + processId)
+  }
+
   def siteLink(agent: AgentDetails): NodeSeq = {
     val href = agent.getHref
     if (href != null)
-      <a href={href} class='site'>{agent.getId}</a>
+      <a href={href} class='site'>
+        {agent.getId}
+      </a>
     else
       Text("")
   }
@@ -67,10 +78,11 @@ class Agents {
     ResourceBean.get match {
       case agent: AgentResource =>
         val details = agent.details
-        val systemProperties = new TreeMap[String,String](details.getSystemProperties)
+        val systemProperties = new TreeMap[String, String](details.getSystemProperties)
+        val processes = new TreeMap[String, MopProcess](agent.processes)
 
         println("agent href " + details.getHref)
-        
+
         bind("agent", xhtml,
           "site" -> siteLink(details),
           "containerType" -> asText(details.getContainerType),
@@ -81,17 +93,30 @@ class Agents {
           "os" -> asText(details.getOs),
           "pid" -> asText("" + details.getPid),
           "profile" -> asText(details.getProfile),
+
           "systemProperty" -> systemProperties.entrySet.flatMap {
             //case (key : String, value : String) =>
-            case entry : Entry[_,_] =>
+            case entry: Entry[_, _] =>
               bind("systemProperty", chooseTemplate("agent", "systemProperty", xhtml),
                 "name" -> asText(entry.getKey),
                 "value" -> asText(entry.getValue))
+          }.toSeq,
+
+          "process" -> processes.entrySet.flatMap {
+            //case (key : String, value : String) =>
+            case entry: Entry[_, _] =>
+              val process: MopProcess = entry.getValue
+              bind("process", chooseTemplate("agent", "process", xhtml),
+                "id" -> asText(entry.getKey),
+                "commandLine" -> asText(process.getCommandLine),
+                AttrBindParam("link", Text(processLink(process)), "href"))
           }.toSeq
-        )
+          )
 
       case _ =>
-        <p> <b>Warning</b>No Agent resources found!</p>
+        <p>
+          <b>Warning</b>
+          No Agent resources found!</p>
     }
   }
 

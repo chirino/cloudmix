@@ -385,7 +385,6 @@
     <module>org.fusesource.cloudmix.agent.dir.webapp</module>
     <!-- TODO lets disable smx4 agent for now until gshell/karaf are more stable -->
     <module>org.fusesource.cloudmix.agent.logging</module>
-    <module>org.fusesource.cloudmix.agent.jbi</module>
     <module>org.fusesource.cloudmix.jersey.osgi</module>
     <module>bundles</module>
     <module>features</module>
@@ -1328,6 +1327,7 @@
       <modules>
         <!-- TODO lets disable smx4 agent for now until gshell/karaf are more stable -->
         <module>org.fusesource.cloudmix.agent.smx4</module>
+        <module>org.fusesource.cloudmix.agent.jbi</module>
         <module>systests</module>
       </modules>
     </profile>
