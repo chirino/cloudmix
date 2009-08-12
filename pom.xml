@@ -389,7 +389,6 @@
     <module>bundles</module>
     <module>features</module>
     <module>assembly</module>
-    <module>testrunner</module>
   </modules>
 
   <dependencyManagement>
