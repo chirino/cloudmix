@@ -4,6 +4,12 @@
       <title>CloudMix Agent Processes</title>
     </head>
 
+    <script language="JavaScript">
+      function confirmDelete() {
+        return confirm('Are you sure you want to kill this process?');
+      }
+    </script>
+
     <h2>Processes:
       <agent:name/>
     </h2>
@@ -21,6 +27,13 @@
               <process:id/>
             </a>
           </td>
+        </tr>
+        <tr>
+        <td>
+          <form process:action="na" method="post">
+            <input type="submit" name="kill" value="Kill this process" onclick="return confirmDelete()"/>
+          </form>
+        </td>
         </tr>
       </agent:process>
     </table>

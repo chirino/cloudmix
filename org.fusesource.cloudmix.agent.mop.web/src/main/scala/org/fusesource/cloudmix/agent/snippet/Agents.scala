@@ -78,6 +78,7 @@ class Agents {
                 "value" -> asText(entry.getValue))
           }.toSeq,
 
+          // TODO can we share bindings with the below??
           "process" -> processes.entrySet.flatMap {
             //case (key : String, value : String) =>
             case entry: Entry[_, _] =>
@@ -85,7 +86,8 @@ class Agents {
               bind("process", chooseTemplate("agent", "process", xhtml),
                 "id" -> asText(entry.getKey),
                 "commandLine" -> asText(process.getCommandLine),
-                AttrBindParam("link", Text(processLink(process)), "href"))
+                AttrBindParam("link", Text(processLink(process)), "href"),
+                AttrBindParam("action", Text(processLink(process)), "action"))
           }.toSeq
           )
 
@@ -101,12 +103,12 @@ class Agents {
       case processResource: ProcessResource =>
         val process = processResource.process
 
-        // TODO can we share bindings with the above??
         bind("process", xhtml,
           "id" -> asText(process.getId),
           "site" -> processLink(process.getId),
           "commandLine" -> asText(process.getCommandLine),
-          "credentials" -> asText(process.getCredentials))
+          "credentials" -> asText(process.getCredentials),
+          AttrBindParam("action", Text(processLink(process)), "action"))
 
       case _ =>
         <p>
