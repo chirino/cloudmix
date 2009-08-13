@@ -27,6 +27,7 @@ public class Main {
             String controllerUrl = "http://localhost:8181/";
             String profile = Constants.WILDCARD_PROFILE_NAME;
             String directory = null;
+            int maximumFeatures = 25;
 
             if (args.length > 0) {
                 String arg0 = args[0];
@@ -53,6 +54,7 @@ public class Main {
             MopAgent agent = new MopAgent();
             agent.setClient(new RestGridClient(controllerUrl));
             agent.setProfile(profile);
+            agent.setMaxFeatures(maximumFeatures);
             agent.setWorkDirectory(new File(directory));
             agent.init();
 
