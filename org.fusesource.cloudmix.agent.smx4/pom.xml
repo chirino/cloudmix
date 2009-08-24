@@ -17,7 +17,7 @@
   <properties>
     <cloudmix.osgi.import.pkg>
       org.apache.commons.logging; version=1.1.1,
-      org.apache.felix.karaf.gshell.features; version=${karaf-version},
+      org.apache.felix.karaf.features; version="[1.2,2.0)",
       com.sun.jersey.core.impl.provider.header; version=0.0.0,
       com.sun.jersey.core.impl.provider.entity; version=0.0.0,
       com.sun.jersey.server.impl; version=0.0.0,
@@ -71,10 +71,16 @@
   -->
   <dependencies>
     <dependency>
-      <groupId>org.apache.felix.karaf.gshell</groupId>
-      <artifactId>org.apache.felix.karaf.gshell.features</artifactId>
+      <groupId>org.apache.felix.karaf.features</groupId>
+      <artifactId>org.apache.felix.karaf.features.core</artifactId>
       <version>${karaf-version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.osgi.foundation</artifactId>
+        </exclusion>
+      </exclusions>      
     </dependency>
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>

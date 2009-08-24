@@ -14,19 +14,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.w3c.dom.Element;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.apache.felix.karaf.gshell.features.FeaturesService;
-import org.apache.felix.karaf.gshell.features.Repository;
+import org.apache.felix.karaf.features.Feature;
+import org.apache.felix.karaf.features.FeaturesService;
+import org.apache.felix.karaf.features.Repository;
+import org.apache.felix.karaf.features.internal.FeatureImpl;
 import org.easymock.EasyMock;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.FeatureList;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.util.FileUtils;
+import org.w3c.dom.Element;
 
 public class ServiceMixAgentTest extends TestCase {
     private GridClient cl;
@@ -38,7 +40,7 @@ public class ServiceMixAgentTest extends TestCase {
 
         private Map<URI, FeatureList> repos = new HashMap<URI, FeatureList>();
         private FeatureList lastFeatureList;
-        private List<String> features = new ArrayList<String>();
+        private List<Feature> features = new ArrayList<Feature>();
         private List<String> bundles = new ArrayList<String>();
         
         public void addRepository(URI uri) throws Exception {
@@ -56,7 +58,7 @@ public class ServiceMixAgentTest extends TestCase {
 
         public void installFeature(String name) throws Exception {
             assertFalse(features.contains(name));
-            features.add(name);
+            features.add(new FeatureImpl(name));
             assertNotNull(lastFeatureList);
             org.fusesource.cloudmix.agent.Feature f = lastFeatureList.getFeature(name);
             assertNotNull(f);
@@ -65,12 +67,12 @@ public class ServiceMixAgentTest extends TestCase {
             }
         }
         
-        public String[] listFeatures() throws Exception {
-            return (String[]) features.toArray(new String[features.size()]);
+        public Feature[] listFeatures() throws Exception {
+            return (Feature[]) features.toArray(new Feature[features.size()]);
         }
 
-        public String[] listInstalledFeatures() {
-            return (String[]) features.toArray(new String[features.size()]);
+        public Feature[] listInstalledFeatures() {
+            return (Feature[]) features.toArray(new Feature[features.size()]);
         }
 
         public Repository[] listRepositories() {
@@ -88,7 +90,14 @@ public class ServiceMixAgentTest extends TestCase {
         }
 
         public void assertFeatureInstalled(String name) {
-            assertTrue(features.contains(name));
+        	boolean installed = false;
+        	for (Feature feature : features) {
+        		if (feature.getName().equals(name)) {
+        			installed = true;
+        			break;
+        		}
+        	}
+            assertTrue("Feature " + name + " should have been installed", installed);
         }
 
         public void assertBundleInstalled(String url) {
@@ -110,6 +119,10 @@ public class ServiceMixAgentTest extends TestCase {
 
 		public void uninstallFeature(String name, String version) throws Exception {
 			fail("NOT IMPLEMENTED");			
+		}
+
+		public boolean isInstalled(Feature feature) {
+			return features.contains(feature);
 		}
 
     }
@@ -148,7 +161,7 @@ public class ServiceMixAgentTest extends TestCase {
         smxa.init();
         details = smxa.getAgentDetails();
         assertTrue(details.getPid() > 0);
-        assertEquals(0, details.getCurrentFeatures().length);
+        assertEquals(0, details.getCurrentFeatures().size());
         assertEquals(null, details.getAgentLink());
         assertEquals("smx4", details.getContainerType());
         assertEquals(2, details.getSupportPackageTypes().length);
@@ -210,9 +223,9 @@ public class ServiceMixAgentTest extends TestCase {
         String url2 = "http://localhost/2";
         smxa.installFeature(flist.getFeature(f2), null);
         
-        String[] features = fs.listFeatures();
+        Feature[] features = fs.listFeatures();
         assertEquals(1, features.length);
-        assertEquals(f2, features[0]);
+        assertEquals(f2, features[0].getName());
         fs.assertFeatureInstalled(f2);
         fs.assertBundleInstalled(url2);    
         assertAgentDetails(f2);
@@ -223,9 +236,9 @@ public class ServiceMixAgentTest extends TestCase {
         String f5 = "f5";
         smxa.installFeature(flist.getFeature(f5), null);
         
-        String[] features = fs.listFeatures();
+        Feature[] features = fs.listFeatures();
         assertEquals(1, features.length);
-        assertEquals(f5, features[0]);
+        assertEquals(f5, features[0].getName());
         fs.assertFeatureInstalled(f5);
         fs.assertBundleInstalled("jbi:http://example.com/r1.txt");    
         fs.assertBundleInstalled("jbi:http://example.com/r2.txt");    
@@ -307,10 +320,10 @@ public class ServiceMixAgentTest extends TestCase {
         
         smxa.updateAgentDetails();
         AgentDetails details = smxa.getAgentDetails();
-        String[] actualFeatures = details.getCurrentFeatures();
+        Set<String> actualFeatures = details.getCurrentFeatures();
         assertNotNull(actualFeatures);
         
-        assertEquals(expectedFeatures.length, actualFeatures.length);
+        assertEquals(expectedFeatures.length, actualFeatures.size());
         for (String ef : expectedFeatures) {
             boolean found = false;
             for (String af : actualFeatures) {

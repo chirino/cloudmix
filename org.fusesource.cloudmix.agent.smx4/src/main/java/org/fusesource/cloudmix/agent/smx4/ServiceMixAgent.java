@@ -20,7 +20,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.felix.karaf.gshell.features.FeaturesService;
+import org.apache.felix.karaf.features.FeaturesService;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.FeatureList;

@@ -58,7 +58,7 @@
   <service ref="endpointRegistry" id="endpointRegistryOSGiService"
            interface="org.fusesource.cloudmix.agent.EndpointRegistry"/>
 
-  <reference id="featuresService" interface="org.apache.felix.karaf.gshell.features.FeaturesService"/>
+  <reference id="featuresService" interface="org.apache.felix.karaf.features.FeaturesService"/>
 
 
 </blueprint>
