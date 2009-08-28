@@ -137,6 +137,7 @@ mop cloudmixAgent:1.3-SNAPSHOT
 The easiest way to get started is by link:/source.html[getting the source code] and link:/building.html[building it] then running the sample unit test cases as follows
 
 ----
+cd cd cloudtests/org.fusesource.cloudmix.testing.samples
 mvn test -Pit
 ----
 
