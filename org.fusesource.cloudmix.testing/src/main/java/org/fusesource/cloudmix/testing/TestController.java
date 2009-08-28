@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
@@ -51,18 +52,8 @@ public abstract class TestController {
      */
     public static final String PROFILE_ID_FILENAME = ".cloudmix.profiles";
 
-    /**
-     * The system property of the URL of the controller
-     */
-    public static final String CLOUDMIX_URL_PROPERTY = "cloudmix.url";
-
-    /**
-     * The default value of the {@link #CLOUDMIX_URL_PROPERTY} system property
-     */
-    public static final String DEFAULT_CONTROLLER_URL = "http://localhost:8181/";
-
     protected long startupTimeout = 60 * 1000;
-    protected String controllerUrl = DEFAULT_CONTROLLER_URL;
+    protected String controllerUrl = CloudmixHelper.getDefaultRootUrl();
 
     protected List<FeatureDetails> features = new CopyOnWriteArrayList<FeatureDetails>();
     protected GridClient gridClient;
@@ -108,7 +99,6 @@ public abstract class TestController {
         }
 
         // lets get the default URL for cloudmix
-        String controllerUrl = System.getProperty(CLOUDMIX_URL_PROPERTY, DEFAULT_CONTROLLER_URL);
         System.out.println("Using controller URL: " + controllerUrl);
 
         // lets register the features

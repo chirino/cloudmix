@@ -1,13 +1,13 @@
 package org.fusesource.cloudmix.agent.web
 
 import java.lang.reflect.Field
-import mop.MopAgent
 
 import _root_.javax.annotation.PostConstruct
 import _root_.javax.servlet.ServletContext
 import _root_.org.springframework.beans.factory.annotation.Autowired
 import _root_.org.springframework.stereotype.Component
-import scalautil.Logging
+import org.fusesource.cloudmix.scalautil.Logging
+import org.fusesource.cloudmix.agent.mop.MopAgent
 
 /**
  * a helper class which on startup will extract (using a Jetty hack!) the URL
@@ -24,6 +24,7 @@ class WebLifecycle extends Logging {
   private var agent: MopAgent = _
 
   def servletContext = context
+
   def mopAgent = agent
 
   @Autowired

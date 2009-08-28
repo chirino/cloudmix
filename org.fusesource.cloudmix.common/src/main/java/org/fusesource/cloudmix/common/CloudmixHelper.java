@@ -18,7 +18,7 @@ public class CloudmixHelper {
     private static final transient Log LOG = LogFactory.getLog(CloudmixHelper.class);
 
     public static final String ROOT_URL_PROPERTY = "cloudmix.url";
-    public static final String DEFAULT_ROOT_URL_VALUE = "http://localhost:8080/";
+    public static final String DEFAULT_ROOT_URL_VALUE = "http://localhost:8181/";
     public static String defaultRootUrl;
 
     /**

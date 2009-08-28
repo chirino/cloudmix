@@ -16,6 +16,7 @@ import org.fusesource.mop.common.collect.ImmutableMap;
 import org.fusesource.mop.common.collect.Maps;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @version $Revision: 1.1 $
@@ -26,6 +27,11 @@ public class MopAgent extends InstallerAgent {
     private Map<String, MopProcess> processes = Maps.newHashMap();
     public static final String MOP_URI_PREFIX = "mop:";
 
+    public MopAgent() {
+        // lets default the profile
+        setProfile("*");
+    }
+
     /**
      * Returns the currently active processes this agent is running
      */
@@ -35,33 +41,57 @@ public class MopAgent extends InstallerAgent {
         }
     }
 
+    /**
+     * A helper method for testing mostly
+     *
+     * @param commandLine
+     */
+    public void installMopFeature(String commandLine) throws Exception {
+        String resource = MOP_URI_PREFIX + commandLine;
+        String feature = "feature:" + UUID.randomUUID().toString();
+        ProvisioningAction action = new  ProvisioningAction(feature, resource);
+        String credentials = "";
+        installFeatures(action, credentials, resource);
+    }
+
     @Override
     protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
         System.out.println("Installing FEATURES: " + resource);
 
         if (resource.startsWith(MOP_URI_PREFIX)) {
             String commandLine = resource.substring(MOP_URI_PREFIX.length());
-            MopProcess process = new MopProcess(action, credentials, commandLine);
 
-            String id = process.getId();
-            synchronized (processes) {
-                MopProcess oldProcess = processes.get(id);
-                if (oldProcess != null) {
-                    oldProcess.stop();
+            // Lets set the context class loader to the one that loaded me!
+            Thread currentThread = Thread.currentThread();
+            ClassLoader oldClassLoader = currentThread.getContextClassLoader();
+            try {
+                currentThread.setContextClassLoader(getClass().getClassLoader());
+
+                MopProcess process = new MopProcess(action, credentials, commandLine);
+
+                String id = process.getId();
+                synchronized (processes) {
+                    MopProcess oldProcess = processes.get(id);
+                    if (oldProcess != null) {
+                        oldProcess.stop();
+                    }
+                    processes.put(id, process);
                 }
-                processes.put(id, process);
+
+                process.start();
+
+
+                // now lets update the current features
+
+                Feature feature = new Feature(id);
+                addAgentFeature(feature);
+
+                // TODO also need to update the current features!
+            }
+            finally {
+                currentThread.setContextClassLoader(oldClassLoader);
             }
 
-            process.start();
-
-
-            // now lets update the current features
-
-            Feature feature = new Feature(id);
-            addAgentFeature(feature);
-
-            // TODO also need to update the current features!
-            
         }
     }
 
