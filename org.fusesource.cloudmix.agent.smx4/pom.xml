@@ -16,22 +16,22 @@
 
   <properties>
     <cloudmix.osgi.import.pkg>
-      org.apache.commons.logging; version=1.1.1,
-      org.apache.felix.karaf.features; version="[1.2,2.0)",
-      com.sun.jersey.core.impl.provider.header; version=0.0.0,
-      com.sun.jersey.core.impl.provider.entity; version=0.0.0,
-      com.sun.jersey.server.impl; version=0.0.0,
-      com.sun.jersey.server.impl.template; version=0.0.0,
-      com.sun.jersey.server.impl.container; version=0.0.0,
-      com.sun.jersey.server.impl.model.method.dispatch; version=0.0.0,
-      com.sun.jersey.server.impl.uri; version=0.0.0,
-      com.sun.jersey.server.impl.container.httpserver; version=0.0.0,
-      org.fusesource.cloudmix.agent.security; version=${pom.version},
-      org.fusesource.cloudmix.agent; version=${pom.version},
-      org.fusesource.cloudmix.common.dto; version=${pom.version},
-      org.fusesource.cloudmix.common.util; version=${pom.version},
-      org.fusesource.cloudmix.common; version=${pom.version},
-      javax.ws.rs.*;version=0.0,
+      org.apache.commons.logging,
+      org.apache.felix.karaf.features,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.uri,
+      com.sun.jersey.server.impl.container.httpserver,
+      org.fusesource.cloudmix.agent.security,
+      org.fusesource.cloudmix.agent,
+      org.fusesource.cloudmix.common.dto,
+      org.fusesource.cloudmix.common.util,
+      org.fusesource.cloudmix.common,
+      javax.ws.rs.*,
       *
     </cloudmix.osgi.import.pkg>
   </properties>

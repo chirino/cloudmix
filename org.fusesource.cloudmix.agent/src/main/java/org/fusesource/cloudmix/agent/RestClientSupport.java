@@ -19,6 +19,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
+import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+
 /**
  * A useful base class for any RESTful client facacde.
  *
@@ -42,15 +44,22 @@ public class RestClientSupport {
     }
 
     public Client getClient(String credentials) {
-        if (client == null) {
-            DefaultClientConfig config = new DefaultClientConfig();
-            config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, Boolean.FALSE);
-            config.getClasses().add(JAXBContextResolver.class);
+        //TODO: find a way around the classloader magic to get this working in Karaf 
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(HeaderDelegate.class.getClassLoader());
+            if (client == null) {
+                DefaultClientConfig config = new DefaultClientConfig();
+                config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, Boolean.FALSE);
+                config.getClasses().add(JAXBContextResolver.class);
 
-            client = Client.create(config);
-            if (credentials != null) {
-                client.addFilter(new AuthClientFilter(credentials));
+                client = Client.create(config);
+                if (credentials != null) {
+                    client.addFilter(new AuthClientFilter(credentials));
+                }
             }
+        } finally {
+            Thread.currentThread().setContextClassLoader(old);            
         }
         return client;
     }

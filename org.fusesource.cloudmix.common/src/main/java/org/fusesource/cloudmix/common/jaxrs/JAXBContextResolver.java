@@ -11,6 +11,9 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
+
+import org.fusesource.cloudmix.common.dto.ObjectFactory;
 
 /**
  * A resolver of the JAXB context primed for our XML languages
@@ -21,11 +24,10 @@ import javax.xml.bind.JAXBException;
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {
     private static final String JAXB_PACKAGES = "org.fusesource.cloudmix.common.dto:javax.xml.ws.wsaddressing";
 
-    private final String packages = JAXB_PACKAGES;
     private final JAXBContext context;
 
     public JAXBContextResolver() throws JAXBException {
-        this.context = JAXBContext.newInstance(packages);
+        this.context = JAXBContext.newInstance(ObjectFactory.class, W3CEndpointReference.class);
     }
 
     public JAXBContext getContext(Class<?> objectType) {
@@ -33,16 +35,12 @@ public class JAXBContextResolver implements ContextResolver<JAXBContext> {
         if (aPackage != null) {
             String name = aPackage.getName();
             if (name.length() > 0) {
-                if (packages.contains(name)) {
+                if (JAXB_PACKAGES.contains(name)) {
                     return context;
                 }
             }
         }
         return null;
-    }
-
-    public String getPackages() {
-        return packages;
     }
 
     public JAXBContext getContext() {
