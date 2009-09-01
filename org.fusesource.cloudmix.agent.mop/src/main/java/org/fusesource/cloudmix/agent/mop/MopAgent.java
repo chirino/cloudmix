@@ -26,10 +26,12 @@ public class MopAgent extends InstallerAgent {
 
     private Map<String, MopProcess> processes = Maps.newHashMap();
     public static final String MOP_URI_PREFIX = "mop:";
+    private ClassLoader mopClassLoader;
 
     public MopAgent() {
         // lets default the profile
         setProfile("*");
+        mopClassLoader = getClass().getClassLoader();
     }
 
     /**
@@ -55,6 +57,12 @@ public class MopAgent extends InstallerAgent {
     }
 
     @Override
+    public void init() throws Exception {
+        super.init();
+        mopClassLoader = Thread.currentThread().getContextClassLoader();
+    }
+
+    @Override
     protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
         System.out.println("Installing FEATURES: " + resource);
 
@@ -64,10 +72,9 @@ public class MopAgent extends InstallerAgent {
             // Lets set the context class loader to the one that loaded me!
             Thread currentThread = Thread.currentThread();
             ClassLoader oldClassLoader = currentThread.getContextClassLoader();
+            currentThread.setContextClassLoader(mopClassLoader);
             try {
-                currentThread.setContextClassLoader(getClass().getClassLoader());
-
-                MopProcess process = new MopProcess(action, credentials, commandLine);
+                MopProcess process = new MopProcess(action, credentials, commandLine, mopClassLoader);
 
                 String id = process.getId();
                 synchronized (processes) {
@@ -91,7 +98,6 @@ public class MopAgent extends InstallerAgent {
             finally {
                 currentThread.setContextClassLoader(oldClassLoader);
             }
-
         }
     }
 
