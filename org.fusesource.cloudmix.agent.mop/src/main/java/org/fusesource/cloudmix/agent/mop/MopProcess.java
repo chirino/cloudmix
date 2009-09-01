@@ -27,8 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MopProcess {
     private static final transient Log LOG = LogFactory.getLog(MopProcess.class);
 
-    private static final boolean transformClassLoader = false;
-
     private ProvisioningAction action;
     private String credentials;
     private String commandLine;
@@ -37,32 +35,11 @@ public class MopProcess {
     private int statusCode = -1;
     private Thread thread;
     private AtomicBoolean completed = new AtomicBoolean(false);
+
     public MopProcess(ProvisioningAction action, String credentials, String commandLine, ClassLoader mopClassLoader) {
         this.action = action;
         this.credentials = credentials;
         this.commandLine = commandLine;
-
-        if (transformClassLoader) {
-            // lets try strip off the system class loader which might include maven and so bork MOP
-            if (mopClassLoader instanceof URLClassLoader) {
-                URLClassLoader ucl = (URLClassLoader) mopClassLoader;
-                URL[] urls = ucl.getURLs();
-
-                boolean found = false;
-                for (URL url : urls) {
-                    String text = url.toString();
-                    if (text.contains("mop-core-") && text.endsWith(".jar")) {
-                        mopClassLoader = new URLClassLoader(new URL[]{url});
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    mopClassLoader = new URLClassLoader(urls);
-                }
-            }
-        }
-
         this.mopClassLoader = mopClassLoader;
     }
 
@@ -106,7 +83,7 @@ public class MopProcess {
         thread = new Thread("Feature: " + getId() + "MOP " + argList) {
             @Override
             public void run() {
-                System.out.println("Using class loader: " + mopClassLoader + " of type: " + mopClassLoader.getClass());
+                LOG.debug("Using class loader: " + mopClassLoader + " of type: " + mopClassLoader.getClass());
                 dumpClassLoader(mopClassLoader);
 
                 Thread.currentThread().setContextClassLoader(mopClassLoader);
@@ -130,18 +107,19 @@ public class MopProcess {
     }
 
     void dumpClassLoader(ClassLoader cl) {
-        if (cl instanceof URLClassLoader) {
-            URLClassLoader urlClassLoader = (URLClassLoader) cl;
-            URL[] urls = urlClassLoader.getURLs();
-            for (URL url : urls) {
-                System.out.println("ClassLoader URL: " + url);
+        if (LOG.isDebugEnabled()) {
+            if (cl instanceof URLClassLoader) {
+                URLClassLoader urlClassLoader = (URLClassLoader) cl;
+                URL[] urls = urlClassLoader.getURLs();
+                for (URL url : urls) {
+                    LOG.debug("ClassLoader URL: " + url);
+                }
             }
-        }
-        ClassLoader parent = cl.getParent();
-        if (parent != null) {
-            System.out.println("");
-            System.out.println("Parent Class Loader: " + parent);
-            dumpClassLoader(parent);
+            ClassLoader parent = cl.getParent();
+            if (parent != null) {
+                LOG.debug("Parent Class Loader: " + parent);
+                dumpClassLoader(parent);
+            }
         }
     }
 
