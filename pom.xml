@@ -376,6 +376,7 @@
     <module>org.fusesource.cloudmix.agent</module>
     <module>org.fusesource.cloudmix.agent.mop</module>
     <module>org.fusesource.cloudmix.agent.mop.web</module>
+    <module>org.fusesource.cloudmix.agent.start</module>
     <module>org.fusesource.cloudmix.controller</module>
     <module>org.fusesource.cloudmix.controller.webapp</module>
     <module>org.fusesource.cloudmix.agent.dir</module>
