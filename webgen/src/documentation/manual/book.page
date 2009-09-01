@@ -105,8 +105,8 @@ then the controller should be available at http://localhost:8080/
 The easiest way to run an agent is currently by link:/source.html[getting the source code] and link:/building.html[building it] then running the following commands
 
 ----
-cd org.fusesource.cloudmix.agent.mop.web
-mvn jetty:run
+cd org.fusesource.cloudmix.agent.start
+java -jar target/org.fusesource.cloudmix.agent.start-1.3-SNAPSHOT.jar 
 ----
 
 You should then be able to browse the Agent's web application by pointing your browser at the default port at http://localhost:8080/. You can override this port by specifying the port you require on the command line
