@@ -10,8 +10,8 @@ package org.fusesource.cloudmix.testing;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
@@ -19,8 +19,9 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -37,11 +38,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * initialises the system, then runs the test and kills the enviroment
  *
  * @version $Revision: 1.1 $
- */
-
-/**
- * TODO uncomment when we have junit 4.7
-@RunWith(Interceptors.class)
  */
 public abstract class TestController {
     private static final transient Log LOG = LogFactory.getLog(TestController.class);
@@ -60,20 +56,17 @@ public abstract class TestController {
     protected ProfileDetails profile;
     protected String profileId;
     protected boolean provisioned;
-    protected boolean destroyProfileAfter = true;
+    protected boolean destroyProfileAfter = false;
 
-    /**
-     * TODO uncomment me when we have junit 4.7 in a maven repo!!!
-     *
-    @Interceptor protected TestName testName = new TestName();
+    @Rule
+    public TestName testName = new TestName();
 
     protected String getTestName() {
-        return testName.getName();
-    }
-    */
-
-    protected String getTestName() {
-        return "n/a until junit 4.7";
+        String answer = testName.getMethodName();
+        if (answer == null || answer.length() == 0) {
+            return "Unknown";
+        }
+        return answer;
     }
 
     /**
@@ -92,47 +85,66 @@ public abstract class TestController {
     }
 
 
-    @Before
-    public void checkProvisioned() throws URISyntaxException, IOException {
-        if (provisioned) {
-            return;
+    /**
+     * This method should be called within each test method so that the profile is setup correctly
+     */
+    public void checkProvisioned() throws Exception {
+        try {
+            if (provisioned) {
+                return;
+            }
+
+            // lets get the default URL for cloudmix
+            System.out.println("Using controller URL: " + controllerUrl);
+
+            // lets register the features
+            GridClient controller = getGridClient();
+
+            if (profileId == null) {
+                profileId = UUID.randomUUID().toString();
+            }
+
+            // lets append the profileId to the file!
+            onProfileIdCreated(profileId);
+            profile = new ProfileDetails(profileId);
+
+            installFeatures();
+
+            for (FeatureDetails feature : features) {
+                ensureFeatureIdLocalToProfile(feature);
+
+                profile.getFeatures().add(new Dependency(feature.getId()));
+
+                System.out.println("Adding feature: " + feature.getId());
+                controller.addFeature(feature);
+            }
+
+            profile.setDescription(createProfileDescription(profile));
+
+            controller.addProfile(profile);
+
+
+            // now lets start the remote grid
+            assertProvisioned();
+            provisioned = true;
+
+            System.out.println("All features provisioned!!");
+        } catch (Exception e) {
+            System.out.println("Caught: " + e);
+            e.printStackTrace();
+            Throwable t = e;
+            while (true) {
+                Throwable throwable = t.getCause();
+                if (throwable == t || throwable == null) {
+                    break;
+                }
+                System.out.println("Caused by : " + throwable);
+                throwable.printStackTrace();
+                t = throwable;
+            }
+            LOG.error("Caught: " + e, e);
+            throw e;
         }
-
-        // lets get the default URL for cloudmix
-        System.out.println("Using controller URL: " + controllerUrl);
-
-        // lets register the features
-        GridClient controller = getGridClient();
-
-        if (profileId == null) {
-            profileId = UUID.randomUUID().toString();
-        }
-
-        // lets append the profileId to the file!
-        onProfileIdCreated(profileId);
-        profile = new ProfileDetails(profileId);
-
-        installFeatures();
-
-        for (FeatureDetails feature : features) {
-            ensureFeatureIdLocalToProfile(feature);
-
-            profile.getFeatures().add(new Dependency(feature.getId()));
-
-            System.out.println("Adding feature: " + feature.getId());
-            controller.addFeature(feature);
-        }
-
-        profile.setDescription(createProfileDescription(profile));
-
-        controller.addProfile(profile);
-
-
-        // now lets start the remote grid
-        assertProvisioned();
-        provisioned = true;
-
-        System.out.println("All features provisioned!!");
     }
 
     protected String createProfileDescription(ProfileDetails profile) {
@@ -144,7 +156,7 @@ public abstract class TestController {
      */
     protected void ensureFeatureIdLocalToProfile(FeatureDetails feature) {
         Assert.assertNotNull("profile ID should be defined!", profileId);
-        
+
         // lets ensure the feature ID is unique (though the code could be smart enough to deduce it!)
         String featureId = feature.getId();
         if (!featureId.startsWith(profileId)) {
@@ -193,6 +205,7 @@ public abstract class TestController {
      * Returns a newly created client. Factory method
      */
     protected GridClient createGridController() throws URISyntaxException {
+        System.out.println("About to create RestGridClient for: " + controllerUrl);
         return new RestGridClient(controllerUrl);
     }
 
@@ -247,8 +260,7 @@ public abstract class TestController {
                             if (provisionedFeatures.add(featureId)) {
                                 LOG.info("Provisioned feature: " + featureId);
                             }
-                        }
-                        else {
+                        } else {
                             failedFeatures.add(featureId);
                         }
                     }

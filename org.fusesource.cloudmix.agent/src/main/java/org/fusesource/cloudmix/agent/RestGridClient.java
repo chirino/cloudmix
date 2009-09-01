@@ -182,6 +182,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
 
     public void addFeature(FeatureDetails feature) throws URISyntaxException {
         String id = feature.getId();
+        ObjectHelper.notNull(id, "FeatureDetails.id");
         WebResource.Builder resource = resource(append(getFeaturesUri(), "/", id)).type("application/xml");
         getTemplate().put(resource, feature);
     }
@@ -293,6 +294,9 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     }
 
     private WebResource resource(URI uri) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("about to use URI: " + uri);
+        }
         return getClient(getCredentials()).resource(uri);
     }
 

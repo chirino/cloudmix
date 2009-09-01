@@ -7,17 +7,15 @@
  */
 package org.fusesource.cloudmix.agent;
 
-import java.util.Date;
-
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MultivaluedMap;
-
 import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MultivaluedMap;
+import java.util.Date;
 
 /**
  * A helper class to wrap up retry logic.
@@ -35,7 +33,7 @@ public class RestTemplate {
         T answer = null;
         for (int i = 0; i < retryAttempts && answer == null; i++) {
             ClientResponse response = resource.get(ClientResponse.class);
-            if (response.getStatus() < 300) {
+            if (response != null && response.getStatus() < 300) {
                 answer = response.getEntity(resultType);
             }
         }
@@ -65,9 +63,9 @@ public class RestTemplate {
                     LOG.debug("Unmodified results for: " + request);
                 }
                 return null;
-            
+
             } else if (status == 200) {
-                
+
                 MultivaluedMap<String, String> metadata = response.getMetadata();
                 Date lastModified = response.getLastModified();
                 if (lastModified != null) {
@@ -83,11 +81,11 @@ public class RestTemplate {
                         LOG.debug("New provisioning instructions: " + value);
                     }
                     return value;
-                
+
                 } else {
                     LOG.error("Could not find an entity for the response: " + response);
                 }
-            
+
             } else {
                 LOG.warn("Unknown status code: " + status + " when polling: " + request);
                 throw new NotFoundException("Status: " + status);
@@ -96,40 +94,29 @@ public class RestTemplate {
         return null;
     }
 
-    public int put(WebResource.Builder resource, Object body) {
-        int status = -1;
-        for (int i = 0; i < retryAttempts; i++) {
-            ClientResponse response = resource.put(ClientResponse.class, body);
-            status = response.getStatus();
-            if (status < 300) {
-                break;
+
+    public int put(final WebResource.Builder resource, final Object body) {
+        return retryLoop(new RestOperation() {
+            public ClientResponse invoke() {
+                return resource.put(ClientResponse.class, body);
             }
-        }
-        return status;
+        });
     }
 
-    public int put(WebResource.Builder resource) {
-        int status = -1;
-        for (int i = 0; i < retryAttempts; i++) {
-            ClientResponse response = resource.put(ClientResponse.class);
-            status = response.getStatus();
-            if (status < 300) {
-                break;
+    public int put(final WebResource.Builder resource) {
+        return retryLoop(new RestOperation() {
+            public ClientResponse invoke() {
+                return resource.put(ClientResponse.class);
             }
-        }
-        return status;
+        });
     }
 
-    public int delete(WebResource.Builder resource) {
-        int status = -1;
-        for (int i = 0; i < retryAttempts; i++) {
-            ClientResponse response = resource.delete(ClientResponse.class);
-            status = response.getStatus();
-            if (status < 300) {
-                break;
+    public int delete(final WebResource.Builder resource) {
+        return retryLoop(new RestOperation() {
+            public ClientResponse invoke() {
+                return resource.delete(ClientResponse.class);
             }
-        }
-        return status;
+        });
     }
 
     public long getDelayBetweenAttempts() {
@@ -146,5 +133,23 @@ public class RestTemplate {
 
     public void setRetryAttempts(int retryAttempts) {
         this.retryAttempts = retryAttempts;
+    }
+
+
+    /**
+     * Performs the given operation {@link #getRetryAttempts()} times returning the final error code
+     */
+    protected int retryLoop(RestOperation operation) {
+        int status = -1;
+        for (int i = 0; i < retryAttempts; i++) {
+            ClientResponse response = operation.invoke();
+            if (response != null) {
+                status = response.getStatus();
+                if (status < 300) {
+                    break;
+                }
+            }
+        }
+        return status;
     }
 }

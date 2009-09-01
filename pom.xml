@@ -31,8 +31,7 @@
     <jna-version>3.0.5</jna-version>
     <jsr250-version>1.0</jsr250-version>
     <jsr311-version>1.1</jsr311-version>
-    <!-- TODO move to 4.7 ASAP so we can expose the test method too in TestController --> 
-    <junit-version>4.6</junit-version>
+    <junit-version>4.7</junit-version>
 
     <!-- TODO move to next milestone ASAP -->
     <!--<lift-version>1.1-M5</lift-version>-->

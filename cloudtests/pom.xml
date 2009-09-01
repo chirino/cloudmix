@@ -20,7 +20,7 @@
   </modules>
 
   <properties>
-    <cloudmix.url>http://localhost:8080/</cloudmix.url>
+    <cloudmix.url>http://localhost:8181/</cloudmix.url>
   </properties>
 
   <build>
