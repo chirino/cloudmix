@@ -17,6 +17,7 @@ import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -86,7 +88,10 @@ public abstract class TestController {
 
 
     /**
-     * This method should be called within each test method so that the profile is setup correctly
+     * Asserts that the test cloud is setup and provisioned properly within the given {@link #startupTimeout}.
+     * 
+     * This method should be called within each test method so that the profile is setup correctly with the class of the test
+     * and the test method name.
      */
     public void checkProvisioned() throws Exception {
         try {
@@ -146,6 +151,32 @@ public abstract class TestController {
             throw e;
         }
     }
+
+
+    /**
+     * Returns all the agents which are running the given feature
+     */
+    protected List<AgentDetails> getAgentsFor(FeatureDetails featureDetails) throws URISyntaxException {
+        String id = featureDetails.getId();
+        Assert.assertNotNull("Feature should have an ID " + featureDetails, id);
+        return getAgentsFor(id);
+    }
+
+    /**
+     * Returns all the agents which are running the given feature  ID
+     */
+    protected List<AgentDetails> getAgentsFor(String featureId) throws URISyntaxException {
+        List<String> agentIds = getGridClient().getAgentsAssignedToFeature(featureId);
+        List<AgentDetails> answer = new ArrayList<AgentDetails>();
+        for (String agentId : agentIds) {
+            AgentDetails agentDetails = getGridClient().getAgentDetails(agentId);
+            if (agentDetails != null) {
+                answer.add(agentDetails);
+            }
+        }
+        return answer;
+    }
+
 
     protected String createProfileDescription(ProfileDetails profile) {
         return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getTestName() + "</b>";

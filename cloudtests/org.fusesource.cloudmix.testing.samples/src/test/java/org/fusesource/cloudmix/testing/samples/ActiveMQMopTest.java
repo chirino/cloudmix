@@ -8,16 +8,24 @@
 package org.fusesource.cloudmix.testing.samples;
 
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.testing.TestController;
 import org.junit.Test;
+import org.junit.Assert;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
+import java.net.URISyntaxException;
 
 /**
  * @version $Revision: 1.1 $
  */
 public class ActiveMQMopTest extends TestController {
+    protected FeatureDetails broker;
+    protected FeatureDetails producer;
+    protected FeatureDetails consumer;
 
     @Test
     public void testScenarioDeploys() throws Exception {
@@ -26,6 +34,14 @@ public class ActiveMQMopTest extends TestController {
         checkProvisioned();
 
         System.out.println("Worked!!!");
+
+        List<AgentDetails> agents = getAgentsFor(broker);
+        Assert.assertTrue("has some agents", !agents.isEmpty());
+
+        for (AgentDetails agent : agents) {
+            System.out.println("Broker agent: " + agent.getHostname());
+        }
+
         Thread.sleep(1000000);
     }
 
@@ -38,13 +54,13 @@ public class ActiveMQMopTest extends TestController {
         }
         String version = "1.3-SNAPSHOT";
 
-        FeatureDetails broker = createFeatureDetails("amq-test-broker",
+        broker = createFeatureDetails("amq-test-broker",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).maximumInstances("1");
 
-        FeatureDetails producer = createFeatureDetails("amq-test-producer",
+        producer = createFeatureDetails("amq-test-producer",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.producer:" + version).depends(broker).maximumInstances("2");
 
-        FeatureDetails consumer = createFeatureDetails("amq-test-consumer",
+        consumer = createFeatureDetails("amq-test-consumer",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.consumer:" + version).depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
