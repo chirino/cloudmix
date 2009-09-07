@@ -114,10 +114,10 @@ public class ProvisioningGridController extends DefaultGridController implements
 
 
                 if (agent == null) {
-                    LOG.info("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
+                    LOG.debug("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
 
                 } else {
-                    LOG.info("for feature: " + featureId + " found adequate agent: "
+                    LOG.debug("for feature: " + featureId + " found adequate agent: "
                             + agent.getDetails());
 
                     Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile,
@@ -199,12 +199,12 @@ public class ProvisioningGridController extends DefaultGridController implements
                                                                  String featureId) {
         Map<String, String> cfgOverridesProps = null;
 
-        LOG.info("getFeatureConfigurationOverrides, relevant feature id: " + featureId);
-        LOG.info("getFeatureConfigurationOverrides, features: " + profile.getDetails().getFeatures().size());
+        LOG.debug("getFeatureConfigurationOverrides, relevant feature id: " + featureId);
+        LOG.debug("getFeatureConfigurationOverrides, features: " + profile.getDetails().getFeatures().size());
 
         for (Dependency dep : profile.getDetails().getFeatures()) {
-            LOG.info("getFeatureConfigurationOverrides, dep id: " + dep.getFeatureId());
-            LOG.info("getFeatureConfigurationOverrides, dep overrides: "
+            LOG.debug("getFeatureConfigurationOverrides, dep id: " + dep.getFeatureId());
+            LOG.debug("getFeatureConfigurationOverrides, dep overrides: "
                     + (dep.getCfgUpdates() == null ? 0 : dep.getCfgUpdates().size()));
 
             if (featureId.equals(decodeURL(dep.getFeatureId())) && dep.getCfgUpdates() != null) {
