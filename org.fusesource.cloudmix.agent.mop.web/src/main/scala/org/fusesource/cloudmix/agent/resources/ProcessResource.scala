@@ -1,6 +1,6 @@
 package org.fusesource.cloudmix.agent.resources
 
-import mop.{MopProcess, MopAgent}
+import _root_.org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
 
 import _root_.com.sun.jersey.api.representation.Form
 import _root_.java.net.URI
@@ -29,7 +29,7 @@ class ProcessResource(val agent: MopAgent, val id: String, val process: MopProce
       delete()
     }
     else {
-      log.warn("Uknown status '" + body + "' sent to process " + process)
+      log.warn("Unknown status '" + body + "' sent to process " + process)
     }
   }
 

@@ -2,6 +2,12 @@
   <lift:profiles.index>
     <head>
       <title>Profile</title>
+
+      <script type="text/javascript">
+        function confirmDelete() {
+          return confirm('Are you sure you want to kill this profile?');
+        }
+      </script>
     </head>
 
     <h2>Profile:
@@ -11,7 +17,11 @@
     <p>
       <profile:description/>
     </p>
-    
+
+    <form profile:action="na" method="post">
+      <input type="submit" name="kill" value="Kill this profile" onclick="return confirmDelete()"/>
+    </form>
+
     <table>
       <tr>
         <th>Feature</th>

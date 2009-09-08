@@ -1,9 +1,9 @@
 package org.fusesource.cloudmix.controller.snippet
 
-import common.dto.{DependencyStatus, ProfileDetails}
-import resources._
-import scalautil.TextFormatting._
-          
+import _root_.org.fusesource.cloudmix.common.dto.{DependencyStatus, ProfileDetails}
+import _root_.org.fusesource.cloudmix.controller.resources._
+import _root_.org.fusesource.cloudmix.scalautil.TextFormatting._
+
 import _root_.net.liftweb.util.Helpers._
 import _root_.com.sun.jersey.lift.ResourceBean
 import _root_.com.sun.jersey.lift.Requests.uri
@@ -16,6 +16,10 @@ import _root_.scala.collection.jcl.Conversions._
  * @version $Revision : 1.1 $
  */
 object Profiles {
+  def profileLink(resource: ProfileResource): String = {
+    profileLink(resource.getProfileDetails)
+  }
+
   def profileLink(profile: ProfileDetails): String = {
     uri("/profiles/" + profile.getId)
   }
@@ -34,6 +38,7 @@ class Profiles {
                   bind("profile", xhtml,
                     "name" -> asText(profile.getId),
                     "description" -> asMarkup(profile.getDescription),
+                    AttrBindParam("action", Text(profileLink(profile)), "action"),
                     AttrBindParam("link", Text(profileLink(profile)), "href"))
         }
 
@@ -50,6 +55,9 @@ class Profiles {
         bind("profile", xhtml,
           "name" -> asText(profile.getProfileId),
           "description" -> asMarkup(profile.getProfileDetails.getDescription),
+          AttrBindParam("action", Text(profileLink(profile)), "action"),
+          AttrBindParam("link", Text(profileLink(profile)), "href"),
+
 
           "feature" -> features.flatMap {
             feature: DependencyStatus =>
@@ -63,6 +71,7 @@ class Profiles {
         <p> <b>Warning</b>No Profile resources found!</p>
     }
   }
+
 
   /*
    AttrBindParam("link", Text(linkUri(profile)), "href"),

@@ -1,6 +1,12 @@
 <lift:surround with="default" at="content">
   <head>
     <title>Profiles</title>
+
+    <script type="text/javascript">
+      function confirmDelete() {
+        return confirm('Are you sure you want to kill this profile?');
+      }
+    </script>
   </head>
   <h2>Profiles</h2>
 
@@ -9,6 +15,7 @@
     <tr>
       <th>Profile</th>
       <th>Description</th>
+      <th>Actions</th>
     </tr>
     <lift:profiles.list>
       <tr>
@@ -19,6 +26,11 @@
         </td>
         <td>
           <profile:description/>
+        </td>
+        <td>
+          <form profile:action="na" method="post">
+            <input type="submit" name="kill" value="Kill this profile" onclick="return confirmDelete()"/>
+          </form>
         </td>
       </tr>
     </lift:profiles.list>
