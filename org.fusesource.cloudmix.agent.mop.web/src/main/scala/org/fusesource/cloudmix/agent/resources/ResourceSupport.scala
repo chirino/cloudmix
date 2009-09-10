@@ -1,9 +1,9 @@
 package org.fusesource.cloudmix.agent.resources
 
 
-import cloudmix.common.dto.AgentDetails
-import mop.MopAgent
-import scalautil.Logging
+import _root_.org.fusesource.cloudmix.common.dto.AgentDetails
+import _root_.org.fusesource.cloudmix.agent.mop.MopAgent
+import _root_.org.fusesource.cloudmix.scalautil.Logging
 
 import _root_.com.sun.jersey.api.view.ImplicitProduces
 import _root_.javax.ws.rs.Produces

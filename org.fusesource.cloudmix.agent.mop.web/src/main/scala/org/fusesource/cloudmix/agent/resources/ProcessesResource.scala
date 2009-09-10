@@ -1,7 +1,7 @@
 package org.fusesource.cloudmix.agent.resources
 
 import _root_.javax.ws.rs.{PathParam, Path}
-import mop.MopAgent
+import _root_.org.fusesource.cloudmix.agent.mop.MopAgent
 
 /**
  * Represents the MOP Agent's resource

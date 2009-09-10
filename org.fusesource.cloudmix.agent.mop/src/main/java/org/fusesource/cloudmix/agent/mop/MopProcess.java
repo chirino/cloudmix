@@ -97,7 +97,6 @@ public class MopProcess {
                     LOG.error("Failed running feature: " + getId() + ". Reason: " + e, e);
                 }
                 finally {
-                    completed.set(true);
                     clear();
                 }
             }
@@ -133,7 +132,12 @@ public class MopProcess {
         clear();
     }
 
+    public boolean isCompleted() {
+        return completed.get();
+    }
+    
     private void clear() {
+        completed.set(true);
         mop = null;
         thread = null;
     }

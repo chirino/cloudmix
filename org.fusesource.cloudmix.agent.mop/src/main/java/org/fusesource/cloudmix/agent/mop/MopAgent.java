@@ -14,9 +14,13 @@ import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.mop.common.collect.ImmutableMap;
 import org.fusesource.mop.common.collect.Maps;
+import org.fusesource.mop.common.collect.Lists;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @version $Revision: 1.1 $
@@ -39,6 +43,13 @@ public class MopAgent extends InstallerAgent {
      */
     public ImmutableMap<String, MopProcess> getProcesses() {
         synchronized (processes) {
+            // lets remove all the dead processes
+            List<MopProcess> list = Lists.newArrayList(processes.values());
+            for (MopProcess process : list) {
+                if (!process.isCompleted()) {
+                    processes.remove(process.getId());
+                }
+            }
             return ImmutableMap.copyOf(processes);
         }
     }
