@@ -30,6 +30,10 @@ public class ObjectFactory {
     public ProfileDetails createProfileDetails() {
         return new ProfileDetails();
     }
+
+    public ProfileStatus createProfileStatus() {
+        return new ProfileStatus();
+    }
     
     public FeatureDetailsList createFeatureDetailsList() {
         return new FeatureDetailsList();
