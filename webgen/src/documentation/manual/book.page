@@ -86,7 +86,7 @@ The easiest way to run the controller is currently by link:/source.html[getting 
 
 ----
 cd org.fusesource.cloudmix.controller.webapp
-mvn jetty:run
+mvn compile jetty:run
 ----
 
 you should now be able to see the controller running by pointing your web browser at http://localhost:8181/
