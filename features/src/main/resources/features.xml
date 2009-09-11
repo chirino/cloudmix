@@ -44,7 +44,7 @@
     <bundle>mvn:org.springframework/spring-context/${spring-version}</bundle>
     <bundle>mvn:org.springframework/spring-tx/${spring-version}</bundle>
 
-    <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jna/${jna-bundle-version}</bundle>
+    <bundle>mvn:org.fusesource.cloudmix.bundles/org.fusesource.cloudmix.bundles.jna/${jna-bundle-version}</bundle>
 
     <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-1.1/${jsr311-specs-version}</bundle>
     <bundle>mvn:com.sun.jersey/jersey-bundle/${jersey-version}</bundle>
