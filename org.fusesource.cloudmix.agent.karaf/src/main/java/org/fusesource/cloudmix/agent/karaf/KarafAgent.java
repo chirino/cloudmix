@@ -5,11 +5,10 @@
  *  The software in this package is published under the terms of the AGPL license
  *  a copy of which has been included with this distribution in the license.txt file.
  */
-package org.fusesource.cloudmix.agent.smx4;
+package org.fusesource.cloudmix.agent.karaf;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -21,6 +20,8 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.felix.karaf.features.FeaturesService;
+import org.apache.felix.karaf.gshell.admin.AdminService;
+import org.apache.felix.karaf.gshell.admin.Instance;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.FeatureList;
@@ -30,17 +31,16 @@ import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
 
-public class ServiceMixAgent extends InstallerAgent {
-
-    
+public class KarafAgent extends InstallerAgent {
+	
     protected static final String VM_PROP_SMX_HOME = "servicemix.home";
 
     protected static final String AGENT_WORK_DIR = File.separator + "data" + File.separator + "cloudmix";
     protected static final String AGENT_PROPS_PATH_SUFFIX = "agent.properties";
     
-    private static final Log LOGGER = LogFactory.getLog(ServiceMixAgent.class);
+    private static final Log LOGGER = LogFactory.getLog(KarafAgent.class);
 
-    private static final String FEATURE_FILE_KEY = ServiceMixAgent.class.getName() + ".featureFile";
+    private static final String FEATURE_FILE_KEY = KarafAgent.class.getName() + ".featureFile";
 
     private static final String SMX4_CONTAINER_TYPE = "smx4";
     private static final String JBI_TYPE = "jbi";
@@ -50,12 +50,16 @@ public class ServiceMixAgent extends InstallerAgent {
     private static final String JBI_URL_PREFIX = "jbi:";
 
     private FeaturesService featuresService;
-
+    
+    private AdminService adminService;
     
     public void setFeaturesService(FeaturesService featuresService) {
         this.featuresService = featuresService;
     }
     
+    public void setAdminService(AdminService adminService) {
+		this.adminService = adminService;
+	}
     
     @Override
     public String getDetailsPropertyFilePath() {
@@ -73,19 +77,29 @@ public class ServiceMixAgent extends InstallerAgent {
 
     @Override
     protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
-        if (resource.startsWith("scan-features:")) {
-            resource = resource.substring("scan-features:".length());
-        }
-        int idx = resource.indexOf("!/");
-        if (idx > 1) {
-            String repo = resource.substring(0, idx);
-            String feature = resource.substring(idx + 2);
-            URI repoUri = new URI(repo);
-            LOGGER.info("Adding feature repository " + repoUri);
-            featuresService.addRepository(repoUri);
-            LOGGER.info("Adding feature: " + feature);
-            featuresService.installFeature(feature);
-        }
+    	LOGGER.info("Installing CloudMix feature " + resource);
+    	Feature feat = new Feature(action.getFeature());
+    	
+    	if (resource.startsWith("karaf:")) {
+    		String name = getInstanceName(feat.getName());
+			Instance instance = adminService.createInstance(name, 0, null);
+    		instance.start(null);
+    	} else {	    	
+	        if (resource.startsWith("scan-features:")) {
+	            resource = resource.substring("scan-features:".length());
+	        }
+	        int idx = resource.indexOf("!/");
+	        if (idx > 1) {
+	            String repo = resource.substring(0, idx);
+	            String feature = resource.substring(idx + 2);
+	            URI repoUri = new URI(repo);
+	            LOGGER.info("Adding feature repository " + repoUri);
+	            featuresService.addRepository(repoUri);
+	            LOGGER.info("Adding feature: " + feature);
+	            featuresService.installFeature(feature);
+	        }
+    	}
+        addAgentFeature(feat);
     }
 
     @Override
@@ -144,29 +158,43 @@ public class ServiceMixAgent extends InstallerAgent {
 
     @Override
     protected void uninstallFeature(Feature feature) {
-        String featureName = feature.getName();
-        try {
-            featuresService.uninstallFeature(featureName);
-            // TODO: check featuresService.listInstalledFeatures()?
-            super.uninstallFeature(feature);
-            
-            File featuresFile = (File) feature.getAgentProperties().get(FEATURE_FILE_KEY);
-            if (featuresFile == null) {
-                LOGGER.error("Cannot find features file for feature " + featureName);
-            } else {
-                URI reposUri = featuresFile.toURI();
-                LOGGER.info("Removing features repository " + reposUri);
-                featuresService.removeRepository(reposUri);
-                
-                LOGGER.info("Deleting features file " + featuresFile);
-                featuresFile.delete();
-            }
-            feature.getAgentProperties().remove(FEATURE_FILE_KEY);
-
-        } catch (Exception e) {
-            LOGGER.error("Error uninstalling feature " + featureName + ", exception " + e);
-            LOGGER.debug(e);
-        }
+    	LOGGER.info("Uninstalling CloudMix feature " + feature);
+    	
+    	Instance instance = adminService == null ? null : adminService.getInstance(getInstanceName(feature.getName()));
+		if (instance!= null) {
+    		try {
+				instance.stop();
+				instance.destroy();
+			} catch (Exception e) {
+				LOGGER.warn("Unable to stop/destroy a Karaf instance: " + e.getMessage(), e);
+			}	
+    	} else {    	
+	        String featureName = feature.getName();
+	        removeFeatureId(featureName);
+	        try {
+	            featuresService.uninstallFeature(featureName);
+	            // TODO: check featuresService.listInstalledFeatures()?
+	            super.uninstallFeature(feature);
+	            
+	            File featuresFile = (File) feature.getAgentProperties().get(FEATURE_FILE_KEY);
+	            if (featuresFile == null) {
+	                LOGGER.error("Cannot find features file for feature " + featureName);
+	            } else {
+	                URI reposUri = featuresFile.toURI();
+	                LOGGER.info("Removing features repository " + reposUri);
+	                featuresService.removeRepository(reposUri);
+	                
+	                LOGGER.info("Deleting features file " + featuresFile);
+	                featuresFile.delete();
+	            }
+	            feature.getAgentProperties().remove(FEATURE_FILE_KEY);
+	
+	        } catch (Exception e) {
+	            LOGGER.error("Error uninstalling feature " + featureName + ", exception " + e);
+	            e.printStackTrace();
+	            LOGGER.debug(e);
+	        }
+    	}
     }
 
     public String generateSMX4FeatureDoc(FeatureList fl) {
@@ -303,6 +331,7 @@ public class ServiceMixAgent extends InstallerAgent {
         return path;
     }
 
-
-
+	public String getInstanceName(String feature) {
+		return feature.replaceAll(":", "_");
+	}
 }

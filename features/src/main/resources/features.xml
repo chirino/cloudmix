@@ -9,7 +9,7 @@
     -->
 
     <feature version='${pom.version}'>jersey.wrapper</feature>
-    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.smx4/${pom.version}</bundle>
+    <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.karaf/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.common/${pom.version}</bundle>
   </feature>

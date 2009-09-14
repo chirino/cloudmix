@@ -143,6 +143,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
                     // This may take some time so its done in a thread.
                 }
             } catch (NotFoundException e) {
+            	System.out.println(e);
                 forceAgentReregistration();
             }
         }

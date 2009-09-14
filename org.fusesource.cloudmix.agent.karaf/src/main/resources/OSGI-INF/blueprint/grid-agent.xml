@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:ext="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0">
+           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
 
-  <ext:property-placeholder persistent-id="org.fusesource.cloudmix.agent.smx4" placeholder-prefix="${" placeholder-suffix="}">
+  <ext:property-placeholder persistent-id="org.fusesource.cloudmix.agent.karaf" placeholder-prefix="${" placeholder-suffix="}">
     <ext:default-properties>
       <ext:property name="initialPollingDelay" value="1000"/>
       <ext:property name="maxFeatures" value="25"/>
@@ -13,7 +13,7 @@
   </ext:property-placeholder>
 
   <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller" init-method="start">
-    <property name="installerAgent" ref="smxAgent"/>
+    <property name="installerAgent" ref="karafAgent"/>
     <property name="initialPollingDelay" value="${initialPollingDelay}"/>
     <property name="pollingPeriod" value="${pollingPeriod}"/>
   </bean>
@@ -30,9 +30,10 @@
     <property name="passwordFile" value="${karaf.home}/etc/agent.password"/>
   </bean>
 
-  <bean id="smxAgent" class="org.fusesource.cloudmix.agent.smx4.ServiceMixAgent" init-method="init">
+  <bean id="karafAgent" class="org.fusesource.cloudmix.agent.karaf.KarafAgent" init-method="init">
     <property name="client" ref="restGridClient"/>
     <property name="featuresService" ref="featuresService"/>
+    <property name="adminService" ref="adminService"/>
     <property name="maxFeatures" value="${maxFeatures}"/>
     <property name="profile" value="${profile}"/>
     <property name="detailsPropertyFilePath" value="${karaf.home}/data/grid/agent.properties"/>
@@ -48,17 +49,18 @@
 
   <bean id="endpointRegistry" class="org.fusesource.cloudmix.agent.EndpointRegistry">
     <property name="client" ref="restGridClient"/>
-    <property name="agent" ref="smxAgent"/>
+    <property name="agent" ref="karafAgent"/>
   </bean>
 
 
-  <service ref="smxAgent" id="cloudmixAgent"
-           interface="org.fusesource.cloudmix.agent.smx4.ServiceMixAgent"/>
+  <service ref="karafAgent" id="cloudmixAgent"
+           interface="org.fusesource.cloudmix.agent.karaf.KarafAgent"/>
 
   <service ref="endpointRegistry" id="endpointRegistryOSGiService"
            interface="org.fusesource.cloudmix.agent.EndpointRegistry"/>
 
   <reference id="featuresService" interface="org.apache.felix.karaf.features.FeaturesService"/>
-
+  
+  <reference id="adminService" interface="org.apache.felix.karaf.gshell.admin.AdminService"/>
 
 </blueprint>

@@ -9,9 +9,9 @@
     <version>1.3-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.fusesource.cloudmix.agent.smx4</artifactId>
+  <artifactId>org.fusesource.cloudmix.agent.karaf</artifactId>
   <packaging>bundle</packaging>
-  <name>CloudMix :: Agent Bundle</name>
+  <name>CloudMix :: Karaf Agent Bundle</name>
   <description>CloudMix Agent Bundle</description>
 
   <properties>
@@ -81,6 +81,12 @@
           <artifactId>org.osgi.foundation</artifactId>
         </exclusion>
       </exclusions>      
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix.karaf.gshell</groupId>
+      <artifactId>org.apache.felix.karaf.gshell.admin</artifactId>
+      <version>${karaf-version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>

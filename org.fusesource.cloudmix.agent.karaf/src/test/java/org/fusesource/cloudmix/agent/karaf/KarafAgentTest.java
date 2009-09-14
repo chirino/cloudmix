@@ -5,7 +5,7 @@
  *  The software in this package is published under the terms of the AGPL license
  *  a copy of which has been included with this distribution in the license.txt file.
  */
-package org.fusesource.cloudmix.agent.smx4;
+package org.fusesource.cloudmix.agent.karaf;
 
 import java.io.File;
 import java.net.URI;
@@ -30,10 +30,10 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.util.FileUtils;
 import org.w3c.dom.Element;
 
-public class ServiceMixAgentTest extends TestCase {
+public class KarafAgentTest extends TestCase {
     private GridClient cl;
     private MockFeaturesService fs;
-    private ServiceMixAgent smxa;
+    private KarafAgent smxa;
     private File workdir;
     
     class MockFeaturesService implements FeaturesService {
@@ -132,7 +132,7 @@ public class ServiceMixAgentTest extends TestCase {
         cl = EasyMock.createNiceMock(GridClient.class);
         EasyMock.replay(cl);
         
-        smxa = new ServiceMixAgent() {
+        smxa = new KarafAgent() {
             @Override
             public GridClient getClient() {
                 return cl;
@@ -346,8 +346,8 @@ public class ServiceMixAgentTest extends TestCase {
         
     
     public void testGetDetailsPropertyFilePath() throws Exception {
-        ServiceMixAgent agent = new ServiceMixAgent();
-        System.setProperty(ServiceMixAgent.VM_PROP_SMX_HOME, "home");
+        KarafAgent agent = new KarafAgent();
+        System.setProperty(KarafAgent.VM_PROP_SMX_HOME, "home");
         assertEquals("home" + File.separator + "data"
                      + File.separator + "cloudmix"
                      + File.separator + "agent.properties",
