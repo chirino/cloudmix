@@ -7,20 +7,18 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
-import org.fusesource.mop.common.collect.ImmutableMap;
-import org.fusesource.mop.common.collect.Maps;
-import org.fusesource.mop.common.collect.Lists;
-
-import java.util.Map;
-import java.util.UUID;
-import java.util.Set;
-import java.util.Collection;
-import java.util.List;
+import org.fusesource.mop.com.google.common.collect.ImmutableMap;
+import org.fusesource.mop.com.google.common.collect.Lists;
+import org.fusesource.mop.com.google.common.collect.Maps;
 
 /**
  * @version $Revision: 1.1 $
