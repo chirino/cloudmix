@@ -7,20 +7,6 @@
  */
 package org.fusesource.cloudmix.agent;
 
-import com.sun.jersey.api.NotFoundException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.GridClient;
-import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
-import org.fusesource.cloudmix.common.dto.ProcessList;
-import org.fusesource.cloudmix.common.dto.ProvisioningAction;
-import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.common.util.FileUtils;
-import org.fusesource.cloudmix.common.util.ObjectHelper;
-import org.springframework.beans.factory.InitializingBean;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,7 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Inet4Address;
-import java.net.URI;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -44,6 +30,21 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
+import org.fusesource.cloudmix.common.dto.ProcessList;
+import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
+import org.fusesource.cloudmix.common.util.FileUtils;
+import org.fusesource.cloudmix.common.util.ObjectHelper;
+import org.springframework.beans.factory.InitializingBean;
+
+import com.sun.jersey.api.NotFoundException;
 
 /**
  * Polls for features that should be installed/uninstalled and executes those installations.
@@ -240,9 +241,17 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
      * If this is a different link to the previously registered one then this will
      * be updated on the controller
      */
-    public void setBaseHref(String baseHref) {
-        this.baseHref = baseHref;
-
+    public void setBaseHref(String href) {
+        this.baseHref = href;
+        final String noHost = "http://0.0.0.0";
+        if (baseHref.startsWith(noHost)) {
+        	String portSuffix = baseHref.substring(noHost.length());
+        	try {
+        	    baseHref = "http://" + InetAddress.getLocalHost().getCanonicalHostName() + portSuffix;
+        	} catch (UnknownHostException ex) {
+        		baseHref = "http://localhost" + portSuffix;
+        	}
+        }
         if (baseHref != null) {
             AgentDetails details = getAgentDetails();
             String oldHref = details.getHref();
