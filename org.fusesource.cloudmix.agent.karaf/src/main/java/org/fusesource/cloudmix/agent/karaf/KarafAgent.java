@@ -7,8 +7,7 @@
  */
 package org.fusesource.cloudmix.agent.karaf;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,8 +29,15 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
+import org.springframework.util.StringUtils;
+
+import static org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper.merge;
 
 public class KarafAgent extends InstallerAgent {
+
+    public static final String FEATURES_REPOSITORIES = "featuresRepositories";
+    public static final String FEATURES_BOOT = "bootFeatures";
+
 	
     protected static final String VM_PROP_SMX_HOME = "servicemix.home";
 
@@ -82,8 +88,9 @@ public class KarafAgent extends InstallerAgent {
     	
     	if (resource.startsWith("karaf:")) {
     		String name = getInstanceName(feat.getName());
-			Instance instance = adminService.createInstance(name, 0, null);
-    		instance.start(null);
+            Instance instance = adminService.createInstance(name, 0, null);
+            configureInstance(instance, resource);
+            instance.start(null);
     	} else {	    	
 	        if (resource.startsWith("scan-features:")) {
 	            resource = resource.substring("scan-features:".length());
@@ -101,6 +108,20 @@ public class KarafAgent extends InstallerAgent {
     	}
         addAgentFeature(feat);
     }
+
+    private void configureInstance(Instance instance, String resource) throws IOException {
+        File config = new File(instance.getLocation(), "etc" + File.separator + "org.apache.felix.karaf.features.cfg");
+        Map<String, String> properties = new HashMap<String, String>();
+        String[] parts = resource.split(" ");
+        switch (parts.length) {
+            case 3:
+                properties.put(FEATURES_BOOT, parts[2]);
+            case 2:
+                properties.put(FEATURES_REPOSITORIES, parts[1]);
+        }
+        merge(config, properties);
+    }
+
 
     @Override
     protected void installFeature(org.fusesource.cloudmix.agent.Feature feature,
