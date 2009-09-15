@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.mop.MOP;
 import org.fusesource.mop.ProcessRunner;
-import org.fusesource.mop.common.collect.Lists;
+import org.fusesource.mop.com.google.common.collect.Lists;
 
 import java.net.URL;
 import java.net.URLClassLoader;
