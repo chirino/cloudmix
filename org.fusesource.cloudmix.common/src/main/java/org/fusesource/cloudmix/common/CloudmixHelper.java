@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public final class CloudmixHelper {
     public static final String ROOT_URL_PROPERTY = "cloudmix.url";

@@ -12,7 +12,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.controller.provisioning.ProvisioningTestSupport;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class BrokerConsumerProducerTest extends ProvisioningTestSupport {
     public void testOneFeaturePerBox() throws Exception {

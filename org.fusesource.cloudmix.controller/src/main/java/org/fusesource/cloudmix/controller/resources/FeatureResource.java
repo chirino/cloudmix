@@ -18,7 +18,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.StringList;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class FeatureResource extends ResourceSupport {
     private final GridController controller;

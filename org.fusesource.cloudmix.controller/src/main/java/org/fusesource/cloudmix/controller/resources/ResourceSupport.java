@@ -14,7 +14,7 @@ import com.sun.jersey.api.view.ImplicitProduces;
 /**
  * A base class of helper methods
  * 
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @ImplicitProduces("text/html;qs=5")
 @Produces({

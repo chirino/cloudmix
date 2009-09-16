@@ -12,7 +12,7 @@ import org.fusesource.cloudmix.common.dto.ProfileStatus;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ProfileStatusResource extends ResourceSupport {
     private ProfileResource profileResource;

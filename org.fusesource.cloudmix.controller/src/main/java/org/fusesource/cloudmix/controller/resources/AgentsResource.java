@@ -29,7 +29,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @Path("/agents")
 public class AgentsResource extends ResourceSupport {

@@ -15,7 +15,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.controller.provisioning.ProvisioningTestSupport;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class WildcardProfileTest extends ProvisioningTestSupport {
     public void testProvision() throws Exception {

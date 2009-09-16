@@ -20,7 +20,7 @@ import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public interface GridController {
     Collection<AgentDetails> getAllAgentDetails();

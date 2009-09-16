@@ -20,7 +20,7 @@ import org.junit.Test;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ActiveMQMopTest extends TestController {
     protected FeatureDetails broker;

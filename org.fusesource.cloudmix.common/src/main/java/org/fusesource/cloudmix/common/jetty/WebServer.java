@@ -21,7 +21,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 /**
  * A simple bootstrap class for starting Jetty in your IDE using the local web application.
  * 
- * @version $Revision: 565003 $
+ * @version $Revision$
  */
 public final class WebServer {
     private static final transient Log LOG = LogFactory.getLog(WebServer.class);

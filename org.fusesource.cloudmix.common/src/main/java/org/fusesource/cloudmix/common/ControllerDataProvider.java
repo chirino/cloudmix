@@ -14,7 +14,7 @@ import org.fusesource.cloudmix.common.controller.FeatureController;
 import org.fusesource.cloudmix.common.controller.ProfileController;
 
 /**
- * @version $Revision: 42104 $
+ * @version $Revision$
  */
 public interface ControllerDataProvider {
     GridController getGrid();

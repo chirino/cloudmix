@@ -21,7 +21,7 @@ import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.controller.RuntimeTestSupport;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ProvisioningTestSupport extends RuntimeTestSupport {
     protected GridControllerClient gridController;

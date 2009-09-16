@@ -15,7 +15,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
- * @version $Revision: 63441 $
+ * @version $Revision$
  */
 public class AgentController {
     

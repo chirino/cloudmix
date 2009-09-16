@@ -13,7 +13,7 @@ import java.util.Collection;
  * Represents a thread safe map of values which timeout after a period of
  * inactivity.
  *
- * @version $Revision: 630591 $
+ * @version $Revision$
  */
 public interface TimeoutMap<K, V> extends Runnable {
     /**

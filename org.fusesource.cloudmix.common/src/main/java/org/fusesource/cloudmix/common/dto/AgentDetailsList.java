@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @version $Revision: 35898 $
+ * @version $Revision$
  */
 @XmlRootElement(name = "agents")
 @XmlAccessorType(XmlAccessType.FIELD)

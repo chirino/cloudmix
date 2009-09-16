@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.fusesource.cloudmix.common.jetty.WebServer;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public abstract class RuntimeTestSupport extends TestCase {
     protected WebServer webServer;

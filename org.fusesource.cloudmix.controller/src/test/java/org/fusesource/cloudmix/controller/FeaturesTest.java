@@ -16,7 +16,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class FeaturesTest extends RuntimeTestSupport {
     protected RestGridClient adminClient = new RestGridClient();

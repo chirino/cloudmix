@@ -19,7 +19,7 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ProfilesTest extends RuntimeTestSupport {
     private static final String PROFILE_ID1 = "d654017c-dcfe-43fc-be92-074457472660";

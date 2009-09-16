@@ -16,7 +16,7 @@ import org.junit.Test;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ActiveMQOsgiFeatureTest extends TestController {
 

@@ -11,7 +11,7 @@ package org.fusesource.cloudmix.common.util;
 /**
  * A number of useful helper methods for working with Objects
  *
- * @version $Revision: 630591 $
+ * @version $Revision$
  */
 public final class ObjectHelper {
     

@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @version $Revision: 630591 $
+ * @version $Revision$
  */
 public class DefaultTimeoutMap<K, V> implements TimeoutMap<K, V>, Runnable {
     private static final Log LOG = LogFactory.getLog(DefaultTimeoutMap.class);

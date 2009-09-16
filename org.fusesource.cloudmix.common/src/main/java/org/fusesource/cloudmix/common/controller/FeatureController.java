@@ -27,7 +27,7 @@ import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 
 /**
- * @version $Revision: 63441 $
+ * @version $Revision$
  */
 public class FeatureController {
     private static final transient Log LOG = LogFactory.getLog(FeatureController.class);

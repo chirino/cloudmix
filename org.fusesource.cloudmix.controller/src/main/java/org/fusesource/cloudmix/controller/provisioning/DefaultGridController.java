@@ -42,7 +42,7 @@ import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.mortbay.util.UrlEncoded;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class DefaultGridController implements GridController, GridClient {
     private static final transient Log LOG = LogFactory.getLog(DefaultGridController.class);

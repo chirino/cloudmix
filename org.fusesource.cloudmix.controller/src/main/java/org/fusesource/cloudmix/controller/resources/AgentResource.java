@@ -23,7 +23,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class AgentResource extends ResourceSupport {
     private final GridController controller;

@@ -10,7 +10,7 @@ package org.fusesource.cloudmix.usecase;
 /**
  * Tests the runtime (server side) failing over to a new instance and continuing to function
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class RuntimeFailingWhenKillingBrokerTest extends RuntimeFailingTest {
 

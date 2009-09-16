@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * @version $Revision: 61256 $
+ * @version $Revision$
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

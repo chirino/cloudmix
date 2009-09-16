@@ -16,7 +16,7 @@ import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class AgentTest extends RuntimeTestSupport {
     protected InstallerAgent agent = new InstallerAgent();

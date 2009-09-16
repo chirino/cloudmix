@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @version $Revision: 47094 $
+ * @version $Revision$
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

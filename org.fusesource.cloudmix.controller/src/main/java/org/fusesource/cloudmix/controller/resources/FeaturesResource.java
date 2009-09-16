@@ -22,7 +22,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @Path("/features")
 public class FeaturesResource extends ResourceSupport {

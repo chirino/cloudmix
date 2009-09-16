@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
  * Used to represent a command sent by the provisioning controller down to the agent.
  * Normally these are install/uninstall commands.
  *
- * @version $Revision: 52311 $
+ * @version $Revision$
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

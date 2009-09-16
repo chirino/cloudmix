@@ -18,7 +18,7 @@ import org.fusesource.cloudmix.common.dto.ObjectFactory;
 /**
  * A resolver of the JAXB context primed for our XML languages
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @Provider
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {

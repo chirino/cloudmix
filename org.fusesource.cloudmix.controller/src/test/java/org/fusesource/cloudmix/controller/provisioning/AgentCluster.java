@@ -29,7 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * A helper class for testing which represents a cluster of Agents to test out the provisioning
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class AgentCluster implements InitializingBean, DisposableBean {
     private static final transient Log LOG = LogFactory.getLog(AgentCluster.class);

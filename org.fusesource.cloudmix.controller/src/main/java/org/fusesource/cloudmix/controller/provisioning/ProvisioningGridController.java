@@ -34,7 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class ProvisioningGridController extends DefaultGridController implements InitializingBean,
         DisposableBean,

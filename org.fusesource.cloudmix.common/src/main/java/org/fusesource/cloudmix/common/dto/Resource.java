@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Represents an arbitrary resource used for example when asking for what files are in a directory
  * or what URIs are available within the web application
  *
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

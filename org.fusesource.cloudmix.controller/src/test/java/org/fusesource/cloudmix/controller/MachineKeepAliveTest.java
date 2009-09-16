@@ -17,7 +17,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
 public class MachineKeepAliveTest extends RuntimeTestSupport {
     protected Client client;
