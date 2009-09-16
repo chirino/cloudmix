@@ -7,11 +7,8 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
-import com.sun.jersey.api.representation.Form;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -21,14 +18,18 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.TEXT_HTML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.MediaType.TEXT_XML;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.net.URISyntaxException;
+
+import com.sun.jersey.api.representation.Form;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
 
 public class ProfileResource extends ResourceSupport {
     private static final transient Log LOG = LogFactory.getLog(ProfileResource.class);
@@ -63,7 +64,9 @@ public class ProfileResource extends ResourceSupport {
     }
 
     @POST
-    @Consumes({TEXT_PLAIN, TEXT_HTML, TEXT_XML, APPLICATION_XML})
+    @Consumes({
+        TEXT_PLAIN, TEXT_HTML, TEXT_XML, APPLICATION_XML
+    })
     public void post(@Context UriInfo uriInfo, @Context HttpHeaders headers, String body) {
         if (body != null && body.equalsIgnoreCase("kill")) {
             delete();
@@ -74,7 +77,8 @@ public class ProfileResource extends ResourceSupport {
 
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response post(@Context UriInfo uriInfo, @Context HttpHeaders headers, Form formData) throws URISyntaxException {
+    public Response post(@Context UriInfo uriInfo, @Context HttpHeaders headers, Form formData)
+        throws URISyntaxException {
         LOG.info("<<<<<< received form: " + formData);
 
         String value = formData.getFirst("kill");

@@ -19,8 +19,10 @@ import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.jetty.WebServer;
 
-public class ProvisioningDemo {
-
+public final class ProvisioningDemo {
+    private ProvisioningDemo() {
+        //not constructed
+    }
     public static void main(String[] args) throws Exception {
         WebServer webServer = new WebServer();
         webServer.start();
@@ -28,12 +30,15 @@ public class ProvisioningDemo {
         GridControllerClient gridController = new GridControllerClient();
 
         FeatureDetails broker = new FeatureDetails("org.apache.activemq.broker.multicast",
-                                                   "mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/1.0-SNAPSHOT/xml/feature").ownsMachine().maximumInstances("1");
+            "mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/1.0-SNAPSHOT/xml/feature")
+            .ownsMachine().maximumInstances("1");
 
         FeatureDetails producer = new FeatureDetails("org.apache.activemq.producer",
-                                                     "mvn:org.fusesource.cloudmix/org.apache.activemq.producer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("2");
+            "mvn:org.fusesource.cloudmix/org.apache.activemq.producer/1.0-SNAPSHOT/xml/feature")
+            .depends(broker).maximumInstances("2");
         FeatureDetails consumer = new FeatureDetails("org.apache.activemq.consumer",
-                                                     "mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/1.0-SNAPSHOT/xml/feature").depends(broker).maximumInstances("3");
+            "mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/1.0-SNAPSHOT/xml/feature")
+            .depends(broker).maximumInstances("3");
 
         gridController.addFeatures(broker, producer, consumer);
 

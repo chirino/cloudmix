@@ -35,7 +35,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
     private static final String CONFIG_NAME = "agent.name";
     private static final String CONFIG_PROFILE = "agent.profile";
     private static final String CONFIG_AGENT_USER = "agent.user";
-    private static final String CONFIG_AGENT_PASSWORD = "agent.password";
+    //private static final String CONFIG_AGENT_PASSWORD = "agent.password";
     private static final String CONFIG_AGENT_TYPE = "agent.type";
     private static final String CONFIG_AGENT_LINK = "agent.link";
     private static final String CONFIG_AGENT_PACKAGES = "agent.packages";
@@ -47,7 +47,7 @@ public class LoggingInstallerAgent extends InstallerAgent {
     private static final String DEFAULT_REPO_URI = "http://localhost:9091/controller";
     private static final String DEFAULT_PROFILE = "default";
     private static final String DEFAULT_AGENT_USER = "Agent";
-    private static final String DEFAULT_AGENT_PASSWORD = "agent";
+    //private static final String DEFAULT_AGENT_PASSWORD = "agent";
     private static final String DEFAULT_PACKAGES = "war, jbi, osgi, jar";
     private static final String DEFAULT_INSTALL_DELAY = "1";
     private static final String DEFAULT_SYS_PROPS = "prop1, prop2, prop3";
@@ -102,7 +102,8 @@ public class LoggingInstallerAgent extends InstallerAgent {
 
             
             //PasswordProvider provider = new SimplePasswordProvider();
-            //final String agentPassword = getConfig(properties, CONFIG_AGENT_PASSWORD, DEFAULT_AGENT_PASSWORD);
+            //final String agentPassword = getConfig(properties, 
+            //                                       CONFIG_AGENT_PASSWORD, DEFAULT_AGENT_PASSWORD);
             //provider.setPassword("agent");
             
             DialogPasswordProvider provider = new DialogPasswordProvider();
@@ -224,7 +225,8 @@ public class LoggingInstallerAgent extends InstallerAgent {
     }
         
     @Override
-    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) throws Exception {
+    protected void installFeature(Feature feature, 
+                                  List<ConfigurationUpdate> featureCfgOverrides) throws Exception {
 
         log("");
         log("installing feature \"" + feature.getName() + "\" {");

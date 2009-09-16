@@ -7,13 +7,11 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
@@ -25,14 +23,14 @@ import org.fusesource.mop.com.google.common.collect.Maps;
  * @version $Revision: 1.1 $
  */
 public class MopAgent extends InstallerAgent {
-    private static final transient Log LOG = LogFactory.getLog(MopAgent.class);
+    public static final String MOP_URI_PREFIX = "mop:";
 
     private Map<String, MopProcess> processes = Maps.newHashMap();
-    public static final String MOP_URI_PREFIX = "mop:";
     private ClassLoader mopClassLoader;
 
     public MopAgent() {
-        System.out.println("==================== CREATING MOP AGENT " + this + " = " + System.identityHashCode(this));
+        System.out.println("==================== CREATING MOP AGENT " + this 
+                           + " = " + System.identityHashCode(this));
         // lets default the profile
         setProfile("*");
         mopClassLoader = getClass().getClassLoader();
@@ -84,7 +82,9 @@ public class MopAgent extends InstallerAgent {
     }
 
     @Override
-    protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
+    protected void installFeatures(ProvisioningAction action, 
+                                   String credentials, 
+                                   String resource) throws Exception {
         System.out.println("Installing FEATURES: " + resource);
 
         if (resource.startsWith(MOP_URI_PREFIX)) {
@@ -115,8 +115,7 @@ public class MopAgent extends InstallerAgent {
                 addAgentFeature(feature);
 
                 // TODO also need to update the current features!
-            }
-            finally {
+            } finally {
                 currentThread.setContextClassLoader(oldClassLoader);
             }
         }

@@ -18,10 +18,9 @@ import javax.ws.rs.core.Request;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.easymock.EasyMock;
-import org.fusesource.cloudmix.controller.resources.AgentResource;
 
 public class AgentResourceTest extends TestCase {
     

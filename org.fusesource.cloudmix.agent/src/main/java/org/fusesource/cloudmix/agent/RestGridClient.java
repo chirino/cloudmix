@@ -7,6 +7,13 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
@@ -24,12 +31,6 @@ import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Revision: 61256 $
@@ -203,13 +204,15 @@ public class RestGridClient extends RestClientSupport implements GridClient {
                                   String agentId,
                                   Map<String, String> cfgOverridesProps) throws URISyntaxException {
         WebResource.Builder resource =
-                resource(append(getFeaturesUri(), "/", featureId, "/agents/", agentId)).type("application/xml");
+                resource(append(getFeaturesUri(), "/", featureId,
+                                "/agents/", agentId)).type("application/xml");
         getTemplate().put(resource);
     }
 
     public void removeAgentFromFeature(String featureId, String agentId) throws URISyntaxException {
         WebResource.Builder resource =
-                resource(append(getFeaturesUri(), "/", featureId, "/agents/", agentId)).type("application/xml");
+                resource(append(getFeaturesUri(), "/", featureId,
+                                "/agents/", agentId)).type("application/xml");
         getTemplate().delete(resource);
     }
 

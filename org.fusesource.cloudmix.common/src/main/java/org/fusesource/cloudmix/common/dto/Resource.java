@@ -10,8 +10,8 @@ package org.fusesource.cloudmix.common.dto;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents an arbitrary resource used for example when asking for what files are in a directory

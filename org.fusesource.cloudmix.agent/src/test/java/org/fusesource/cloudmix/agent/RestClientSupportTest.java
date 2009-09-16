@@ -7,9 +7,10 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.net.URI;
+
 import junit.framework.TestCase;
 
-import java.net.URI;
 
 import org.fusesource.cloudmix.common.CloudmixHelper;
 

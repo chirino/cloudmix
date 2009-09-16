@@ -7,13 +7,14 @@
  */
 package org.fusesource.cloudmix.agent.security;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /*
  * Password provider that reads the password from a file.  The password is the first non empty line read

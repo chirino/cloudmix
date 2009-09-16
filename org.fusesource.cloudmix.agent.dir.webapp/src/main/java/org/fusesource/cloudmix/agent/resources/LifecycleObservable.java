@@ -12,11 +12,11 @@ public interface LifecycleObservable {
     /**
      * Register an observer for initiate and destroy notifications.
      */
-    public void register(LifecycleObserver observer);
+    void register(LifecycleObserver observer);
 
     /**
      * Deregister a previously registered observer.
      */
-    public void deregister(LifecycleObserver observer);
+    void deregister(LifecycleObserver observer);
 
 }

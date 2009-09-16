@@ -9,11 +9,11 @@ package org.fusesource.cloudmix.controller;
 
 import java.util.Collection;
 
+import com.sun.jersey.api.client.Client;
+
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
-import com.sun.jersey.api.client.Client;
 
 /**
  * @version $Revision: 1.1 $

@@ -22,7 +22,8 @@ import org.fusesource.cloudmix.common.dto.ObjectFactory;
  */
 @Provider
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {
-    private static final String JAXB_PACKAGES = "org.fusesource.cloudmix.common.dto:javax.xml.ws.wsaddressing";
+    private static final String JAXB_PACKAGES 
+        = "org.fusesource.cloudmix.common.dto:javax.xml.ws.wsaddressing";
 
     private final JAXBContext context;
 

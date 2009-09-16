@@ -15,7 +15,11 @@ import javax.xml.bind.Marshaller;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 
-public class EndpointReferenceBuilder {
+public final class EndpointReferenceBuilder {
+    private EndpointReferenceBuilder() {
+        //utility class
+    }
+    
     public static W3CEndpointReference create(String address) {
         String jaxwsProvider = System.getProperty("javax.xml.ws.spi.Provider");
         System.setProperty("javax.xml.ws.spi.Provider", 

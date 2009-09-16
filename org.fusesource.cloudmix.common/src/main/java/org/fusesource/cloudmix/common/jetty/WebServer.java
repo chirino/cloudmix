@@ -9,34 +9,33 @@ package org.fusesource.cloudmix.common.jetty;
 
 import java.io.File;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.CloudmixHelper;
 
 /**
- * A simple bootstrap class for starting Jetty in your IDE using the local web
- * application.
- *
+ * A simple bootstrap class for starting Jetty in your IDE using the local web application.
+ * 
  * @version $Revision: 565003 $
  */
 public final class WebServer {
     private static final transient Log LOG = LogFactory.getLog(WebServer.class);
 
-    protected static final String defaultWebAppDir = "src/main/webapp";
+    protected final String defaultWebAppDir = "src/main/webapp";
+    protected String defaultDirectory = "org.fusesource.cloudmix.controller";
 
     private Server server = new Server();
-    private int port = 0;
+    private int port;
     private int localPort;
 
     private String webAppDir;
 
     private String webAppContext = "/";
-    protected String defaultDirectory = "org.fusesource.cloudmix.controller";
 
     public WebServer() {
     }
@@ -67,8 +66,7 @@ public final class WebServer {
             File file = new File(defaultWebAppDir);
             if (file.exists()) {
                 webAppDir = defaultWebAppDir;
-            }
-            else {
+            } else {
                 webAppDir = defaultDirectory + "/" + defaultWebAppDir;
             }
             LOG.info("Defaulting the web app dir to: " + webAppDir);
@@ -80,7 +78,7 @@ public final class WebServer {
             context
         });
         server.setConnectors(new Connector[] {
-                connector
+            connector
         });
         server.start();
 
@@ -101,7 +99,7 @@ public final class WebServer {
     }
 
     // Properties
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     public String getRootUrl() {
         return "http://localhost:" + getLocalPort() + "/";

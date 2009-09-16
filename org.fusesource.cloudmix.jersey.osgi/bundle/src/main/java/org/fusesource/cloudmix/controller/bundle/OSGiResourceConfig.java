@@ -80,8 +80,9 @@ public class OSGiResourceConfig extends DefaultResourceConfig {
         } else if (param instanceof String []) {
             return getClasses((String []) param);            
         } else {
-            throw new IllegalArgumentException(CLASS_NAMES + " must have a property " +
-            		"value of type String or String []");
+            throw new IllegalArgumentException(CLASS_NAMES 
+                                               + " must have a property " 
+                                               + "value of type String or String []");
         }
     }
     

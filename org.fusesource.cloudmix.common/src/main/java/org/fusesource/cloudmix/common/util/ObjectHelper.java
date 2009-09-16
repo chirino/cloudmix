@@ -58,6 +58,7 @@ public final class ObjectHelper {
      * A helper method for performing an ordered comparsion on the objects
      * handling nulls and objects which do not handle sorting gracefully
      */
+    @SuppressWarnings("unchecked")
     public static int compare(Object a, Object b) {
         if (a == b) {
             return 0;

@@ -7,6 +7,19 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import com.sun.jersey.spi.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,18 +27,6 @@ import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
 
 /**
  * @version $Revision: 1.1 $

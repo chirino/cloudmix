@@ -7,19 +7,19 @@
  */
 package org.fusesource.cloudmix.agent;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.config.ClientConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.CloudmixHelper;
-import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
+
+
 
 /**
  * A useful base class for any RESTful client facacde.
@@ -27,8 +27,6 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
  * @version $Revision: 1.1 $
  */
 public class RestClientSupport {
-
-    private static final transient Log LOG = LogFactory.getLog(RestClientSupport.class);
 
     private Client client;
     private URI rootUri;

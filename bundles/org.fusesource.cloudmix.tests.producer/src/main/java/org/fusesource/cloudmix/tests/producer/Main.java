@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.tests.producer;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,10 +14,15 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 /**
  * @version $Revision: 1.1 $
  */
-public class Main {
+public final class Main {
+    private Main() {
+        //utility class
+    }
     public static void main(String[] args) {
         if (args.length > 0 && args[0].equals("-debug")) {
             Map<Object, Object> properties = new TreeMap<Object, Object>();
@@ -28,7 +32,8 @@ public class Main {
             }
         }
 
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("META-INF/spring/context.xml");
+        ClassPathXmlApplicationContext applicationContext 
+            = new ClassPathXmlApplicationContext("META-INF/spring/context.xml");
         applicationContext.start();
 
         System.out.println("Enter quit to stop");

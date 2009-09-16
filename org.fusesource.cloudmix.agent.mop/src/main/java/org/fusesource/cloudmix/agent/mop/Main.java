@@ -7,21 +7,26 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.AgentPoller;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.dto.Constants;
 
-import java.io.File;
 
 /**
  * @version $Revision: 1.1 $
  */
-public class Main {
+public final class Main {
 
     private static final transient Log LOG = LogFactory.getLog(Main.class);
 
+    private Main() {
+        //utility class/Launcher
+    }
+    
     public static void main(String[] args) {
         try {
             String controllerUrl = "http://localhost:8181/";
@@ -32,7 +37,8 @@ public class Main {
             if (args.length > 0) {
                 String arg0 = args[0];
                 if (arg0.startsWith("?") || arg0.startsWith("-")) {
-                    System.out.println("Usage: DirectoryInstallerAgent [controllerURL] [profile] [workingDirectory]");
+                    System.out.println("Usage: DirectoryInstallerAgent [controllerURL] "
+                                       + "[profile] [workingDirectory]");
                     return;
                 } else {
                     controllerUrl = arg0;
@@ -48,7 +54,8 @@ public class Main {
             if (directory == null) {
                 directory = createDirectoryName();
             }
-            LOG.info("Connecting to Cloudmix controller at: " + controllerUrl + " with profile: " + profile + " with working directory: " + directory);
+            LOG.info("Connecting to Cloudmix controller at: " + controllerUrl 
+                     + " with profile: " + profile + " with working directory: " + directory);
 
 
             MopAgent agent = new MopAgent();

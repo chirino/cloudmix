@@ -7,13 +7,11 @@
  */
 package org.fusesource.cloudmix.common.dto;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * @version $Revision: 1.1 $
@@ -21,8 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DependencyStatus {
-
-    private static final transient Log LOG = LogFactory.getLog(DependencyStatus.class);
 
     @XmlAttribute
     private String featureId;

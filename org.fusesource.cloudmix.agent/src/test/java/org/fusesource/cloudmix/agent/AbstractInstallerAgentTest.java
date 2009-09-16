@@ -8,10 +8,10 @@
 package org.fusesource.cloudmix.agent;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -461,14 +461,5 @@ public class AbstractInstallerAgentTest extends TestCase {
         return collection.contains(element);
     }
 
-
-    private boolean contains(String s, String[] l) {
-        for (String s2 : l) {
-            if (s.equals(s2)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 }

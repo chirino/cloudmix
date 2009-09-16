@@ -7,16 +7,20 @@
  */
 package org.fusesource.cloudmix.agent.karaf;
 
-import java.util.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Utility methods for updating ConfigAdmin .cfg filess
  */
-public class ConfigAdminHelper {
+public final class ConfigAdminHelper {
 
     private ConfigAdminHelper() {
         // hide constructor
@@ -24,9 +28,11 @@ public class ConfigAdminHelper {
 
     /**
      * Merge two Strings containing a comma-separated list of values
+     * 
      * @param first the first string
-     * @param last  the second string
-     * @return a result string, containing a comma-separated list of the union of values in the original strings
+     * @param last the second string
+     * @return a result string, containing a comma-separated list of the union of values in the original
+     *         strings
      */
     public static String merge(String first, String last) {
         return merge(first.split(","), last.split(","));
@@ -40,12 +46,12 @@ public class ConfigAdminHelper {
         for (String element : last) {
             merged.add(element);
         }
-        return explode(merged.toArray(new String[]{}), ",");
+        return explode(merged.toArray(new String[] {}), ",");
     }
 
     private static String explode(String[] elements, String separator) {
         StringBuffer result = new StringBuffer();
-        for (int i = 0 ; i < elements.length ; i++) {
+        for (int i = 0; i < elements.length; i++) {
             result.append(elements[i]);
             if (i + 1 < elements.length) {
                 result.append(separator);
@@ -56,7 +62,7 @@ public class ConfigAdminHelper {
 
     /**
      * Merge a set of properties into an existing file, updating the file by adding the new property values
-     *
+     * 
      * @param file the existing properties file
      * @param properties the set of properties to be merged into the file
      * @throws IOException if a problem occurs while reading/writing the file
@@ -66,7 +72,7 @@ public class ConfigAdminHelper {
             // don't need to do anything for an empty map
             return;
         }
-        
+
         Properties result = new Properties();
         if (file.exists()) {
             // let's load the contents of the existing file
@@ -80,7 +86,7 @@ public class ConfigAdminHelper {
             }
         }
 
-        //write the result back to file with a plain PrintWriter -- Properties.store() escapes the : with a \
+        // write the result back to file with a plain PrintWriter -- Properties.store() escapes the : with a \
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(file);

@@ -22,13 +22,14 @@ public final class FileUtils {
     public static final int BUFFER_SIZE = 1024;
 
     private static final Log LOGGER = LogFactory.getLog(FileUtils.class);
-    
-    private FileUtils() { /* Utility classes should not have a public constructor */ }
-    
+
+    private FileUtils() { /* Utility classes should not have a public constructor */
+    }
+
     public static File createDirectory(File parentDir, String path) {
         File dir = parentDir == null ? new File(path) : new File(parentDir, path);
         return createDirectory(dir);
-        
+
     }
 
     public static File createDirectory(File dir) {
@@ -41,33 +42,32 @@ public final class FileUtils {
         }
         return dir;
     }
-    
+
     public static void deleteDirectory(File dir) {
         LOGGER.info("deleting directory " + dir);
         File[] files = dir.listFiles();
         if (files != null) {
-        	for (File f : files) {
-        		if (f.isDirectory()) {
-        			deleteDirectory(f);
-        		} else {
-        			f.delete();
-        		}
-        	}
-        	dir.delete();
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
+                }
+            }
+            dir.delete();
         }
     }
-    
+
     public static void deleteFile(File file) {
         LOGGER.info("deleting file " + file);
         if (!file.delete()) {
             LOGGER.warn("failed to delete file " + file);
         }
     }
-    
-    
+
     public static void copy(InputStream is, OutputStream os) throws IOException {
         final byte[] buffer = new byte[BUFFER_SIZE];
-        
+
         long total = 0;
         int n = is.read(buffer);
         while (n != -1) {
@@ -76,16 +76,15 @@ public final class FileUtils {
             n = is.read(buffer);
         }
         LOGGER.info("Copied " + total + " bytes");
-        
+
         is.close();
         os.close();
     }
 
-
     public static String readFile(String path) throws IOException {
         return readFile(new File(path));
     }
-    
+
     public static String readFile(File file) throws IOException {
 
         StringBuilder sb = new StringBuilder();
@@ -94,7 +93,7 @@ public final class FileUtils {
 
         char[] chars = new char[BUFFER_SIZE];
         int length;
-        
+
         while ((length = reader.read(chars)) > 0) {
             sb.append(chars, 0, length);
         }

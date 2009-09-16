@@ -7,20 +7,11 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 
 import junit.framework.TestCase;
 
-import org.fusesource.cloudmix.common.GridController;
 import org.easymock.EasyMock;
-import org.fusesource.cloudmix.controller.resources.ProfilesResource;
-import org.fusesource.cloudmix.controller.resources.ProfileResource;
+import org.fusesource.cloudmix.common.GridController;
 
 public class ProfilesResourceTest extends TestCase {
     public void testControllerAccessor() {

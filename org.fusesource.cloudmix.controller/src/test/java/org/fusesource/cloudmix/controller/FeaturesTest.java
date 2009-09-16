@@ -7,15 +7,13 @@
  */
 package org.fusesource.cloudmix.controller;
 
-import java.util.List;
-import java.util.Collection;
 import java.net.URISyntaxException;
+import java.util.List;
+import com.sun.jersey.api.client.Client;
 
 import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import com.sun.jersey.api.client.Client;
 
 /**
  * @version $Revision: 1.1 $

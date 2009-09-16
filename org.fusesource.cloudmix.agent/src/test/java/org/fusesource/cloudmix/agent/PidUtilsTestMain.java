@@ -7,14 +7,16 @@
  */
 package org.fusesource.cloudmix.agent;
 
-public class PidUtilsTestMain {
-
-	public static void main(String[] args) throws InterruptedException {
-//		System.err.println(System.getProperty("java.class.path"));
-		System.out.println(PidUtils.getPid());
-		while(true) {
-			Thread.sleep(1000);
-		}
-	}
+public final class PidUtilsTestMain {
+    private PidUtilsTestMain() {
+        //not constructed
+    }
+    public static void main(String[] args) throws InterruptedException {
+        // System.err.println(System.getProperty("java.class.path"));
+        System.out.println(PidUtils.getPid());
+        while (true) {
+            Thread.sleep(1000);
+        }
+    }
 
 }

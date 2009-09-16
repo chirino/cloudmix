@@ -70,7 +70,9 @@ public final class Main {
         System.exit(0);
     }
 
-    public static int writeStreamTo(final InputStream input, final OutputStream output, int bufferSize) throws IOException {
+    public static int writeStreamTo(final InputStream input,
+                                    final OutputStream output,
+                                    int bufferSize) throws IOException {
         int available = Math.min(input.available(), 256 * KB);
         byte[] buffer = new byte[Math.max(bufferSize, available)];
         int answer = 0;

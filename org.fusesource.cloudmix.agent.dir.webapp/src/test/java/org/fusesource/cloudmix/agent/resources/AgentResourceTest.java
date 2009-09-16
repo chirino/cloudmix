@@ -16,8 +16,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,6 +29,9 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import junit.framework.TestCase;
 
+import org.easymock.classextension.EasyMock;
+import org.easymock.classextension.IMocksControl;
+
 import org.fusesource.cloudmix.agent.EndpointRegistry;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.common.EndpointRefBuilder;
@@ -36,14 +39,11 @@ import org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent;
 import org.fusesource.cloudmix.agent.webapp.GridAgentWebapp;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 
-import org.easymock.classextension.EasyMock;
-import org.easymock.classextension.IMocksControl;
 
 public class AgentResourceTest extends TestCase {
 
     private static final String AGENT_URI = "http://localhost:8080/agent";
     private IMocksControl control;
-    private AgentResource resource;
     private GridAgentWebapp webapp;
     private DirectoryInstallerAgent agent; 
     private AgentDetails details;
@@ -105,7 +105,7 @@ public class AgentResourceTest extends TestCase {
     }
     
     public void testInit() throws Exception {
-         AgentResource resource = setUpResource();
+        AgentResource resource = setUpResource();
         webapp.init(config);
         EasyMock.replay(webapp);
 
@@ -115,7 +115,7 @@ public class AgentResourceTest extends TestCase {
     }
 
     public void testDestroy() throws Exception {
-         AgentResource resource = setUpResource();
+        AgentResource resource = setUpResource();
         webapp.destroy();
         EasyMock.replay(webapp);
 
@@ -171,9 +171,9 @@ public class AgentResourceTest extends TestCase {
         Class<AgentResource> cls = AgentResource.class;
 
         Method addEndpoint = 
-           cls.getDeclaredMethod("addEndpoint",
-                                 String.class,
-                                 W3CEndpointReference.class);
+            cls.getDeclaredMethod("addEndpoint",
+                                  String.class,
+                                  W3CEndpointReference.class);
         assertNotNull(addEndpoint.getAnnotation(PUT.class));
         Path path = addEndpoint.getAnnotation(Path.class);
         assertNotNull(path);
@@ -191,7 +191,7 @@ public class AgentResourceTest extends TestCase {
         Class<AgentResource> cls = AgentResource.class;
 
         Method removeEndpoint = 
-           cls.getDeclaredMethod("removeEndpoint", String.class);
+            cls.getDeclaredMethod("removeEndpoint", String.class);
         assertNotNull(removeEndpoint.getAnnotation(DELETE.class));
         Path path = removeEndpoint.getAnnotation(Path.class);
         assertNotNull(path);

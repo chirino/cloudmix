@@ -10,8 +10,8 @@ package org.fusesource.cloudmix.usecase;
 import java.util.List;
 
 import org.fusesource.cloudmix.agent.InstallerAgent;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.Constants;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.controller.provisioning.ProvisioningTestSupport;
 
 /**

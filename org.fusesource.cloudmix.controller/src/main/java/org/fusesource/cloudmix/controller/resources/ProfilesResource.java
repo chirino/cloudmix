@@ -7,16 +7,17 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
-import com.sun.jersey.spi.inject.Inject;
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import java.util.List;
+
+import com.sun.jersey.spi.inject.Inject;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
+
 
 @Path("/profiles")
 public class ProfilesResource extends ResourceSupport {

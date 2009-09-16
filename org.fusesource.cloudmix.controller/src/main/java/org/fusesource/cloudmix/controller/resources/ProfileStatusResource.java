@@ -7,16 +7,14 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.controller.resources;
 
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import javax.ws.rs.GET;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
 
 /**
  * @version $Revision: 1.1 $
  */
-public class ProfileStatusResource extends ResourceSupport{
+public class ProfileStatusResource extends ResourceSupport {
     private ProfileResource profileResource;
 
     public ProfileStatusResource(ProfileResource profileResource) {

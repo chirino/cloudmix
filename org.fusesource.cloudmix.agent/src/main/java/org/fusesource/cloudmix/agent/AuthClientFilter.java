@@ -7,13 +7,14 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AuthClientFilter extends ClientFilter {
 
@@ -29,7 +30,7 @@ public class AuthClientFilter extends ClientFilter {
         
         List<Object> header = new ArrayList<Object>();
         header.add(credentials);
-        request.getMetadata().put("Authorization", header);
+        request.getHeaders().put("Authorization", header);
         return getNext().handle(request);
     }
 

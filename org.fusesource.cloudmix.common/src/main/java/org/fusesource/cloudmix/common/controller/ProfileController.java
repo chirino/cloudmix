@@ -20,9 +20,9 @@ import org.fusesource.cloudmix.common.controller.constraints.feature.FeatureMaxI
 import org.fusesource.cloudmix.common.controller.constraints.feature.IFeatureConstraintChecker;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
-import org.fusesource.cloudmix.common.dto.DependencyStatus;
 
 public class ProfileController {
     

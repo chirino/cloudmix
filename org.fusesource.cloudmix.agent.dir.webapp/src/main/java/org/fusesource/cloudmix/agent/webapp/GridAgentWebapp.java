@@ -7,6 +7,8 @@
  */
 package org.fusesource.cloudmix.agent.webapp;
 
+import java.util.Set;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
@@ -18,7 +20,6 @@ import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 
-import java.util.Set;
 
 public class GridAgentWebapp {
 
@@ -71,7 +72,8 @@ public class GridAgentWebapp {
             LOGGER.debug("  Install Directory: " + agent.getInstallDirectory());
             LOGGER.debug("  Repository URI:    " + gridClient.getRootUri());
             LOGGER.debug("  Agent Username:    " + gridClient.getUsername());
-            LOGGER.debug("  Password Provider: " + gridClient.getPasswordProvider().getClass().getSimpleName());
+            LOGGER.debug("  Password Provider: " + gridClient.getPasswordProvider()
+                             .getClass().getSimpleName());
             LOGGER.debug("  Polling Dealay:    " + poller.getInitialPollingDelay());
             LOGGER.debug("  Polling Period:    " + poller.getPollingPeriod());
 
@@ -178,15 +180,16 @@ public class GridAgentWebapp {
     }
 
     
-    public void setClient(RestGridClient gridClient) {
-        this.gridClient = gridClient;
+    public void setClient(RestGridClient gridclient) {
+        this.gridClient = gridclient;
     }
 
 
-    public RestGridClient getClient() {
-        return gridClient != null 
-               ? gridClient
-               : (gridClient = new RestGridClient());
+    public synchronized RestGridClient getClient() {
+        if (gridClient == null) {
+            gridClient = new RestGridClient();
+        }
+        return gridClient;
     }
 
     public void setAgent(DirectoryInstallerAgent agent) {

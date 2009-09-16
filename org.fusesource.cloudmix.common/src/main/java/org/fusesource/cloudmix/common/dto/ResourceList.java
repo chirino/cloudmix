@@ -7,13 +7,14 @@
  */
 package org.fusesource.cloudmix.common.dto;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @version $Revision: 1.1 $
@@ -23,6 +24,14 @@ import java.util.List;
 public class ResourceList {
     @XmlElement(name = "resource")
     private List<Resource> resources;
+
+    public ResourceList() {
+        this.resources = new ArrayList<Resource>();
+    }
+
+    public ResourceList(Collection<Resource> resources) {
+        this.resources = new ArrayList<Resource>(resources);
+    }
 
     public static ResourceList newInstance(Iterable<Resource> resources) {
         List<Resource> list = new ArrayList<Resource>();
@@ -43,13 +52,6 @@ public class ResourceList {
 */
 
 
-    public ResourceList() {
-        this.resources = new ArrayList<Resource>();
-    }
-
-    public ResourceList(Collection<Resource> resources) {
-        this.resources = new ArrayList<Resource>(resources);
-    }
 
     @Override
     public String toString() {

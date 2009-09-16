@@ -15,10 +15,10 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.easymock.EasyMock;
 
 public class FeatureControllerTest extends TestCase {
     

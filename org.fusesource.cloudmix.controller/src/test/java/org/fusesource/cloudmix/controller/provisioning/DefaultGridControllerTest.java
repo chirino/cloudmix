@@ -7,6 +7,7 @@
  */
 package org.fusesource.cloudmix.controller.provisioning;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,15 +15,15 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+
 import org.fusesource.cloudmix.common.ControllerDataProvider;
 import org.fusesource.cloudmix.common.controller.AgentController;
+import org.fusesource.cloudmix.common.controller.FeatureController;
 import org.fusesource.cloudmix.common.controller.ProfileController;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.fusesource.cloudmix.controller.provisioning.SimpleControllerDataProvider;
-import org.fusesource.cloudmix.controller.provisioning.DefaultGridController;
 
 public class DefaultGridControllerTest extends TestCase {
     public void testSetDataProviderAlsoSetsReferenceToController() {
@@ -70,7 +71,7 @@ public class DefaultGridControllerTest extends TestCase {
         dp.setGrid(gc);
 
         // TODO bit of a hack but the default implementation invokes getFeatures by default
-        EasyMock.expect(dp.getFeatures()).andReturn(Collections.EMPTY_LIST);
+        EasyMock.expect(dp.getFeatures()).andReturn(new ArrayList<FeatureController>());
 
         EasyMock.replay(dp);
         

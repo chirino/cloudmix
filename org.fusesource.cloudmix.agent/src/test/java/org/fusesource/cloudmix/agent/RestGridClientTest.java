@@ -9,14 +9,14 @@ package org.fusesource.cloudmix.agent;
 
 import java.net.URI;
 
-import com.sun.jersey.api.client.WebResource.Builder;
-
 import junit.framework.TestCase;
+
+import com.sun.jersey.api.client.WebResource.Builder;
 
 import org.easymock.IAnswer;
 import org.easymock.classextension.EasyMock;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 
 public class RestGridClientTest extends TestCase {
     protected String rootUrl = CloudmixHelper.getDefaultRootUrl();

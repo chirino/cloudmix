@@ -14,12 +14,17 @@ import org.fusesource.cloudmix.common.util.ObjectHelper;
 /**
  * @version $Revision: 1.1 $
  */
-public class CloudmixHelper {
-    private static final transient Log LOG = LogFactory.getLog(CloudmixHelper.class);
-
+public final class CloudmixHelper {
     public static final String ROOT_URL_PROPERTY = "cloudmix.url";
     public static final String DEFAULT_ROOT_URL_VALUE = "http://localhost:8181/";
-    public static String defaultRootUrl;
+
+    private static String defaultRootUrl;
+    
+    private static final transient Log LOG = LogFactory.getLog(CloudmixHelper.class);
+
+    private CloudmixHelper() {
+        //utility class
+    }
 
     /**
      * Returns the default URL used to connect to CloudMix controller using the
@@ -37,14 +42,16 @@ public class CloudmixHelper {
             if (ObjectHelper.isNullOrBlank(defaultRootUrl)) {
                 defaultRootUrl = DEFAULT_ROOT_URL_VALUE;
             }
-            LOG.info("Using default CloudMix URL: " + defaultRootUrl + " system property: " + ROOT_URL_PROPERTY + " = " + systemProperty);
+            LOG.info("Using default CloudMix URL: " + defaultRootUrl 
+                     + " system property: " + ROOT_URL_PROPERTY + " = " + systemProperty);
         }
         return defaultRootUrl;
     }
 
     /**
      * Sets the default root URL.
-     * Typically this method is only used in test cases where we create multiple web servers with different ports/URLS
+     * Typically this method is only used in test cases where we create multiple web
+     * servers with different ports/URLS
      */
     public static void setDefaultRootUrl(String defaultRootUrl) {
         CloudmixHelper.defaultRootUrl = defaultRootUrl;

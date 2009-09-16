@@ -9,20 +9,20 @@ package org.fusesource.cloudmix.agent.security;
 
 public class SimplePasswordProvider implements PasswordProvider {
 
-	private String password;
+    private String password;
 
-	public SimplePasswordProvider() {
-	}
-	
-	public void setRawPassword(String pw) {
-		password = pw;
-	}
-	
-	public char[] getPassword() {
-		if (password == null) {
-			return null;
-		}
-		return password.toCharArray();
-	}
+    public SimplePasswordProvider() {
+    }
+
+    public void setRawPassword(String pw) {
+        password = pw;
+    }
+
+    public char[] getPassword() {
+        if (password == null) {
+            return null;
+        }
+        return password.toCharArray();
+    }
 
 }

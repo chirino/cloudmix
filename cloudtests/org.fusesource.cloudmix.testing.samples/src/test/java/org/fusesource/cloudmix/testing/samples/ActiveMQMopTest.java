@@ -7,17 +7,17 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.testing.samples;
 
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.testing.TestController;
-import org.junit.Test;
-import org.junit.Assert;
-
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URISyntaxException;
+
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.testing.TestController;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 
 /**
  * @version $Revision: 1.1 $
@@ -55,13 +55,16 @@ public class ActiveMQMopTest extends TestController {
         String version = "1.3-SNAPSHOT";
 
         broker = createFeatureDetails("amq-test-broker",
-                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version).maximumInstances("1");
+                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version)
+                    .maximumInstances("1");
 
         producer = createFeatureDetails("amq-test-producer",
-                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.producer:" + version).depends(broker).maximumInstances("2");
+                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.producer:" + version)
+                    .depends(broker).maximumInstances("2");
 
         consumer = createFeatureDetails("amq-test-consumer",
-                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.consumer:" + version).depends(broker).maximumInstances("3");
+                "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.consumer:" + version)
+                    .depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
     }

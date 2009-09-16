@@ -7,6 +7,13 @@
  */
 package org.fusesource.cloudmix.agent.dir;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.AgentPoller;
@@ -15,14 +22,8 @@ import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.security.SecurityUtils;
-import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.cloudmix.common.dto.Constants;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import org.fusesource.cloudmix.common.util.FileUtils;
 
 public class DirectoryInstallerAgent extends InstallerAgent {
 
@@ -32,6 +33,10 @@ public class DirectoryInstallerAgent extends InstallerAgent {
 
     private String installDir;
     private String tmpSuffix;
+    
+    public DirectoryInstallerAgent() {
+        // Complete.
+    }
 
     public static void main(String[] args) {
         try {
@@ -75,9 +80,6 @@ public class DirectoryInstallerAgent extends InstallerAgent {
         }
     }
 
-    public DirectoryInstallerAgent() {
-        // Complete.
-    }
 
     public void setInstallDirectory(String path) {
         LOGGER.info("install directory: " + path);

@@ -10,6 +10,10 @@ package org.fusesource.cloudmix.common.dto;
 /**
  * @version $Revision: 1.1 $
  */
-public class Constants {
+public final class Constants {
     public static final String WILDCARD_PROFILE_NAME = "*";
+    
+    private Constants() {
+        // utility class
+    }
 }

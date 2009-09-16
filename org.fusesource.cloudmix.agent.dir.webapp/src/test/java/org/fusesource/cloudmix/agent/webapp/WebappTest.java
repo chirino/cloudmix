@@ -21,10 +21,10 @@ import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import junit.framework.TestCase;
 
-import org.fusesource.cloudmix.agent.common.EndpointRefBuilder;
-import org.fusesource.cloudmix.common.jetty.WebServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.agent.common.EndpointRefBuilder;
+import org.fusesource.cloudmix.common.jetty.WebServer;
 
 /**
  * Test the webapp agent in a deployed state. 
@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 public class WebappTest extends TestCase {
     private static final transient Log LOG = LogFactory.getLog(WebappTest.class);
     
-    protected String baseURL = "http://localhost:9091/service-grid/agent";
     private static final String BASE_URN = "urn:%7Bhttp:%2F%2Fcxf.apache.org%7D";
 
     private static final String[] EXPECTED_STATUS_REGEXP = 
@@ -71,6 +70,7 @@ public class WebappTest extends TestCase {
         "^</html>$"};
 
     protected WebServer webServer = new WebServer("org.fusesource.cloudmix.agent.webapp");
+    protected String baseURL = "http://localhost:9091/service-grid/agent";
 
     @Override
     protected void setUp() throws Exception {

@@ -11,6 +11,8 @@ package org.fusesource.cloudmix.agent.resources;
 import java.io.InputStream;
 import java.net.URI;
 
+import javax.annotation.PostConstruct;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
@@ -26,20 +28,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
-import javax.annotation.PostConstruct;
+
+import com.sun.jersey.spi.inject.Inject;
+import com.sun.jersey.spi.resource.Singleton;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.fusesource.cloudmix.agent.EndpointRegistry;
-
-import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.agent.dir.DirectoryInstallerAgent;
 import org.fusesource.cloudmix.agent.webapp.GridAgentWebapp;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
 
-import com.sun.jersey.spi.resource.Singleton;
-import com.sun.jersey.spi.inject.Inject;
 
 @Path("/agent")
 @Singleton
@@ -135,8 +133,8 @@ public class AgentResource implements LifecycleObserver {
      *
      * @param webapp grid agent webapp
      */
-    public void setGridAgentWebapp(GridAgentWebapp webapp) {
-        this.webapp = webapp;
+    public void setGridAgentWebapp(GridAgentWebapp gawebapp) {
+        this.webapp = gawebapp;
     }
 
     /**
@@ -182,25 +180,5 @@ public class AgentResource implements LifecycleObserver {
         webapp.destroy();
     }
 
-    /**
-     * @return agent
-     */
-    private final DirectoryInstallerAgent getAgent() {
-        return webapp.getAgent();
-    }
-    
-    /**
-     * @return agent details
-     */
-    private final AgentDetails getAgentDetails() {
-        return webapp.getAgent().getAgentDetails();
-    }
-    
-    /**
-     * @return grid client
-     */
-    private final RestGridClient getClient() {
-       return webapp.getClient();
-    }
 }
     

@@ -7,16 +7,17 @@
  */
 package org.fusesource.cloudmix.agent.karaf;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import junit.framework.TestCase;
 import org.fusesource.cloudmix.common.util.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
 
 /**
  * Test cases for {@link org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper}
@@ -43,7 +44,9 @@ public class ConfigAdminHelperTest extends TestCase {
      */
     public void testMergeMapIntoFile() throws IOException {
         File file = File.createTempFile("org.apache.felix.karaf.features.", ".cfg", new File("target"));
-        FileUtils.copy(getClass().getClassLoader().getResourceAsStream("org.apache.felix.karaf.features.cfg"), new FileOutputStream(file));
+        FileUtils.copy(getClass().getClassLoader()
+                       .getResourceAsStream("org.apache.felix.karaf.features.cfg"), 
+                       new FileOutputStream(file));
 
         Map<String, String> properties = new HashMap<String,  String>();
         properties.put(KarafAgent.FEATURES_BOOT, FEATURE);

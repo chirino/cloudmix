@@ -52,10 +52,8 @@ public class JaxbTest extends TestCase {
         AgentDetails details = new AgentDetails();
         details.setHostname("localhost");
         details.setSystemProperties(new HashMap<String, String>());
-        details.addEndpoint("urn:{http://cxf.apache.org}SoapPort", 
-                            getEPR("http://tempuri.org/foo/bar"));
-        details.addEndpoint("urn:Bank::Account/12345",
-                            getEPR("corbaname:rir/NameService#account_12345"));
+        details.addEndpoint("urn:{http://cxf.apache.org}SoapPort", getEPR("http://tempuri.org/foo/bar"));
+        details.addEndpoint("urn:Bank::Account/12345", getEPR("corbaname:rir/NameService#account_12345"));
         dump(details);
     }
 
@@ -63,12 +61,10 @@ public class JaxbTest extends TestCase {
         AgentDetails details = new AgentDetails();
         details.setHostname("localhost");
         details.setSystemProperties(new HashMap<String, String>());
-        details.addEndpoint("urn:{http://cxf.apache.org}SoapPort", 
-                            getEPR("http://tempuri.org/foo/bar"));
-        details.addEndpoint("urn:Bank::Account/12345",
-                            getEPR("corbaname:rir/NameService#account_12345"));
-        details.removeEndpoint("urn:{http://cxf.apache.org}SoapPort"); 
-	details.removeEndpoint("urn:Bank::Account/12345");
+        details.addEndpoint("urn:{http://cxf.apache.org}SoapPort", getEPR("http://tempuri.org/foo/bar"));
+        details.addEndpoint("urn:Bank::Account/12345", getEPR("corbaname:rir/NameService#account_12345"));
+        details.removeEndpoint("urn:{http://cxf.apache.org}SoapPort");
+        details.removeEndpoint("urn:Bank::Account/12345");
         dump(details);
     }
 
@@ -79,7 +75,6 @@ public class JaxbTest extends TestCase {
         marshaller.marshal(dto, buffer);
         log.info("Created: " + buffer);
     }
-
 
     protected Object parseUri(String uri) throws JAXBException {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -109,8 +104,7 @@ public class JaxbTest extends TestCase {
 
     private void setJaxwsProvider() {
         jaxwsProvider = System.getProperty("javax.xml.ws.spi.Provider");
-        System.setProperty("javax.xml.ws.spi.Provider", 
-                           "org.apache.cxf.jaxws.spi.ProviderImpl");
+        System.setProperty("javax.xml.ws.spi.Provider", "org.apache.cxf.jaxws.spi.ProviderImpl");
     }
 
     private void unsetJaxwsProvider() {

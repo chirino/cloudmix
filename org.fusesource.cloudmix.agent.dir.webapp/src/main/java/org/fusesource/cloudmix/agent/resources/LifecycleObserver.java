@@ -13,11 +13,11 @@ public interface LifecycleObserver {
     /**
      * Notification that bean has been initiated.
      */
-    public void init();
+    void init();
 
     /**
      * Notification that bean will be destroyed.
      */
-    public void destroy();
+    void destroy();
 
 }

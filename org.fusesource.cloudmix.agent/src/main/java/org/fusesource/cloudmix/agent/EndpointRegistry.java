@@ -33,7 +33,7 @@ public class EndpointRegistry {
             getAgentDetails().addEndpoint(id, ref);
             getClient().updateAgentDetails(getAgent().getAgentId(), 
                                            getAgentDetails());
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             LOG.warn("update agent details failed", t);
         }
     }
@@ -59,8 +59,8 @@ public class EndpointRegistry {
         return exists; 
     }
 
-    public void setClient(RestGridClient gridClient) {
-        this.gridClient = gridClient;
+    public void setClient(RestGridClient gridclient) {
+        this.gridClient = gridclient;
     }
 
     public RestGridClient getClient() {
@@ -78,7 +78,7 @@ public class EndpointRegistry {
     /**
      * @return agent details
      */
-    private final AgentDetails getAgentDetails() {
+    private AgentDetails getAgentDetails() {
         return getAgent().getAgentDetails();
     }
 }

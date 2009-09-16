@@ -15,10 +15,9 @@ import javax.ws.rs.PUT;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.easymock.EasyMock;
-import org.fusesource.cloudmix.controller.resources.ProfileResource;
 
 public class ProfileResourceTest extends TestCase {
     public void testAnnotations() throws Exception {

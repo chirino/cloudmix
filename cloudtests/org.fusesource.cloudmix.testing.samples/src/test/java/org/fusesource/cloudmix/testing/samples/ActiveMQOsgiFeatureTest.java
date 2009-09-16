@@ -7,12 +7,13 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.testing.samples;
 
+import java.util.Map;
+import java.util.Properties;
+
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.testing.TestController;
 import org.junit.Test;
 
-import java.util.Properties;
-import java.util.Map;
 
 /**
  * @version $Revision: 1.1 $
@@ -35,12 +36,18 @@ public class ActiveMQOsgiFeatureTest extends TestController {
         String version = "1.3-SNAPSHOT";
 
         FeatureDetails broker = createFeatureDetails("org.fusesource.cloudmix.tests.broker",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/" + version + "/xml/features!/org.fusesource.cloudmix.tests.broker").ownsMachine().maximumInstances("1");
+                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.broker.multicast/"
+                + version + "/xml/features!/org.fusesource.cloudmix.tests.broker")
+                    .ownsMachine().maximumInstances("1");
 
         FeatureDetails producer = createFeatureDetails("org.fusesource.cloudmix.tests.producer",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.producer/" + version + "/xml/features!/org.fusesource.cloudmix.tests.producer").depends(broker).maximumInstances("2");
+                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.producer/"
+                + version + "/xml/features!/org.fusesource.cloudmix.tests.producer")
+                    .depends(broker).maximumInstances("2");
         FeatureDetails consumer = createFeatureDetails("org.fusesource.cloudmix.tests.consumer",
-                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/" + version + "/xml/features!/org.fusesource.cloudmix.tests.consumer").depends(broker).maximumInstances("3");
+                "scan-features:mvn:org.fusesource.cloudmix/org.apache.activemq.consumer/" 
+                + version + "/xml/features!/org.fusesource.cloudmix.tests.consumer")
+                    .depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
     }

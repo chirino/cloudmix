@@ -7,22 +7,25 @@
  */
 package org.fusesource.cloudmix.controller;
 
-import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.common.GridClient;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
-
-import java.util.List;
 import java.net.URISyntaxException;
 
+import java.util.List;
+
 import com.sun.jersey.api.client.Client;
+
+import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+
+
 
 /**
  * @version $Revision: 1.1 $
  */
 public class ProfilesTest extends RuntimeTestSupport {
-    protected RestGridClient adminClient = new RestGridClient();
     private static final String PROFILE_ID1 = "d654017c-dcfe-43fc-be92-074457472660";
     private static final String PROFILE_ID2 = "b9903abc-8c57-4ebd-9aad-d9bda8bd1242";
+    
+    protected RestGridClient adminClient = new RestGridClient();
 
     public void testAddingAndRemovingProfiles() throws Exception {
         assertProfileSize(0, adminClient.getProfiles());

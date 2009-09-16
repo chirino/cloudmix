@@ -15,8 +15,8 @@ import java.util.Map;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
+import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
  * @version $Revision$

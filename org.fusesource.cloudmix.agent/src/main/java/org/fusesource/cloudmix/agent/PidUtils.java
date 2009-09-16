@@ -12,22 +12,26 @@ import java.lang.management.ManagementFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.fusesource.cloudmix.agent.unix.Posix;
-import org.fusesource.cloudmix.agent.win32.Kernel32;
-
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
+import org.fusesource.cloudmix.agent.unix.Posix;
+import org.fusesource.cloudmix.agent.win32.Kernel32;
+
+
 public final class PidUtils {
-    private static final String [] UNIX_COMMAND = {"sh", "-c", "echo $PPID"};
+    private static final String[] UNIX_COMMAND = {
+        "sh", "-c", "echo $PPID"
+    };
     private static final int PID = getPidInternal();
-    
-    private PidUtils() { /* static utility class */ }
-    
+
+    private PidUtils() { /* static utility class */
+    }
+
     public static int getPid() {
         return PID;
     }
-    
+
     /**
      * @param pid
      * @return true if the provided pid is running.
@@ -35,27 +39,27 @@ public final class PidUtils {
      */
     public static boolean isPidRunning(int pid) throws IOException {
         Kernel32 kernel32 = Kernel32.Factory.get();
-        if( kernel32!=null ) {
-        	Pointer process = kernel32.OpenProcess(Kernel32.SYNCHRONIZE, 0, pid);
-        	if( process!=null ) {
-        		int x = kernel32.WaitForSingleObject(process, 0);
-        		return x != Kernel32.WAIT_OBJECT_0;
-        	}
-        	return false;
+        if (kernel32 != null) {
+            Pointer process = kernel32.OpenProcess(Kernel32.SYNCHRONIZE, 0, pid);
+            if (process != null) {
+                int x = kernel32.WaitForSingleObject(process, 0);
+                return x != Kernel32.WAIT_OBJECT_0;
+            }
+            return false;
         }
-        
+
         Posix posix = Posix.Factory.get();
-        if( posix!=null ) {
-        	return posix.kill(pid, 0) == 0;
+        if (posix != null) {
+            return posix.kill(pid, 0) == 0;
         }
-        throw new UnsupportedOperationException("isPidRunning is not yet supported on this operating system.");
+        throw new UnsupportedOperationException("isPidRunning is not yet supported"
+                                                + " on this operating system.");
     }
-    
+
     /**
-     * Kills a running PID.
-     *   If your on a Unix system, it kills it with the given signal, but if your on Windows,
-     *   you terminate the process with the provided exitCode.
-     *  
+     * Kills a running PID. If your on a Unix system, it kills it with the given signal, but if your on
+     * Windows, you terminate the process with the provided exitCode.
+     * 
      * @param pid
      * @param signal
      * @param exitCode
@@ -63,47 +67,49 @@ public final class PidUtils {
      */
     public static void killPid(int pid, int signal, int exitCode) throws IOException {
         Kernel32 kernel32 = Kernel32.Factory.get();
-        if( kernel32!=null ) {
-        	Pointer process = kernel32.OpenProcess(Kernel32.PROCESS_TERMINATE, 0, pid);
-        	if( process==null ) {
-        		throw new IOException("Could not open process pid "+pid+": "+Kernel32.Factory.getLastErrorAsString());
-        	}
-        	try {
-        		if( kernel32.TerminateProcess(process, exitCode) == 0 ) {
-            		throw new IOException("Could not terminate process pid "+pid+": "+Kernel32.Factory.getLastErrorAsString());
-        		}
-            	return;
-        	} finally {
-        		kernel32.CloseHandle(process);
-        	}
+        if (kernel32 != null) {
+            Pointer process = kernel32.OpenProcess(Kernel32.PROCESS_TERMINATE, 0, pid);
+            if (process == null) {
+                throw new IOException("Could not open process pid " + pid + ": "
+                                      + Kernel32.Factory.getLastErrorAsString());
+            }
+            try {
+                if (kernel32.TerminateProcess(process, exitCode) == 0) {
+                    throw new IOException("Could not terminate process pid " + pid + ": "
+                                          + Kernel32.Factory.getLastErrorAsString());
+                }
+                return;
+            } finally {
+                kernel32.CloseHandle(process);
+            }
         }
-        
+
         Posix posix = Posix.Factory.get();
-        if( posix!=null ) {
-        	if( posix.kill(pid, signal) != 0 ) {
-        		throw new IOException("Could not kill process pid "+pid+": "+posix.strerror(Native.getLastError()));
-        	}
-        	return;
+        if (posix != null) {
+            if (posix.kill(pid, signal) != 0) {
+                throw new IOException("Could not kill process pid " + pid + ": "
+                                      + posix.strerror(Native.getLastError()));
+            }
+            return;
         }
-        
+
         throw new UnsupportedOperationException("killPid is not yet supported on this operating system.");
     }
 
-    
     private static int getPidInternal() {
-        
-    	// Try to do a native system call call...
-    	Kernel32 kernel32 = Kernel32.Factory.get();
-        if( kernel32!=null ) {
-        	return kernel32.GetCurrentProcessId();
+
+        // Try to do a native system call call...
+        Kernel32 kernel32 = Kernel32.Factory.get();
+        if (kernel32 != null) {
+            return kernel32.GetCurrentProcessId();
         }
-        
-    	// Try to do a native system call call...
+
+        // Try to do a native system call call...
         Posix posix = Posix.Factory.get();
-        if( posix!=null ) {
-        	return posix.getpid();
+        if (posix != null) {
+            return posix.getpid();
         }
-        
+
         // Fall back to some JVM hacks..
         int id = getMXBeanPid();
         if (id != -1) {
@@ -122,7 +128,7 @@ public final class PidUtils {
             Matcher matcher = pattern.matcher(name);
             if (matcher.matches()) {
                 name = matcher.group(1);
-                return Integer.parseInt(name);                
+                return Integer.parseInt(name);
             } else {
                 return -1;
             }
@@ -130,13 +136,13 @@ public final class PidUtils {
             return -1;
         }
     }
-    
+
     private static int getPidFromShell() {
         try {
             Process p = Runtime.getRuntime().exec(UNIX_COMMAND);
-            byte [] bytes = new byte[100];
+            byte[] bytes = new byte[100];
             p.getInputStream().read(bytes);
-            
+
             int value = Integer.parseInt(new String(bytes));
             if (value == 0) {
                 value = -1;

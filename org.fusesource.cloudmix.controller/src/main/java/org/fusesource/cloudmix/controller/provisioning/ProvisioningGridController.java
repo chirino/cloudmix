@@ -7,6 +7,15 @@
  */
 package org.fusesource.cloudmix.controller.provisioning;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.AgentPoller;
@@ -17,20 +26,12 @@ import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.Constants;
 import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
 
 /**
  * @version $Revision: 1.1 $
@@ -114,7 +115,8 @@ public class ProvisioningGridController extends DefaultGridController implements
 
 
                 if (agent == null) {
-                    LOG.debug("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
+                    LOG.debug("for feature: " + featureId + " no agent selected from possible agents " 
+                              + agentTrackers.size());
 
                 } else {
                     LOG.debug("for feature: " + featureId + " found adequate agent: "
@@ -150,8 +152,9 @@ public class ProvisioningGridController extends DefaultGridController implements
         // (... or only an unpublished one...) or
         for (AgentController ac : agentTrackers()) {
             String assignedProfile = ac.getDetails().getProfile();
-            boolean agentProfileGone = assignedProfile == null || hasProfileGone(assignedProfile) && !assignedProfile.equals(Constants.WILDCARD_PROFILE_NAME);
-
+            boolean agentProfileGone = assignedProfile == null 
+                || hasProfileGone(assignedProfile) 
+                && !assignedProfile.equals(Constants.WILDCARD_PROFILE_NAME);
             if (ac.getFeatures() != null && !ac.getFeatures().isEmpty()) {
                 String agentId = ac.getDetails().getId();
                 String[] featuresCopy = ac.getFeatures().toArray(new String[ac.getFeatures().size()]);
@@ -159,8 +162,7 @@ public class ProvisioningGridController extends DefaultGridController implements
                     for (String fid : featuresCopy) {
                         removeAgentFromFeature(fid, agentId);
                     }
-                }
-                else {
+                } else {
                     for (String fid : featuresCopy) {
                         FeatureController featureController = getFeatureController(fid);
                         // if the feature controller has gone, then the feature has gone
@@ -169,11 +171,10 @@ public class ProvisioningGridController extends DefaultGridController implements
                         if (featureController != null) {
                             deleteFeature = false;
                             FeatureDetails details = featureController.getDetails();
-                            if (details != null) {
-                                String ownerProfileId = details.getOwnedByProfileId();
-                                if (ownerProfileId != null && hasProfileGone(ownerProfileId)) {
-                                    deleteFeature = true;
-                                }
+                            if (details != null
+                                && details.getOwnedByProfileId() != null
+                                && hasProfileGone(details.getOwnedByProfileId())) {
+                                deleteFeature = true;
                             }
                         }
                         if (deleteFeature) {

@@ -23,8 +23,8 @@ import org.fusesource.cloudmix.common.controller.constraints.agent.AgentPrefered
 import org.fusesource.cloudmix.common.controller.constraints.agent.AgentProfileChecker;
 import org.fusesource.cloudmix.common.controller.constraints.agent.IAgentConstraintChecker;
 import org.fusesource.cloudmix.common.dto.Dependency;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.DependencyStatus;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
 
 /**
  * @version $Revision: 63441 $

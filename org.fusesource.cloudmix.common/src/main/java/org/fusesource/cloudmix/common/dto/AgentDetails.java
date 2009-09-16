@@ -8,10 +8,10 @@
 package org.fusesource.cloudmix.common.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -35,7 +35,7 @@ public class AgentDetails extends IdentifiedType {
     @XmlAttribute
     private String hostname = "localhost";
     @XmlAttribute(required = false)
-    private String href =  null;
+    private String href;
     @XmlAttribute
     private int pid = -1;
     @XmlAttribute
@@ -218,6 +218,8 @@ public class AgentDetails extends IdentifiedType {
      * Returns true if this ID is the wildcard or matches the given profile id
      */
     public boolean matchesProfile(String profileId) {
-        return profile != null && (profile.equals(profileId) || profile.equals(Constants.WILDCARD_PROFILE_NAME));
+        return profile != null 
+            && (profile.equals(profileId) 
+                || profile.equals(Constants.WILDCARD_PROFILE_NAME));
     }
 }

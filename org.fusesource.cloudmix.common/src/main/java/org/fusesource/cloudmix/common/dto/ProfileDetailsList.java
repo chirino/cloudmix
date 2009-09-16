@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="profiles")
+@XmlRootElement(name = "profiles")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProfileDetailsList {
     @XmlElement(name = "profile")

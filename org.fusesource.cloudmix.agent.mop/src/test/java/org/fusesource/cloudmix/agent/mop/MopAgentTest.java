@@ -7,11 +7,12 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent.mop;
 
-import junit.framework.TestCase;
-import org.fusesource.cloudmix.agent.RestGridClient;
-import org.fusesource.cloudmix.agent.AgentPoller;
-
 import java.net.URISyntaxException;
+
+import junit.framework.TestCase;
+import org.fusesource.cloudmix.agent.AgentPoller;
+import org.fusesource.cloudmix.agent.RestGridClient;
+
 
 /**
  * @version $Revision: 1.1 $

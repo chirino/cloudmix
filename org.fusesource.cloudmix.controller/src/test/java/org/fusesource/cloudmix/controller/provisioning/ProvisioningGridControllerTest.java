@@ -24,7 +24,6 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.controller.provisioning.ProvisioningGridController;
 
 public class ProvisioningGridControllerTest extends TestCase {
     public void testStartupDelay() {
@@ -138,7 +137,6 @@ public class ProvisioningGridControllerTest extends TestCase {
         
     }
     
-    @SuppressWarnings("unchecked")
     public void testProfileDeletion() throws Exception {
         // have 2 profiles (testing & production)
         // have 3 agents (one for production two for testing)
@@ -233,7 +231,7 @@ public class ProvisioningGridControllerTest extends TestCase {
                      a3AC.getHistory().getActions().get(1).getFeature());
     }
 
-    @SuppressWarnings("unchecked")
+    //CHECKSTYLE:OFF - this testcase is verylong, probably should be broken up a bit
     public void testProfileUpdate() throws Exception {
         // have 2 profiles (testing & production)
         // have 3 agents (one for production two for testing)
@@ -356,8 +354,8 @@ public class ProvisioningGridControllerTest extends TestCase {
         assertEquals("f2", a2AC.getHistory().getActions().get(1).getFeature());
         assertEquals("f4", a2AC.getHistory().getActions().get(2).getFeature());
     }
+    //CHECKSTYLE:ON
 
-    @SuppressWarnings("unchecked")
     public void testAgentDeactivation() throws Exception {
         // have 1 profile
         // have 2 agents

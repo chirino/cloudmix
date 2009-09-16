@@ -7,15 +7,14 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import javax.ws.rs.core.EntityTag;
+
 import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MultivaluedMap;
-import java.util.Date;
 
 /**
  * A helper class to wrap up retry logic.
@@ -26,7 +25,6 @@ public class RestTemplate {
     private static final transient Log LOG = LogFactory.getLog(RestTemplate.class);
     private int retryAttempts = 10;
     private long delayBetweenAttempts = 100L;
-    private Date pollLastModifiedDate;
     private EntityTag pollETag;
 
     public <T> T get(WebResource.Builder resource, Class<T> resultType) {
@@ -65,12 +63,6 @@ public class RestTemplate {
                 return null;
 
             } else if (status == 200) {
-
-                MultivaluedMap<String, String> metadata = response.getMetadata();
-                Date lastModified = response.getLastModified();
-                if (lastModified != null) {
-                    pollLastModifiedDate = lastModified;
-                }
                 EntityTag etag = response.getEntityTag();
                 if (etag != null) {
                     pollETag = etag;

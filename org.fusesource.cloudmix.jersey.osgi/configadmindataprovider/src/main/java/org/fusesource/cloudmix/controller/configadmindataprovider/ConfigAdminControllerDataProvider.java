@@ -7,33 +7,38 @@
  */
 package org.fusesource.cloudmix.controller.configadmindataprovider;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.fusesource.cloudmix.common.ControllerDataProvider;
 import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.dto.Dependency;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.controller.AgentController;
 import org.fusesource.cloudmix.common.controller.FeatureController;
 import org.fusesource.cloudmix.common.controller.ProfileController;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.osgi.service.cm.ManagedService;
+import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 
 public class ConfigAdminControllerDataProvider implements ControllerDataProvider, ManagedService {
 
     private static final Log LOG = LogFactory.getLog(ConfigAdminControllerDataProvider.class);
 
-    private ConcurrentMap<String, AgentController> agents = new ConcurrentHashMap<String, AgentController>();
-    private ConcurrentMap<String, FeatureController> features = new ConcurrentHashMap<String, FeatureController>();
-    private ConcurrentMap<String, ProfileController> profiles = new ConcurrentHashMap<String, ProfileController>();
+    private ConcurrentMap<String, AgentController> agents 
+        = new ConcurrentHashMap<String, AgentController>();
+    private ConcurrentMap<String, FeatureController> features 
+        = new ConcurrentHashMap<String, FeatureController>();
+    private ConcurrentMap<String, ProfileController> profiles 
+        = new ConcurrentHashMap<String, ProfileController>();
     private GridController grid;
 
     public ConfigAdminControllerDataProvider() {

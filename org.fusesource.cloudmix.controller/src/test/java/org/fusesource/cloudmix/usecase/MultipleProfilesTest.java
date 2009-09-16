@@ -18,16 +18,14 @@ public class MultipleProfilesTest extends ProvisioningTestSupport {
         // 3 features: tf1, tf2 and pf1
         // 6 agents, two per profile
 
-        agentCluster.createInstallAgentsInProfiles("default", "default",
-                "testing", "testing",
-                "production", "production");
+        agentCluster.createInstallAgentsInProfiles("default", "default", "testing", "testing", "production",
+                                                   "production");
 
         waitForAgentsToActivate();
 
         ProfileDetails defProfile = new ProfileDetails("default");
-        ProfileDetails testProfile = new ProfileDetails("testing")
-                .addFeature("tf1", null)
-                .addFeature("tf2", null);
+        ProfileDetails testProfile = new ProfileDetails("testing").addFeature("tf1", null).addFeature("tf2",
+                                                                                                      null);
         ProfileDetails prodProfile = new ProfileDetails("production").addFeature("pf1", null);
 
         FeatureDetails tf1 = new FeatureDetails("tf1");
@@ -45,8 +43,7 @@ public class MultipleProfilesTest extends ProvisioningTestSupport {
         agentCluster.assertFeatureInstances("pf1", 1);
         agentCluster.assertMaximumFeaturesPerAgent(1);
 
-
-        // Now check that the features got deployed on the correct agents in the 
+        // Now check that the features got deployed on the correct agents in the
         // right profile...
         int tf1Count = 0;
         int tf2Count = 0;
@@ -68,16 +65,16 @@ public class MultipleProfilesTest extends ProvisioningTestSupport {
                 }
             } else if (agent.getProfile().equals("production")) {
                 switch (agentInstallActions(agent).size()) {
-                    case 0:
-                        emptyProdAgentCount++;
-                        break;
-                    case 1:
-                        if (agentFeatureCount(agent, "pf1") == 1) {
-                            pf1Count++;
-                        }
-                        break;
-                    default:
-                        fail("Unexpected agent in production: " + agent);
+                case 0:
+                    emptyProdAgentCount++;
+                    break;
+                case 1:
+                    if (agentFeatureCount(agent, "pf1") == 1) {
+                        pf1Count++;
+                    }
+                    break;
+                default:
+                    fail("Unexpected agent in production: " + agent);
                 }
             } else {
                 fail("Unexpected agent in profile " + agent.getProfile());

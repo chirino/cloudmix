@@ -7,8 +7,10 @@
  */
 package org.fusesource.cloudmix.controller.bundle;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 
+import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.HttpAuthenticator;
@@ -17,7 +19,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 //import org.fusesource.cloudmix.common.spring.SpringServlet;
 
 @SuppressWarnings("unused")
@@ -29,7 +30,7 @@ public class JerseyServletFactory implements ApplicationContextAware, Initializi
     
     private ApplicationContext applicationContext;
     private HttpService httpService;
-	private HttpAuthenticator authenticator;
+    private HttpAuthenticator authenticator;
 
     public void setJerseyClassNames(String ... names) {
         StringBuilder sb = new StringBuilder();
@@ -56,19 +57,20 @@ public class JerseyServletFactory implements ApplicationContextAware, Initializi
     }
 
     public void setAuthenticator(HttpAuthenticator ca) {
-    	authenticator = ca;
+        authenticator = ca;
     }
     
     public void setApplicationContext(ApplicationContext ctx)
-            throws BeansException {
+        throws BeansException {
+        
         applicationContext = ctx;
     }
     
     public void afterPropertiesSet() throws Exception {
         // This property is needed for JAXB to properly operate inside OSGi
-        System.setProperty("com.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize","true");
+        System.setProperty("com.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize", "true");
         
-        Hashtable<String, String> initParams = new Hashtable<String, String>();
+        Dictionary<String, String> initParams = new Hashtable<String, String>();
         initParams.put("com.sun.jersey.config.feature.Redirect", "true");
         initParams.put("com.sun.jersey.config.feature.ImplicitViewables", "true");
         

@@ -7,6 +7,12 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import com.sun.jersey.spi.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,13 +20,6 @@ import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetailsList;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import java.util.List;
 
 /**
  * @version $Revision: 1.1 $
@@ -29,8 +28,6 @@ import java.util.List;
 public class FeaturesResource extends ResourceSupport {
     private static final transient Log LOG = LogFactory.getLog(FeaturesResource.class);
 
-    @Context
-    private UriInfo uriInfo;
     @Inject
     private GridController controller;
 

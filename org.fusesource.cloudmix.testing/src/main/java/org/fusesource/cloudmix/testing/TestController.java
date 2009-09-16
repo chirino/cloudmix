@@ -7,32 +7,37 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.testing;
 
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
+
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 
 
 /**
@@ -42,14 +47,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version $Revision: 1.1 $
  */
 public abstract class TestController {
-    private static final transient Log LOG = LogFactory.getLog(TestController.class);
-
+    
     /**
      * The name of the file which all the newly created profile IDs are written on each test run.
      * You can then clean up your test cloud by deleting all of the profiles in this file
      */
     public static final String PROFILE_ID_FILENAME = ".cloudmix.profiles";
 
+    private static final transient Log LOG = LogFactory.getLog(TestController.class);
+
+    //CHECKSTYLE:OFF
+    @Rule
+    public TestName testName = new TestName(); 
+    //CHECKSTYLE:ON
+    
     protected long startupTimeout = 60 * 1000;
     protected String controllerUrl = CloudmixHelper.getDefaultRootUrl();
 
@@ -58,10 +69,8 @@ public abstract class TestController {
     protected ProfileDetails profile;
     protected String profileId;
     protected boolean provisioned;
-    protected boolean destroyProfileAfter = false;
+    protected boolean destroyProfileAfter;
 
-    @Rule
-    public TestName testName = new TestName();
 
     protected String getTestName() {
         String answer = testName.getMethodName();
@@ -90,8 +99,8 @@ public abstract class TestController {
     /**
      * Asserts that the test cloud is setup and provisioned properly within the given {@link #startupTimeout}.
      * 
-     * This method should be called within each test method so that the profile is setup correctly with the class of the test
-     * and the test method name.
+     * This method should be called within each test method so that the profile is setup 
+     * correctly with the class of the test and the test method name.
      */
     public void checkProvisioned() throws Exception {
         try {
@@ -178,8 +187,9 @@ public abstract class TestController {
     }
 
 
-    protected String createProfileDescription(ProfileDetails profile) {
-        return "CloudMix test case for class <b>" + getClass().getName() + "</b> with test method <b>" + getTestName() + "</b>";
+    protected String createProfileDescription(ProfileDetails pd) {
+        return "CloudMix test case for class <b>" + getClass().getName() 
+            + "</b> with test method <b>" + getTestName() + "</b>";
     }
 
     /**
@@ -197,11 +207,11 @@ public abstract class TestController {
         feature.setOwnedByProfileId(profileId);
     }
 
-    protected void onProfileIdCreated(String profileId) throws IOException {
+    protected void onProfileIdCreated(String profileid) throws IOException {
         String fileName = PROFILE_ID_FILENAME;
         try {
             FileWriter writer = new FileWriter(fileName, true);
-            writer.append(profileId);
+            writer.append(profileid);
             writer.append("\n");
             writer.close();
         } catch (IOException e) {
@@ -305,7 +315,8 @@ public abstract class TestController {
 
             long delta = now - start;
             if (delta > startupTimeout) {
-                Assert.fail("Provision failure. Not enough instances of features: " + failedFeatures + " after waiting " + (startupTimeout / 1000) + " seconds");
+                Assert.fail("Provision failure. Not enough instances of features: " 
+                            + failedFeatures + " after waiting " + (startupTimeout / 1000) + " seconds");
             } else {
                 try {
                     Thread.sleep(1000);

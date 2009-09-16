@@ -7,7 +7,6 @@
  */
 package org.fusesource.cloudmix.controller.provisioning;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,17 +15,16 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.AgentPoller;
-import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.Feature;
+import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.util.CompositeCallable;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A helper class for testing which represents a cluster of Agents to test out the provisioning
