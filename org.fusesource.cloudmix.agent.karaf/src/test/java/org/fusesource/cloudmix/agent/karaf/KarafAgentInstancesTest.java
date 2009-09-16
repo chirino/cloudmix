@@ -9,7 +9,7 @@ package org.fusesource.cloudmix.agent.karaf;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -203,7 +203,7 @@ public class KarafAgentInstancesTest extends TestCase {
             Properties properties = new Properties();
             properties.setProperty(KarafAgent.FEATURES_REPOSITORIES, ORIGINAL_REPOSITORY);
             properties.setProperty(KarafAgent.FEATURES_BOOT, ORIGINAL_FEATURE);
-            properties.store(new FileWriter(new File(etc, "org.apache.felix.karaf.features.cfg")),
+            properties.store(new FileOutputStream(new File(etc, "org.apache.felix.karaf.features.cfg")),
                              "Default repository and feature created from mock AdminService");
         }
 

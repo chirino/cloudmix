@@ -12,8 +12,8 @@ import org.fusesource.cloudmix.common.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
@@ -52,7 +52,7 @@ public class ConfigAdminHelperTest extends TestCase {
 
         // now, let's read the file and check if everything got merged in
         Properties result = new Properties();
-        result.load(new FileReader(file));
+        result.load(new FileInputStream(file));
 
         assertTrue(FEATURE + " should have been added to the boot features",
                    result.getProperty(KarafAgent.FEATURES_BOOT).contains(FEATURE));

@@ -9,7 +9,7 @@ package org.fusesource.cloudmix.agent.karaf;
 
 import java.util.*;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -70,7 +70,7 @@ public class ConfigAdminHelper {
         Properties result = new Properties();
         if (file.exists()) {
             // let's load the contents of the existing file
-            result.load(new FileReader(file));
+            result.load(new FileInputStream(file));
         }
         for (String key : properties.keySet()) {
             if (result.containsKey(key)) {
