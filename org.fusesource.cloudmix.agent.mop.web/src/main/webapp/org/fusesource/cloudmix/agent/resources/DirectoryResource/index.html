@@ -1,0 +1,42 @@
+<lift:surround with="default" at="content">
+  <lift:directories.index>
+    <head>
+      <title>Directory</title>
+    </head>
+
+
+    <h2>Directory:
+      <directory:fullname/>
+    </h2>
+
+
+    <table>
+      <tr>
+        <th>Name</th>
+      </tr>
+
+      <tr>
+        <td>
+          <img src="/images/files/back.gif" />
+          <a class="file" directory:parentLink="na">
+            Parent Directory
+          </a>
+        </td>
+      </tr>
+      <directory:child>
+        <tr>
+          <td>
+            <img child:iconSource="na" />
+            <a class='file' child:link="na">
+              <child:name/>
+            </a>
+          </td>
+        </tr>
+        <tr>
+        </tr>
+      </directory:child>
+    </table>
+  </lift:directories.index>
+</lift:surround>
+
+

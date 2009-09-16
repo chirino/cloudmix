@@ -50,4 +50,12 @@ public class ObjectFactory {
     public StringList createStringList() {
         return new StringList();
     }
+
+    public ResourceList createResourceList() {
+        return new ResourceList();
+    }
+
+    public Resource createResource() {
+        return new Resource();
+    }
 }

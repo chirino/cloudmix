@@ -28,4 +28,6 @@ ProfileDetailsList
 ProfileStatus
 ProvisioningAction
 ProvisioningHistory
+Resource
+ResourceList
 StringList

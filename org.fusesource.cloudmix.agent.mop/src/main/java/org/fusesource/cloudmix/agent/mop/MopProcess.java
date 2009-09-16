@@ -10,6 +10,7 @@ package org.fusesource.cloudmix.agent.mop;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
+import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.mop.MOP;
 import org.fusesource.mop.ProcessRunner;
 import org.fusesource.mop.com.google.common.collect.Lists;
@@ -19,6 +20,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.File;
 
 
 /**
@@ -35,12 +37,14 @@ public class MopProcess {
     private int statusCode = -1;
     private Thread thread;
     private AtomicBoolean completed = new AtomicBoolean(false);
+    private File workDirectory;
 
-    public MopProcess(ProvisioningAction action, String credentials, String commandLine, ClassLoader mopClassLoader) {
+    public MopProcess(MopAgent mopAgent, ProvisioningAction action, String credentials, String commandLine, ClassLoader mopClassLoader) {
         this.action = action;
         this.credentials = credentials;
         this.commandLine = commandLine;
         this.mopClassLoader = mopClassLoader;
+        this.workDirectory = mopAgent.createProcessDirectory(action);
     }
 
     public String getId() {
@@ -57,6 +61,10 @@ public class MopProcess {
 
     public String getCredentials() {
         return credentials;
+    }
+
+    public File getWorkDirectory() {
+        return workDirectory;
     }
 
     public void start() throws Exception {
@@ -85,6 +93,12 @@ public class MopProcess {
             public void run() {
                 LOG.debug("Using class loader: " + mopClassLoader + " of type: " + mopClassLoader.getClass());
                 dumpClassLoader(mopClassLoader);
+
+                File dir = getWorkDirectory();
+                LOG.info("Creating work directory " + dir + " for feature " + getId());
+                FileUtils.createDirectory(dir);
+
+                mop.setWorkingDirectory(dir);
 
                 Thread.currentThread().setContextClassLoader(mopClassLoader);
 

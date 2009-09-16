@@ -10,6 +10,7 @@ package org.fusesource.cloudmix.agent.mop;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,9 +32,20 @@ public class MopAgent extends InstallerAgent {
     private ClassLoader mopClassLoader;
 
     public MopAgent() {
+        System.out.println("==================== CREATING MOP AGENT " + this + " = " + System.identityHashCode(this));
         // lets default the profile
         setProfile("*");
         mopClassLoader = getClass().getClassLoader();
+    }
+
+    @Override
+    public File getWorkDirectory() {
+        File answer = super.getWorkDirectory();
+        if (answer == null) {
+            setWorkDirectory(new File("mopAgentWork"));
+            answer = super.getWorkDirectory();
+        }
+        return answer;
     }
 
     /**
@@ -44,7 +56,7 @@ public class MopAgent extends InstallerAgent {
             // lets remove all the dead processes
             List<MopProcess> list = Lists.newArrayList(processes.values());
             for (MopProcess process : list) {
-                if (!process.isCompleted()) {
+                if (process.isCompleted()) {
                     processes.remove(process.getId());
                 }
             }
@@ -83,7 +95,7 @@ public class MopAgent extends InstallerAgent {
             ClassLoader oldClassLoader = currentThread.getContextClassLoader();
             currentThread.setContextClassLoader(mopClassLoader);
             try {
-                MopProcess process = new MopProcess(action, credentials, commandLine, mopClassLoader);
+                MopProcess process = new MopProcess(this, action, credentials, commandLine, mopClassLoader);
 
                 String id = process.getId();
                 synchronized (processes) {
@@ -125,5 +137,9 @@ public class MopAgent extends InstallerAgent {
 
         super.uninstallFeature(feature);
         removeFeatureId(id);
+    }
+
+    public File createProcessDirectory(ProvisioningAction action) {
+        return new File(getWorkDirectory(), action.getId());
     }
 }

@@ -1,9 +1,9 @@
 package org.fusesource.cloudmix.agent.snippet
 
-import cloudmix.common.dto.AgentDetails
-import mop.MopProcess
-import resources.{ProcessResource, ResourceSupport}
-import scalautil.TextFormatting._
+import _root_.org.fusesource.cloudmix.common.dto.AgentDetails
+import _root_.org.fusesource.cloudmix.agent.mop.MopProcess
+import _root_.org.fusesource.cloudmix.agent.resources.{ProcessResource, ResourceSupport}
+import _root_.org.fusesource.cloudmix.scalautil.TextFormatting._
 
 import _root_.com.sun.jersey.lift.Requests.uri
 import _root_.com.sun.jersey.lift.ResourceBean
@@ -34,6 +34,10 @@ object Agents {
 
   def processLink(processId: String): String = {
     uri("/processes/" + processId)
+  }
+
+  def directoryLink(process: MopProcess): String = {
+    processLink(process) + "/directory"
   }
 
   def siteLink(agent: AgentDetails): NodeSeq = {
@@ -86,7 +90,10 @@ class Agents {
               bind("process", chooseTemplate("agent", "process", xhtml),
                 "id" -> asText(entry.getKey),
                 "commandLine" -> asText(process.getCommandLine),
+                "directory" -> asText(process.getWorkDirectory),
                 AttrBindParam("link", Text(processLink(process)), "href"),
+                AttrBindParam("dirLink", Text(directoryLink(process)), "href"),
+                AttrBindParam("directoryTitle", Text(asText(process.getWorkDirectory)), "title"),
                 AttrBindParam("action", Text(processLink(process)), "action"))
           }.toSeq
           )
@@ -103,12 +110,21 @@ class Agents {
       case processResource: ProcessResource =>
         val process = processResource.process
 
-        bind("process", xhtml,
-          "id" -> asText(process.getId),
-          "site" -> processLink(process.getId),
-          "commandLine" -> asText(process.getCommandLine),
-          "credentials" -> asText(process.getCredentials),
-          AttrBindParam("action", Text(processLink(process)), "action"))
+        if (process == null) {
+          <p>No such Process</p>
+        }
+        else {
+          bind("process", xhtml,
+            "id" -> asText(process.getId),
+            "site" -> processLink(process.getId),
+            "commandLine" -> asText(process.getCommandLine),
+            "directory" -> asText(process.getWorkDirectory),
+            "credentials" -> asText(process.getCredentials),
+            AttrBindParam("dirLink", Text(directoryLink(process)), "href"),
+            AttrBindParam("directoryTitle", Text(asText(process.getWorkDirectory)), "title"),
+            AttrBindParam("action", Text(processLink(process)), "action"))
+
+        }
 
       case _ =>
         <p>

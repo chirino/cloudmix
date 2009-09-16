@@ -2,7 +2,7 @@ package org.fusesource.cloudmix.agent.resources
 
 import javax.annotation.PostConstruct
 import javax.ws.rs.core.{UriInfo, Context}
-import mop.MopAgent
+import org.fusesource.cloudmix.agent.mop.MopAgent
 
 import _root_.com.sun.jersey.spi.inject.Inject
 import _root_.javax.ws.rs.{Path}
@@ -21,6 +21,9 @@ class AgentResource extends ResourceSupport {
 
   @Path("processes")
   def processResources = new ProcessesResource(agent)
+
+  @Path("directory")
+  def directory = new RootDirectoryResource(agent.getWorkDirectory, "/directory")
 
   @PostConstruct
   def start: Unit = {

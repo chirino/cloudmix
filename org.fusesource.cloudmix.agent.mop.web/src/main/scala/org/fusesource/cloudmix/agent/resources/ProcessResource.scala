@@ -5,16 +5,19 @@ import _root_.org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
 import _root_.com.sun.jersey.api.representation.Form
 import _root_.java.net.URI
 import _root_.javax.ws.rs.core.MediaType._
-import _root_.javax.ws.rs.core.{Response, HttpHeaders, UriInfo, Context}
-import _root_.javax.ws.rs.{Consumes, POST, DELETE}
+import _root_.javax.ws.rs.core.{Response, HttpHeaders, UriInfo, UriBuilder, Context}
 import _root_.scala.collection.jcl.Conversions._
-             
+import javax.ws.rs.{Path, Consumes, POST, DELETE}
+import org.fusesource.cloudmix.agent.snippet.Agents
+
 /**
  * Represents the MOP Agent's resource
  *
  * @version $Revision : 1.1 $
  */
 class ProcessResource(val agent: MopAgent, val id: String, val process: MopProcess) extends ResourceSupport {
+
+  def uri = UriBuilder.fromResource(classOf[ProcessResource]).build(id)
 
   @DELETE
   def delete(): Unit = {
@@ -43,4 +46,8 @@ class ProcessResource(val agent: MopAgent, val id: String, val process: MopProce
     Response.seeOther(new URI("/processes")).build
   }
 
+  @Path("directory")
+  def directory() = {
+    new RootDirectoryResource(process.getWorkDirectory, Agents.directoryLink(process))
+  }
 }

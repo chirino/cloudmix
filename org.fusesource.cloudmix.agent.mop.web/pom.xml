@@ -16,7 +16,7 @@
 
   <properties>
     <profile>*</profile>
-    <workingDir></workingDir>
+    <workingDir>cloudmix-data</workingDir>
     <cloudmixUrl>http://localhost:8181</cloudmixUrl>
     <jetty.port>0</jetty.port>
   </properties>
@@ -31,6 +31,11 @@
       <groupId>org.fusesource.cloudmix</groupId>
       <artifactId>org.fusesource.cloudmix.scalautil</artifactId>
        <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalaforge</groupId>
+      <artifactId>scalax</artifactId>
+      <version>0.1</version>
     </dependency>
 
     <dependency>

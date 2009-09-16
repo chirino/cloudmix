@@ -17,7 +17,7 @@
 
     <table>
       <tr>
-        <th>Processes</th>
+        <th colspan="3">Processes</th>
       </tr>
 
       <agent:process>
@@ -27,13 +27,16 @@
               <process:id/>
             </a>
           </td>
-        </tr>
-        <tr>
-        <td>
-          <form process:action="na" method="post">
-            <input type="submit" name="kill" value="Kill this process" onclick="return confirmDelete()"/>
-          </form>
-        </td>
+          <td>
+            <a class='process' process:dirLink="na" process:directoryTitle="na">
+              working directory
+            </a>
+          </td>
+          <td>
+            <form process:action="na" method="post">
+              <input type="submit" name="kill" value="Kill this process" onclick="return confirmDelete()"/>
+            </form>
+          </td>
         </tr>
       </agent:process>
     </table>

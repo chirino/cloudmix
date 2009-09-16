@@ -1,8 +1,8 @@
 package org.fusesource.cloudmix.controller.snippet
 
-import common.dto.{AgentDetails, DependencyStatus}
-import resources._
-import scalautil.TextFormatting._
+import org.fusesource.cloudmix.common.dto.{AgentDetails}
+import org.fusesource.cloudmix.controller.resources._
+import org.fusesource.cloudmix.scalautil.TextFormatting._
 
 import _root_.net.liftweb.util.Helpers._
 import _root_.com.sun.jersey.lift.ResourceBean
@@ -32,7 +32,9 @@ object Agents {
   def siteLink(agent: AgentDetails): NodeSeq = {
     val href = agent.getHref
     if (href != null)
-      <a href={href} class='site'>{agent.getId}</a>
+      <a href={href} class='site'>
+        {agent.getId}
+      </a>
     else
       Text("")
   }
@@ -54,41 +56,48 @@ class Agents {
           agent: AgentDetails =>
                   bind("agent", xhtml,
                     "name" -> Text(agent.getId),
-                    "site" -> siteLink(agent),
-                    AttrBindParam("link", Text(agentLink(agent)), "href"))}
+                    "site" -> Text(agent.getHref),
+                    AttrBindParam("siteLink", Text(agent.getHref), "href"),
+                    AttrBindParam("link", Text(agentLink(agent)), "href"))
+        }
 
       case _ =>
-        <p> <b>Warning</b>No Agent resources found!</p>
+        <p>
+          <b>Warning</b>
+          No Agent resources found!</p>
     }
   }
 
   def index(xhtml: Group): NodeSeq = {
     ResourceBean.get match {
-      case agent: AgentResource =>
-        val details = agent.get
-        val systemProperties = new TreeMap[String,String](details.getSystemProperties)
-        
+      case resource: AgentResource =>
+        val agent = resource.get
+        val systemProperties = new TreeMap[String, String](agent.getSystemProperties)
+
         bind("agent", xhtml,
-          "site" -> siteLink(details),
-          "containerType" -> asText(details.getContainerType),
-          "hostname" -> asText(details.getHostname),
-          "maximumFeatures" -> asText("" + details.getMaximumFeatures),
-          "name" -> asText(details.getName),
-          "id" -> asText(details.getId),
-          "os" -> asText(details.getOs),
-          "pid" -> asText("" + details.getPid),
-          "profile" -> asText(details.getProfile),
+          "site" -> Text(agent.getHref),
+          AttrBindParam("siteLink", Text(agent.getHref), "href"),
+          "containerType" -> asText(agent.getContainerType),
+          "hostname" -> asText(agent.getHostname),
+          "maximumFeatures" -> asText("" + agent.getMaximumFeatures),
+          "name" -> asText(agent.getName),
+          "id" -> asText(agent.getId),
+          "os" -> asText(agent.getOs),
+          "pid" -> asText("" + agent.getPid),
+          "profile" -> asText(agent.getProfile),
           "systemProperty" -> systemProperties.entrySet.flatMap {
             //case (key : String, value : String) =>
-            case entry : Entry[String,String] =>
+            case entry: Entry[String, String] =>
               bind("systemProperty", chooseTemplate("agent", "systemProperty", xhtml),
                 "name" -> asText(entry.getKey),
                 "value" -> asText(entry.getValue))
           }.toSeq
-        )
+          )
 
       case _ =>
-        <p> <b>Warning</b>No Agent resources found!</p>
+        <p>
+          <b>Warning</b>
+          No Agent resources found!</p>
     }
   }
 
