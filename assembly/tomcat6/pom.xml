@@ -35,7 +35,20 @@
     <artifactId>org.apache.tomcat.agent.assembly</artifactId>
     <packaging>pom</packaging>
     <description>Tomcat Agent Assembly</description>
-	
+    <repositories>
+    <repository>
+       <id>open.iona.m2</id>
+       <name>FuseSource Community Dependency Repository</name>
+       <url>http://repo.fusesource.com/maven2</url>
+       <snapshots>
+         <enabled>false</enabled>
+       </snapshots>
+       <releases>
+         <enabled>true</enabled>
+       </releases>
+     </repository>
+    </repositories>
+
     <build>
         <resources>
             <resource>

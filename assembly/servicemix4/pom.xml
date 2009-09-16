@@ -31,7 +31,20 @@
     <artifactId>org.fusesource.cloudmix.agent.assembly</artifactId>
     <packaging>pom</packaging>
     <description>CloudMix Agent Assembly</description>
-	
+    <repositories>
+         <repository>
+            <id>open.iona.m2</id>
+            <name>FuseSource Community Dependency Repository</name>
+            <url>http://repo.fusesource.com/maven2</url>
+            <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+            <releases>
+              <enabled>true</enabled>
+            </releases>
+          </repository>
+     </repositories>
+
     <build>
         <resources>
             <resource>
@@ -95,7 +108,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.fusesource.cloudmix</groupId>
-                                    <artifactId>org.fusesource.cloudmix.agent.smx4</artifactId>
+                                    <artifactId>org.fusesource.cloudmix.agent.karaf</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>	                            

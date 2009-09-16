@@ -21,6 +21,19 @@
     <module>org.fusesource.cloudmix.tests.producer</module>
     <module>org.fusesource.cloudmix.tests.consumer</module>
   </modules>
+  <pluginRepositories>
+      <pluginRepository>
+         <id>fusesource.m2</id>
+         <name>FuseSource Community Dependency Repository</name>
+         <url>http://repo.fusesource.com/maven2</url>
+         <snapshots>
+           <enabled>true</enabled>
+         </snapshots>
+         <releases>
+           <enabled>true</enabled>
+         </releases>
+       </pluginRepository>
+   </pluginRepositories>
 
   <build>
 

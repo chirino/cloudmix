@@ -36,14 +36,20 @@
     </cloudmix.osgi.import.pkg>
   </properties>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>scm.ops4j.org</id>
-      <name>ops4j scm repo</name>
-      <url>https://scm.ops4j.org/repos/ops4j/projects/pax/runner-repository</url>
-      <releases/>
-    </pluginRepository>
-  </pluginRepositories>
+ <repositories>
+     <repository>
+      <id>apache.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <!--
       com.sun.ws.rs.ex; version=0.0.0,
 

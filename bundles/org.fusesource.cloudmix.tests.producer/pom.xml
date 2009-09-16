@@ -38,7 +38,19 @@
     </dependency>
 
   </dependencies>
-  
+  <repositories>
+      <repository>
+         <id>open.iona.m2</id>
+         <name>FuseSource Community Dependency Repository</name>
+         <url>http://repo.fusesource.com/maven2</url>
+         <snapshots>
+           <enabled>true</enabled>
+         </snapshots>
+         <releases>
+           <enabled>true</enabled>
+         </releases>
+       </repository>
+  </repositories>
   <build>
     <resources>
       <resource>

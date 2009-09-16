@@ -14,64 +14,6 @@
   <packaging>pom</packaging>
   <name>Cloudmix :: Pax :: Run</name>
 
-  <repositories>
-    <repository>
-      <id>repo1.maven.org</id>
-      <url>http://repo1.maven.org/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <!-- OPS4J repo -->
-    <repository>
-      <id>ops4j</id>
-      <name>OPS4j Repository</name>
-      <url>http://repository.ops4j.org/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <!-- Spring milestone repo -->
-    <repository>
-      <id>spring-milestone</id>
-      <name>Spring Portfolio Milestone Repository</name>
-      <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <!-- for the pax:run stuff -->
-    <repository>
-      <id>scm.ops4j.org</id>
-      <name>ops4j scm repo</name>
-      <url>http://scm.ops4j.org/repos/ops4j/projects/pax/runner-repository</url>
-      <releases/>
-    </repository>
-
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/release</url>
-    </repository>
-
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>http://repository.springsource.com/maven/bundles/external</url>
-    </repository>
-  </repositories>
 
   <dependencies>
 <!--
