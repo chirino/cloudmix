@@ -63,6 +63,7 @@ public final class Main {
             agent.setProfile(profile);
             agent.setMaxFeatures(maximumFeatures);
             agent.setWorkDirectory(new File(directory));
+            agent.setContainerType("mop");
             agent.init();
 
             AgentPoller poller = new AgentPoller(agent);

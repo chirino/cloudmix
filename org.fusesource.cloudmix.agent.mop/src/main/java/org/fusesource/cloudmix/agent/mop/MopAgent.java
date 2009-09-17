@@ -29,8 +29,6 @@ public class MopAgent extends InstallerAgent {
     private ClassLoader mopClassLoader;
 
     public MopAgent() {
-        System.out.println("==================== CREATING MOP AGENT " + this 
-                           + " = " + System.identityHashCode(this));
         // lets default the profile
         setProfile("*");
         mopClassLoader = getClass().getClassLoader();
@@ -77,6 +75,8 @@ public class MopAgent extends InstallerAgent {
 
     @Override
     public void init() throws Exception {
+        System.out.println("==================== CREATING MOP AGENT " + this 
+                           + " = " + System.identityHashCode(this));
         super.init();
         mopClassLoader = Thread.currentThread().getContextClassLoader();
     }

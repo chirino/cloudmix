@@ -56,8 +56,8 @@ class Agents {
           agent: AgentDetails =>
                   bind("agent", xhtml,
                     "name" -> Text(agent.getId),
-                    "site" -> Text(agent.getHref),
-                    AttrBindParam("siteLink", Text(agent.getHref), "href"),
+                    "site" -> asText(agent.getHref),
+                    AttrBindParam("siteLink", Text("" + agent.getHref), "href"),
                     AttrBindParam("link", Text(agentLink(agent)), "href"))
         }
 
@@ -75,8 +75,8 @@ class Agents {
         val systemProperties = new TreeMap[String, String](agent.getSystemProperties)
 
         bind("agent", xhtml,
-          "site" -> Text(agent.getHref),
-          AttrBindParam("siteLink", Text(agent.getHref), "href"),
+          "site" -> asText(agent.getHref),
+          AttrBindParam("siteLink", Text("" + agent.getHref), "href"),
           "containerType" -> asText(agent.getContainerType),
           "hostname" -> asText(agent.getHostname),
           "maximumFeatures" -> asText("" + agent.getMaximumFeatures),

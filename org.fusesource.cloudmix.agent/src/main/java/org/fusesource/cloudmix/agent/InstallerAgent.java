@@ -125,7 +125,13 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
     @Override
     public String toString() {
-        return "InstallerAgent[id: " + agentId + " hostName: " + hostName + " profile: " + profile + "]";
+        try {
+            getAgentId();
+        } catch (URISyntaxException e) {
+            //ignore
+        }
+        return "InstallerAgent[id: " + agentId + " hostName: " + getHostName() 
+            + " profile: " + getProfile() + "]";
     }
 
     /**
@@ -724,7 +730,6 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     protected String createHostName() {
         try {
             return Inet4Address.getLocalHost().getCanonicalHostName();
-
         } catch (UnknownHostException e) {
             LOG.warn("Could not find out the host name: " + e, e);
             return "localhost";
