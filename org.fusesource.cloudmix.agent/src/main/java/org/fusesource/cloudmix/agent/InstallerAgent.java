@@ -9,6 +9,7 @@ package org.fusesource.cloudmix.agent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -31,10 +32,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.sun.jersey.api.NotFoundException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.agent.logging.LogHandler;
+import org.fusesource.cloudmix.agent.logging.LogParser;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.AgentCfgUpdate;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
@@ -45,6 +46,8 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.sun.jersey.api.NotFoundException;
 
 
 /**
@@ -69,9 +72,6 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
     // Persistent properties.
     protected AgentState agentState = new AgentState();
-
-    // private DomDriver dd = new DomDriver();
-    // private XStream xstream= new XStream(dd);
 
     protected String propertyFilePath;
 
@@ -101,6 +101,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     private BlockingQueue<ProvisioningHistory> historyQueue = new LinkedBlockingQueue<ProvisioningHistory>();
     private String baseHref;
 
+    private LogParser parser; 
+
     public InstallerAgent() {
 
         lastActionsCount = 0;
@@ -126,6 +128,49 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
         return "InstallerAgent[id: " + agentId + " hostName: " + hostName + " profile: " + profile + "]";
     }
 
+    /**
+     * Sets a custom LogParser
+     * @param parser
+     */
+    public void setParser(LogParser parser) {
+		this.parser = parser;
+	}
+
+    /**
+     * Gets the current LogParser
+     * @return LogParser
+     */
+	public LogParser getParser() {
+		return parser;
+	}
+    
+    /**
+     * Creates a LogHandler  
+     * @param logPath points to a log file
+     * @return LogHandler
+     */
+    public LogHandler getLogHandler(String logPath) {
+    	InputStream is = null; 
+    
+    	try {
+    	    is = new FileInputStream(logPath);
+    	} catch (FileNotFoundException ex) {
+    		LOG.warn(logPath + " points to a non-existent log");
+    		throw new RuntimeException(ex);
+    	}
+    	return getLogHandler(is);
+    }
+    
+    /**
+     * Creates a LogHandler  
+     * @param logStream represents a log stream
+     * @return LogHandler
+     */
+    public LogHandler getLogHandler(InputStream logStream) {
+    	LogHandler handler = getParser() == null ? new LogHandler(logStream) : new LogHandler(logStream, getParser());
+    	return handler;
+    }
+    
     public Object call() throws Exception {
         String theAgentId = getAgentId();
 
