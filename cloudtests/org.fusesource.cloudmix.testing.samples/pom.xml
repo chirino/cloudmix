@@ -36,6 +36,12 @@
           <childDelegation>false</childDelegation>
           <useFile>true</useFile>
           <argLine>-Xms256m -Xmx768m</argLine>
+          <systemProperties>
+            <property>
+              <name>cloudmix.url</name>
+              <value>${cloudmixUrl}</value>
+            </property>
+          </systemProperties>
           <excludes>
             <!-- TODO - disable until we have a working set of OSGi agents -->
             <exclude>**/ActiveMQOsgiFeatureTest.java</exclude>
