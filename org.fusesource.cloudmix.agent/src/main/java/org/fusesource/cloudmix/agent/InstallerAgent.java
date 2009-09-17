@@ -32,6 +32,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.sun.jersey.api.NotFoundException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.logging.LogHandler;
@@ -46,8 +48,6 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.springframework.beans.factory.InitializingBean;
-
-import com.sun.jersey.api.NotFoundException;
 
 
 /**
@@ -101,7 +101,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     private BlockingQueue<ProvisioningHistory> historyQueue = new LinkedBlockingQueue<ProvisioningHistory>();
     private String baseHref;
 
-    private LogParser parser; 
+    private LogParser parser;
 
     public InstallerAgent() {
 
@@ -130,47 +130,52 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
     /**
      * Sets a custom LogParser
+     * 
      * @param parser
      */
     public void setParser(LogParser parser) {
-		this.parser = parser;
-	}
+        this.parser = parser;
+    }
 
     /**
      * Gets the current LogParser
+     * 
      * @return LogParser
      */
-	public LogParser getParser() {
-		return parser;
-	}
-    
+    public LogParser getParser() {
+        return parser;
+    }
+
     /**
-     * Creates a LogHandler  
+     * Creates a LogHandler
+     * 
      * @param logPath points to a log file
      * @return LogHandler
      */
     public LogHandler getLogHandler(String logPath) {
-    	InputStream is = null; 
-    
-    	try {
-    	    is = new FileInputStream(logPath);
-    	} catch (FileNotFoundException ex) {
-    		LOG.warn(logPath + " points to a non-existent log");
-    		throw new RuntimeException(ex);
-    	}
-    	return getLogHandler(is);
+        InputStream is = null;
+
+        try {
+            is = new FileInputStream(logPath);
+        } catch (FileNotFoundException ex) {
+            LOG.warn(logPath + " points to a non-existent log");
+            throw new RuntimeException(ex);
+        }
+        return getLogHandler(is);
     }
-    
+
     /**
-     * Creates a LogHandler  
+     * Creates a LogHandler
+     * 
      * @param logStream represents a log stream
      * @return LogHandler
      */
     public LogHandler getLogHandler(InputStream logStream) {
-    	LogHandler handler = getParser() == null ? new LogHandler(logStream) : new LogHandler(logStream, getParser());
-    	return handler;
+        LogHandler handler = getParser() == null ? new LogHandler(logStream) : new LogHandler(logStream,
+                                                                                              getParser());
+        return handler;
     }
-    
+
     public Object call() throws Exception {
         String theAgentId = getAgentId();
 
@@ -514,7 +519,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
         if (LOG.isDebugEnabled()) {
             LOG.debug("timestamp of previous provisioning history: " + lastAppliedHistory);
             LOG.debug("timestamp of current provisioning history: "
-                         + (aProvisioningHistory != null ? aProvisioningHistory.getLastModified() : "???"));
+                      + (aProvisioningHistory != null ? aProvisioningHistory.getLastModified() : "???"));
         }
 
         if (aProvisioningHistory != null
@@ -564,7 +569,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
             if (lastActionsCount != aProvisioningHistory.getActions().size()) {
 
                 LOG.debug("provisioning actions changed since last poll (was " + lastActionsCount
-                             + " and now " + aProvisioningHistory.getActions().size());
+                          + " and now " + aProvisioningHistory.getActions().size());
                 try {
                     Map<String, ProvisioningAction> installActions 
                         = new HashMap<String, ProvisioningAction>();

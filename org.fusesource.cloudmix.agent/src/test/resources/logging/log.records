@@ -1,0 +1,6 @@
+15:55:03,345 | WARN  | pool-1-thread-1  | FileMonitor                      | x.kernel.filemonitor.FileMonitor  272 | Unsupported deployment: D:\Work\CloudMix\cloudmix\org.fusesource.cloudmix.agent.start\apache-servicemix-4.0.0\etc\users.properties
+15:55:03,345 | WARN  | pool-1-thread-1  | FileMonitor                      | x.kernel.filemonitor.FileMonitor  272 | Unsupported deployment: D:\Work\CloudMix\cloudmix\org.fusesource.cloudmix.agent.start\apache-servicemix-4.0.0\etc\system.properties
+15:55:03,345 | FATAL | pool-1-thread-1  | FileMonitor                      | x.kernel.filemonitor.FileMonitor  272 | This line can not be matched\r\n but it should not prevent next log records from being read
+15:55:03,361 | WARN  | pool-1-thread-1  | FileMonitor                      | x.kernel.filemonitor.FileMonitor  272 | Unsupported deployment: D:\Work\CloudMix\cloudmix\org.fusesource.cloudmix.agent.start\apache-servicemix-4.0.0\etc\startup.properties
+15:55:03,392 | INFO  | FelixStartLevel  | OsgiServiceFactoryBean           | r.support.OsgiServiceFactoryBean  299 | Publishing service under classes [{org.osgi.service.url.URLStreamHandlerService}]
+

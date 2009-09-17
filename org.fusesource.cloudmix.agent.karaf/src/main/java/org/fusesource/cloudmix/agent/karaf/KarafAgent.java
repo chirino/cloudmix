@@ -342,9 +342,9 @@ public class KarafAgent extends InstallerAgent {
     public String getInstanceName(String feature) {
         return feature.replaceAll(":", "_");
     }
-    
+
     @Override
     public String getBaseHref() {
-    	return "**unavailable**";
+        return "**unavailable**";
     }
 }
