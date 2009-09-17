@@ -385,6 +385,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     // -------------------------------------------------------------------------
     protected void populateInitialAgentDetails(AgentDetails details) {
         details.setHostname(getHostName());
+        details.setHref(getBaseHref());
         details.setPid(PidUtils.getPid());
         details.setMaximumFeatures(getMaxFeatures());
         details.setProfile(getProfile());

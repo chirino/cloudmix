@@ -35,7 +35,7 @@ import static org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper.merge;
 public class KarafAgent extends InstallerAgent {
 
     public static final String FEATURES_REPOSITORIES = "featuresRepositories";
-    public static final String FEATURES_BOOT = "bootFeatures";
+    public static final String FEATURES_BOOT = "featuresBoot";
 
     protected static final String VM_PROP_SMX_HOME = "servicemix.home";
 
@@ -341,5 +341,10 @@ public class KarafAgent extends InstallerAgent {
 
     public String getInstanceName(String feature) {
         return feature.replaceAll(":", "_");
+    }
+    
+    @Override
+    public String getBaseHref() {
+    	return "**unavailable**";
     }
 }
