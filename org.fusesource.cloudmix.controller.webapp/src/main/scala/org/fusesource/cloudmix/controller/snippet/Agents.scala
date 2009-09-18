@@ -55,9 +55,9 @@ class Agents {
         agentList.flatMap {
           agent: AgentDetails =>
                   bind("agent", xhtml,
-                    "name" -> Text(agent.getId),
-                    "site" -> asText(agent.getHref),
-                    AttrBindParam("siteLink", Text("" + agent.getHref), "href"),
+                    "name" -> Text(asText(agent.getId)),
+                    "site" -> Text(asText(agent.getHref)),
+                    AttrBindParam("siteLink", Text(asText(agent.getHref)), "href"),
                     AttrBindParam("link", Text(agentLink(agent)), "href"))
         }
 
@@ -75,8 +75,8 @@ class Agents {
         val systemProperties = new TreeMap[String, String](agent.getSystemProperties)
 
         bind("agent", xhtml,
-          "site" -> asText(agent.getHref),
-          AttrBindParam("siteLink", Text("" + agent.getHref), "href"),
+          "site" -> Text(agent.getHref),
+          AttrBindParam("siteLink", Text(asText(agent.getHref)), "href"),
           "containerType" -> asText(agent.getContainerType),
           "hostname" -> asText(agent.getHostname),
           "maximumFeatures" -> asText("" + agent.getMaximumFeatures),
@@ -87,7 +87,7 @@ class Agents {
           "profile" -> asText(agent.getProfile),
           "systemProperty" -> systemProperties.entrySet.flatMap {
             //case (key : String, value : String) =>
-            case entry: Entry[_, _] =>
+            case entry: Entry[String, String] =>
               bind("systemProperty", chooseTemplate("agent", "systemProperty", xhtml),
                 "name" -> asText(entry.getKey),
                 "value" -> asText(entry.getValue))
