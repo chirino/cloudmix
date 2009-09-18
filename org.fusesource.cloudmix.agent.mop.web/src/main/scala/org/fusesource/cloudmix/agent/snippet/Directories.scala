@@ -14,6 +14,12 @@ import org.fusesource.cloudmix.agent.resources.{FileSystemResource, DirectoryRes
  */
 
 object Directories {
+  def action(file: FileSystemResource) = {
+    if (file.name.endsWith(".log"))
+      <a href={file.path + "/log"} title="View and search the log contents Log">View Log</a>
+    else
+      Text("")
+  }
 }
 
 import Directories._
@@ -34,6 +40,7 @@ class Directories {
             case child: FileSystemResource =>
               bind("child", chooseTemplate("directory", "child", xhtml),
                 "name" -> asText(child.name),
+                "action" -> action(child),
                 AttrBindParam("link", Text(child.path), "href"),
                 AttrBindParam("iconSource", Text(child.icon), "src"))
           }.toSeq
