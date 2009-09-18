@@ -56,17 +56,15 @@ class WebLifecycle extends Logging {
       case array: Array[AnyRef] =>
         for (a <- array) {
           log.debug("connector " + a)
-          if (a.isInstanceOf[HasHostAndPort]) {
-            val hostAndPort = a.asInstanceOf[HasHostAndPort]
-
-            // lets force it to open by default to get the actual local port used
-            // as usually we are invoked before the connectors start so they have no port yet
-            if (!hostAndPort.isRunning()) {
-              hostAndPort.open()
-            }
-            url = "http://" + hostAndPort.getName()
-            log.debug("web application has URL " + url)
+          val hostAndPort = a.asInstanceOf[HasHostAndPort]
+    
+          // lets force it to open by default to get the actual local port used
+          // as usually we are invoked before the connectors start so they have no port yet
+          if (!hostAndPort.isRunning()) {
+            hostAndPort.open()
           }
+          url = "http://" + hostAndPort.getName()
+          log.debug("web application has URL " + url)
         }
 
       case _ =>
