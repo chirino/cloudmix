@@ -1,9 +1,9 @@
 package org.fusesource.cloudmix.agent.resources
 
 import javax.ws.rs.{Produces, GET, PathParam, Path}
-import scala.collection.jcl.Conversions._
+//import scala.collection.jcl.Conversions._
 import org.fusesource.cloudmix.scalautil.Collections._
-import org.fusesource.cloudmix.common.dto.{ResourceList}
+import org.fusesource.cloudmix.common.dto.{Resource, ResourceList}
 import org.fusesource.cloudmix.agent.mop.{MopAgent}
 
 /**
@@ -15,8 +15,10 @@ class ProcessesResource(val agent: MopAgent) extends ResourceSupport {
   @GET
   @Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
   def resources: ResourceList = {
-    //val resources = processes.values.map((p) => new Resource(p.getId, p.getId))
-    //new ResourceList(resources)
+/*
+    val resources = processes.values.map((p) => new Resource(p.getId, p.getId))
+    ResourceList.newInstance(iterabletoCollection(resources))
+*/
     val answer = new ResourceList
     for (p <- processes.values) {
       val id = p.getId

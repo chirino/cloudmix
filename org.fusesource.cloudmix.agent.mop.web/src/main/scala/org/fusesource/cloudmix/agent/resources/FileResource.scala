@@ -3,7 +3,7 @@ package org.fusesource.cloudmix.agent.resources
 import java.io.File
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.core.Response
-import javax.ws.rs.{Produces, GET, PathParam}
+import javax.ws.rs.{Path, Produces, GET, PathParam}
 
 /**
  * @version $Revision : 1.1 $
@@ -39,4 +39,15 @@ class FileResource(file: File, parentPath: String) extends FileSystemResource(fi
       Response.status(Status.NOT_FOUND).build()
     }
   }
+
+  @Path("log")
+  def logResource = {
+    if (file.exists) {
+      new LogResource(file, path)
+    }
+    else {
+      null
+    }
+  }
+
 }
