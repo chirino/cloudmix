@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.testing.TestController;
 
 import org.junit.Assert;
@@ -41,6 +42,14 @@ public class ActiveMQMopTest extends TestController {
         for (AgentDetails agent : agents) {
             System.out.println("Broker agent: " + agent.getHostname());
         }
+
+
+        // show the processes
+        List<? extends ProcessClient> producerProcesses = getProcessClientsFor(producer);
+        Assert.assertEquals("size of producer processes", 1, producerProcesses.size());
+        ProcessClient processClient = producerProcesses.get(0);
+        Assert.assertNotNull("Should have a processClient for a producer", processClient);
+        System.out.println("ProcessClient: " + processClient);
 
         Thread.sleep(1000000);
     }

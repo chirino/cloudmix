@@ -11,7 +11,6 @@ package org.fusesource.cloudmix.testing;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,8 +22,10 @@ import org.apache.commons.logging.LogFactory;
 
 
 import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.agent.GridClients;
 import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.Dependency;
 import org.fusesource.cloudmix.common.dto.DependencyStatus;
@@ -65,7 +66,7 @@ public abstract class TestController {
     protected String controllerUrl = CloudmixHelper.getDefaultRootUrl();
 
     protected List<FeatureDetails> features = new CopyOnWriteArrayList<FeatureDetails>();
-    protected GridClient gridClient;
+    protected RestGridClient gridClient;
     protected ProfileDetails profile;
     protected String profileId;
     protected boolean provisioned;
@@ -161,20 +162,34 @@ public abstract class TestController {
         }
     }
 
+    protected List<? extends ProcessClient> getProcessClientsFor(FeatureDetails featureDetails) throws URISyntaxException {
+        return getProcessClientsFor(id(featureDetails));
+    }
+
+    private List<? extends ProcessClient> getProcessClientsFor(String featureId) throws URISyntaxException {
+        return getGridClient().getProcessClientsForFeature(featureId);
+    }
 
     /**
      * Returns all the agents which are running the given feature
      */
     protected List<AgentDetails> getAgentsFor(FeatureDetails featureDetails) throws URISyntaxException {
+        return getAgentsFor(id(featureDetails));
+    }
+
+    protected String id(FeatureDetails featureDetails) {
         String id = featureDetails.getId();
         Assert.assertNotNull("Feature should have an ID " + featureDetails, id);
-        return getAgentsFor(id);
+        return id;
     }
 
     /**
      * Returns all the agents which are running the given feature  ID
      */
     protected List<AgentDetails> getAgentsFor(String featureId) throws URISyntaxException {
+        return GridClients.getAgentDetailsAssignedToFeature(getGridClient(), featureId);
+/*
+
         List<String> agentIds = getGridClient().getAgentsAssignedToFeature(featureId);
         List<AgentDetails> answer = new ArrayList<AgentDetails>();
         for (String agentId : agentIds) {
@@ -184,6 +199,7 @@ public abstract class TestController {
             }
         }
         return answer;
+*/
     }
 
 
@@ -231,21 +247,21 @@ public abstract class TestController {
         }
     }
 
-    public GridClient getGridClient() throws URISyntaxException {
+    public RestGridClient getGridClient() throws URISyntaxException {
         if (gridClient == null) {
             gridClient = createGridController();
         }
         return gridClient;
     }
 
-    public void setGridClient(GridClient gridClient) {
+    public void setGridClient(RestGridClient gridClient) {
         this.gridClient = gridClient;
     }
 
     /**
      * Returns a newly created client. Factory method
      */
-    protected GridClient createGridController() throws URISyntaxException {
+    protected RestGridClient createGridController() throws URISyntaxException {
         System.out.println("About to create RestGridClient for: " + controllerUrl);
         return new RestGridClient(controllerUrl);
     }

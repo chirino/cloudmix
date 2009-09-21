@@ -16,11 +16,20 @@ import javax.ws.rs.PathParam;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.StringList;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @version $Revision$
  */
 public class FeatureResource extends ResourceSupport {
+    private static final transient Log LOG = LogFactory.getLog(FeatureResource.class);
+
     private final GridController controller;
     private final String featureId;
 
@@ -46,8 +55,8 @@ public class FeatureResource extends ResourceSupport {
     }
     
     @GET @Path("agents")
-    public StringList getAgents(@PathParam("featureId")String aFeatureId) {
-        return new StringList(controller.getAgentsAssignedToFeature(aFeatureId));
+    public StringList getAgentList() {
+        return new StringList(controller.getAgentsAssignedToFeature(featureId));
     }
 
     @PUT @Path("agents/{id}")
@@ -60,5 +69,25 @@ public class FeatureResource extends ResourceSupport {
     public void removeAgent(@PathParam("id")String agentId) {
         controller.removeAgentFromFeature(featureId, agentId);
     }
-    
+
+    public List<AgentDetails> getAgents() {
+        List<AgentDetails> answer = new ArrayList<AgentDetails>();
+        List<String> agentIdList = controller.getAgentsAssignedToFeature(featureId);
+        System.out.println(">>>>> found agents for feature id " + featureId + " are  " + agentIdList);
+        for (String agentId : agentIdList) {
+            AgentDetails agentDetails = controller.getAgentDetails(agentId);
+            if (agentDetails != null) {
+                answer.add(agentDetails);
+            }
+            else {
+                LOG.warn("No agent details found for " + agentId + " when resolving feature " + featureId);
+            }
+        }
+        System.out.println("Found: " + answer);
+        return answer;
+    }
+
+    public String getFeatureId() {
+        return featureId;
+    }
 }

@@ -9,11 +9,15 @@ import _root_.scala.xml.{Text, NodeSeq}
  */
 object TextFormatting extends Logging {
 
-  def asText(value: AnyRef): String = {
+  def asText(value: AnyRef, defaultValue: String): String = {
     if (value != null)
       value.toString
     else
-      ""
+      defaultValue
+  }
+
+  def asText(value: AnyRef): String = {
+    asText(value, "")
   }
 
   def asText(value: Boolean): String = {

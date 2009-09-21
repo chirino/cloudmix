@@ -38,7 +38,6 @@ public class RestClientSupport {
     @Override
     public String toString() {
         return "RestClient[rootUri: " + rootUri + "]";
-
     }
 
     public Client getClient(String credentials) {

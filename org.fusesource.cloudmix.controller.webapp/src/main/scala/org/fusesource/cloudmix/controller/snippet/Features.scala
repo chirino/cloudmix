@@ -1,7 +1,8 @@
 package org.fusesource.cloudmix.controller.snippet
 
-import common.dto.{FeatureDetails, DependencyStatus}
-import resources._
+import org.fusesource.cloudmix.common.dto.{AgentDetails, FeatureDetails, DependencyStatus}
+import org.fusesource.cloudmix.controller.resources._
+import org.fusesource.cloudmix.scalautil.TextFormatting._
 
 import _root_.net.liftweb.util.Helpers._
 import _root_.com.sun.jersey.lift.ResourceBean
@@ -25,6 +26,10 @@ object Features {
 
   def featureLink(featureId: String): String = {
     uri("/features/" + featureId)
+  }
+
+  def agentFeatureLink(agent: AgentDetails, featureId: String): String = {
+    agent.getHref + "features/" + featureId
   }
 }
 
@@ -52,9 +57,22 @@ class Features {
       case feature: FeatureResource =>
         //val features = feature.getStatus.getStatus.getFeatures
 
+        val agents = feature.getAgents
+
         bind("feature", xhtml,
-          "name" -> Text(feature.getFeatureDetails.getId)
-          )
+          "name" -> Text(feature.getFeatureId),
+
+          "agent" -> agents.flatMap {
+            agent: AgentDetails =>
+             var name = agent.getName
+             if (name == null) {
+               name = "agent"
+             }
+             bind("agent", chooseTemplate("feature", "agent", xhtml),
+                "name" -> Text(name),
+                AttrBindParam("featureLink", Text(agentFeatureLink(agent, feature.getFeatureId)), "href"))
+          })
+
 /*
 
           "feature" -> features.flatMap {
