@@ -28,6 +28,10 @@ object Agents {
     uri("/agents/" + agentId)
   }
 
+  def featureLink(featureId: String): String = {
+    uri("/features/" + featureId)
+  }
+
   def processLink(process: MopProcess): String = {
     processLink(process.getId)
   }
@@ -117,10 +121,12 @@ class Agents {
           bind("process", xhtml,
             "id" -> asText(process.getId),
             "site" -> processLink(process.getId),
+            "feature" -> asText(process.getFeatureId),
             "commandLine" -> asText(process.getCommandLine),
             "directory" -> asText(process.getWorkDirectory),
             "credentials" -> asText(process.getCredentials),
             AttrBindParam("dirLink", Text(directoryLink(process)), "href"),
+            AttrBindParam("featureLink", Text(featureLink(process.getFeatureId)), "href"),
             AttrBindParam("directoryTitle", Text(asText(process.getWorkDirectory)), "title"),
             AttrBindParam("action", Text(processLink(process)), "action"))
 

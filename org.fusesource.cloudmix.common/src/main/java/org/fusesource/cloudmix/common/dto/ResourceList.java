@@ -10,11 +10,14 @@ package org.fusesource.cloudmix.common.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @version $Revision$
@@ -24,6 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResourceList {
     @XmlElement(name = "resource")
     private List<Resource> resources;
+    @XmlTransient
+    private Set<String> names = new HashSet<String>();
 
     public ResourceList() {
         this.resources = new ArrayList<Resource>();
@@ -63,9 +68,14 @@ public class ResourceList {
     }
 
     public void addResource(Resource resource) {
+        names.add(resource.getName());
         resources.add(resource);
     }
 
+    public boolean containsName(String name) {
+        return names.contains(name);
+    }
+    
     // Properties
     //-------------------------------------------------------------------------
 

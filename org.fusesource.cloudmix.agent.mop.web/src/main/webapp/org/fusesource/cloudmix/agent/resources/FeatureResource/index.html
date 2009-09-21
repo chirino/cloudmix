@@ -1,0 +1,27 @@
+<lift:surround with="default" at="content">
+  <lift:features.index>
+    <head>
+      <title>CloudMix Agent Feature<feature:name/></title>
+    </head>
+
+    <h2>Feature <feature:name/></h2>
+
+    <table>
+      <tr>
+        <th colspan="3">Processes</th>
+      </tr>
+
+      <feature:resource>
+        <tr>
+          <td>
+            <a class='feature' resource:link="na">
+              <resource:name/>
+            </a>
+          </td>
+        </tr>
+      </feature:resource>
+    </table>
+  </lift:features.index>
+</lift:surround>
+
+

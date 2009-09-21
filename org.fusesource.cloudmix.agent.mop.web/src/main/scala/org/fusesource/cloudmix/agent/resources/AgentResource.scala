@@ -19,6 +19,9 @@ class AgentResource extends ResourceSupport {
   @Context
   var uriInfo: UriInfo = null;
 
+  @Path("features")
+  def featuresResources = new FeaturesResource(agent)
+
   @Path("processes")
   def processResources = new ProcessesResource(agent)
 

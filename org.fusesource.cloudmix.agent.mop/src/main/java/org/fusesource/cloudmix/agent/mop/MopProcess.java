@@ -39,15 +39,21 @@ public class MopProcess {
     private Thread thread;
     private AtomicBoolean completed = new AtomicBoolean(false);
     private File workDirectory;
+    private String featureId;
 
     public MopProcess(MopAgent mopAgent, ProvisioningAction action,
                       String credentials, String commandLine,
                       ClassLoader mopClassLoader) {
         this.action = action;
+        this.featureId = action.getFeature();
         this.credentials = credentials;
         this.commandLine = commandLine;
         this.mopClassLoader = mopClassLoader;
         this.workDirectory = mopAgent.createProcessDirectory(action);
+    }
+
+    public String getFeatureId() {
+        return featureId;
     }
 
     public String getId() {
