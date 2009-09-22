@@ -7,22 +7,23 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.dto.StringList;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.ArrayList;
+import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.StringList;
+
 
 /**
  * @version $Revision$
@@ -78,8 +79,7 @@ public class FeatureResource extends ResourceSupport {
             AgentDetails agentDetails = controller.getAgentDetails(agentId);
             if (agentDetails != null) {
                 answer.add(agentDetails);
-            }
-            else {
+            } else {
                 LOG.warn("No agent details found for " + agentId + " when resolving feature " + featureId);
             }
         }

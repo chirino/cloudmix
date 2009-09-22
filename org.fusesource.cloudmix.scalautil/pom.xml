@@ -52,6 +52,35 @@
         <artifactId>maven-scala-plugin</artifactId>
       </plugin>
     </plugins>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-eclipse-plugin</artifactId>
+              <configuration>
+                <downloadSources>true</downloadSources>
+                <buildcommands>
+                  <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
+                  <java.lang.String>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</java.lang.String>
+                  <!-- Lets not enable the PMD buidler just yet..
+                  <java.lang.String>net.sourceforge.pmd.runtime.pmdBuilder</java.lang.String>
+                  -->
+                </buildcommands>
+                <projectnatures>
+                  <nature>ch.epfl.lamp.sdt.core.scalanature</nature>
+                  <nature>org.eclipse.jdt.core.javanature</nature>
+                  <nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
+                  <!-- Lets not enable the PMD buidler just yet..
+                  <nature>net.sourceforge.pmd.runtime.pmdNature</nature>
+                  -->
+                </projectnatures>
+                <sourceIncludes>
+                    <sourceInclude>**/*.scala</sourceInclude>
+                </sourceIncludes>
+              </configuration>
+            </plugin>
+        </plugins>
+    </pluginManagement>
   </build>
 
 </project>

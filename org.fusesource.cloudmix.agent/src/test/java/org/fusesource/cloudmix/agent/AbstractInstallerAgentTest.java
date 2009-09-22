@@ -113,6 +113,11 @@ public class AbstractInstallerAgentTest extends TestCase {
         ph = new ProvisioningHistory();
         
     }
+    @Override
+    protected void tearDown() {
+        File tmpWorkDirectory = new File("tmp.work.dir");
+        FileUtils.deleteDirectory(tmpWorkDirectory);        
+    }
     
     
     public void testInstallNothing() throws Exception {

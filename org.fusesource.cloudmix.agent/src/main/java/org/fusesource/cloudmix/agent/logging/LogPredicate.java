@@ -32,6 +32,7 @@ public class LogPredicate implements Predicate<LogRecord> {
         if (t == null || isEmpty(t)) {
             return false;
         }
+        //CHECKSTYLE:OFF - really ugly boolean expression complexity level
         if ((r.getLevel() == null || r.getLevel() != null && r.getLevel().equals(t.getLevel()))
             && (r.getDate() == null || r.getDate() != null && r.getDate().equals(t.getDate()))
             && (r.getCategory() == null || t.getCategory().matches(r.getCategory()))
@@ -39,6 +40,7 @@ public class LogPredicate implements Predicate<LogRecord> {
             && (r.getMessage() == null || t.getMessage().matches(r.getMessage()))) {
             return true;
         }
+        //CHECKTSYLTE:ON
         return false;
     }
 

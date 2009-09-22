@@ -7,6 +7,13 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
@@ -28,12 +35,6 @@ import org.fusesource.cloudmix.common.dto.ResourceList;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
 
 /**
  * @version $Revision: 61256 $
@@ -231,9 +232,11 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return answer.getValues();
     }
 
-    public List<? extends ProcessClient> getProcessClientsForFeature(String featureId) throws URISyntaxException {
+    public List<? extends ProcessClient> getProcessClientsForFeature(String featureId) 
+        throws URISyntaxException {
+        
         List<RestProcessClient> answer = new ArrayList<RestProcessClient>();
-        List<AgentDetails> list = Collections.EMPTY_LIST;
+        List<AgentDetails> list = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
             list = GridClients.getAgentDetailsAssignedToFeature(this, featureId);
             if (!list.isEmpty()) {
@@ -268,8 +271,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
                             answer.add(client);
                         }
                     }
-                }
-                else {
+                } else {
                     LOG.warn("No ResourceList found for " + uri);
                 }
             } else {
@@ -279,7 +281,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return answer;
     }
 
-    private RestProcessClient createProcessClient(AgentDetails agentDetails, String featureId, Resource resource) throws URISyntaxException {
+    private RestProcessClient createProcessClient(AgentDetails agentDetails, String featureId,
+                                                  Resource resource) throws URISyntaxException {
         return new RestProcessClient(agentDetails.getHref() + resource.getHref());
     }
 

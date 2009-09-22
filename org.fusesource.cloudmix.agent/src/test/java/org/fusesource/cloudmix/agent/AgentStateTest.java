@@ -15,6 +15,11 @@ import junit.framework.TestCase;
 import org.fusesource.cloudmix.common.util.FileUtils;
 
 public class AgentStateTest extends TestCase {
+    @Override
+    protected void tearDown() {
+        File tmpWorkDirectory = new File("tmp.work.dir");
+        FileUtils.deleteDirectory(tmpWorkDirectory);        
+    }
 
     class TestAgent extends InstallerAgent {
 

@@ -21,8 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.GridClients;
+import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.ProcessClient;
@@ -162,7 +162,9 @@ public abstract class TestController {
         }
     }
 
-    protected List<? extends ProcessClient> getProcessClientsFor(FeatureDetails featureDetails) throws URISyntaxException {
+    protected List<? extends ProcessClient> getProcessClientsFor(FeatureDetails featureDetails) 
+        throws URISyntaxException {
+        
         return getProcessClientsFor(id(featureDetails));
     }
 

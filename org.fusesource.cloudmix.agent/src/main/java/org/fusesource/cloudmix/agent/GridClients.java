@@ -7,26 +7,28 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent;
 
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.common.dto.ResourceList;
-import org.fusesource.cloudmix.common.dto.Resource;
-import org.fusesource.cloudmix.common.GridClient;
-import org.fusesource.cloudmix.common.ProcessClient;
-
-import java.util.List;
-import java.util.ArrayList;
 import java.net.URISyntaxException;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+
 
 /**
  * Some helper methods for working with {@link org.fusesource.cloudmix.common.GridClient} instances
  *
  * @version $Revision: 1.1 $
  */
-public class GridClients {
+public final class GridClients {
+    private GridClients() {
+        //utility class
+    }
 
-
-    public static List<AgentDetails> getAgentDetailsAssignedToFeature(GridClient gridClient, String featureId) throws URISyntaxException {
+    public static List<AgentDetails> getAgentDetailsAssignedToFeature(GridClient gridClient, 
+                                                                      String featureId) 
+        throws URISyntaxException {
+        
         List<String> agentIds = gridClient.getAgentsAssignedToFeature(featureId);
         List<AgentDetails> answer = new ArrayList<AgentDetails>();
         for (String agentId : agentIds) {

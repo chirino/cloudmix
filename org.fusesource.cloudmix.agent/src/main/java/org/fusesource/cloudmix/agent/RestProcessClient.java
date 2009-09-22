@@ -7,10 +7,11 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent;
 
-import org.fusesource.cloudmix.common.ProcessClient;
-
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import org.fusesource.cloudmix.common.ProcessClient;
+
 
 /**
  * A client API for working with a process RESTfully

@@ -7,22 +7,21 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.testing.samples;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.net.URISyntaxException;
 
+import com.sun.jersey.api.client.filter.LoggingFilter;
+
+import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.testing.TestController;
-import org.fusesource.cloudmix.agent.RestGridClient;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.sun.jersey.api.client.filter.LoggingFilter;
 
 
 /**
