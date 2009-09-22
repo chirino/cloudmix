@@ -56,7 +56,11 @@
       <artifactId>jna</artifactId>
       <version>${jna-version}</version>
     </dependency>
-    
+    <dependency>
+      <groupId>com.google.code.google-collections</groupId>
+      <artifactId>google-collect</artifactId>
+      <version>snapshot-20080530</version>
+    </dependency> 
 <!--
     <dependency>
       <groupId>net.java.dev.jna</groupId>

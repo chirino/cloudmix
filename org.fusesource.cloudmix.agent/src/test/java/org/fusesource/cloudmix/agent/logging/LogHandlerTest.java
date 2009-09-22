@@ -70,6 +70,17 @@ public class LogHandlerTest extends TestCase {
                      "r.support.OsgiServiceFactoryBean", "299",
                      "Publishing service under classes [{org.osgi.service.url.URLStreamHandlerService}]");
     }
+    
+    public void testGetInfoCategoryRecordWithPredicate() {
+        LogHandler parser = new LogHandler(new StringReader(records));
+        LogPredicate p = new LogPredicate("INFO", "OsgiServiceFactoryBean");
+        List<LogRecord> recs = parser.findWithPredicate(p);
+        assertEquals("1 record is expected", 1, recs.size());
+        LogRecord rec = recs.get(0);
+        verifyRecord(rec, "15:55:03", "INFO", "FelixStartLevel", "OsgiServiceFactoryBean",
+                     "r.support.OsgiServiceFactoryBean", "299",
+                     "Publishing service under classes [{org.osgi.service.url.URLStreamHandlerService}]");
+    }
 
     public void testGetInfoCategoryRecordRegEx() {
         LogHandler parser = new LogHandler(new StringReader(records));

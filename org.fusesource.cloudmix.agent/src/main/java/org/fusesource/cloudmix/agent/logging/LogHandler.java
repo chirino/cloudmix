@@ -13,6 +13,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.common.base.Predicate;
+
 /**
  * Facilitates the retrieval of and search for log records independently of the actual log format
  */
@@ -60,6 +62,7 @@ public class LogHandler {
         return findLevelRecords(level, 0, records.size());
     }
 
+    
     /**
      * Gets all the records matching a provided level
      * 
@@ -185,6 +188,41 @@ public class LogHandler {
         return recs;
     }
 
+    /**
+     * Gets all the records using a predicate
+     * 
+     * @param Predicate
+     * @param start position in the list where to start searching from
+     * @param max max number of records
+     * @return the records
+     */
+    public List<LogRecord> findWithPredicate(Predicate<LogRecord> p) {
+        return  findWithPredicate(p, 0, records.size());
+    }
+    
+    /**
+     * Gets all the records using a predicate
+     * 
+     * @param Predicate
+     * @param start position in the list where to start searching from
+     * @param max max number of records
+     * @return the records
+     */
+    public List<LogRecord> findWithPredicate(Predicate<LogRecord> p, int start, int max) {
+        if (start > records.size()) {
+            throw new IllegalArgumentException();
+        }
+        List<LogRecord> recs = new ArrayList<LogRecord>();
+        for (int i = start; i < records.size() && recs.size() <= max; i++) {
+            LogRecord record = records.get(i);
+            if (p.apply(record)) {
+                recs.add(record);
+            }
+        }
+        return recs;
+    }
+    
+    
     private boolean matches(String value, String regex) {
         if (value == null) {
             return false;
