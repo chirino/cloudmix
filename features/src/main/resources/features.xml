@@ -12,6 +12,7 @@
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent.karaf/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.agent/${pom.version}</bundle>
     <bundle>mvn:org.fusesource.cloudmix/org.fusesource.cloudmix.common/${pom.version}</bundle>
+    <bundle>wrap:mvn:com.google.code.google-collections/google-collect/${google-collect-version}</bundle>
   </feature>
 
   <feature name='jersey.wrapper' version='${pom.version}'>

@@ -59,7 +59,7 @@
     <dependency>
       <groupId>com.google.code.google-collections</groupId>
       <artifactId>google-collect</artifactId>
-      <version>snapshot-20080530</version>
+      <version>${google-collect-version}</version>
     </dependency> 
 <!--
     <dependency>

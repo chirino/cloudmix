@@ -47,6 +47,7 @@
     <smx4-version>1.0.1.0-fuse</smx4-version>
     <smx4-features-plugin-version>1.0.0.0-fuse</smx4-features-plugin-version>
     <xbean-version>3.4</xbean-version>
+    <google-collect-version>snapshot-20080530</google-collect-version>
 
     <!-- OSGi bundles properties -->
     <cloudmix.osgi.import.pkg>!javax.xml.bind.annotation.adapters,*</cloudmix.osgi.import.pkg>
