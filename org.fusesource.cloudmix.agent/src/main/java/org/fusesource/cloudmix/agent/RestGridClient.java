@@ -7,13 +7,6 @@
  */
 package org.fusesource.cloudmix.agent;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
@@ -30,10 +23,17 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetailsList;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
-import org.fusesource.cloudmix.common.dto.StringList;
-import org.fusesource.cloudmix.common.dto.ResourceList;
 import org.fusesource.cloudmix.common.dto.Resource;
+import org.fusesource.cloudmix.common.dto.ResourceList;
+import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 /**
  * @version $Revision: 61256 $
@@ -233,12 +233,31 @@ public class RestGridClient extends RestClientSupport implements GridClient {
 
     public List<? extends ProcessClient> getProcessClientsForFeature(String featureId) throws URISyntaxException {
         List<RestProcessClient> answer = new ArrayList<RestProcessClient>();
-        List<AgentDetails> list = GridClients.getAgentDetailsAssignedToFeature(this, featureId);
+        List<AgentDetails> list = Collections.EMPTY_LIST;
+        for (int i = 0; i < 10; i++) {
+            list = GridClients.getAgentDetailsAssignedToFeature(this, featureId);
+            if (!list.isEmpty()) {
+                break;
+            }
+            LOG.debug("Retrying...");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
         for (AgentDetails agentDetails : list) {
             String href = agentDetails.getHref();
             if (href != null && href.contains("://")) {
                 // lets get the processes for this feature
-                String uri = href + "/features";
+                if (!href.endsWith("/")) {
+                    href = href + "/";
+                }
+                String uri = href + "features/" + featureId;
+
+                LOG.debug("About to test feature URI: " + uri);
+                //System.out.println("Found: " + resource(new URI(uri)).accept("text/xml").get(String.class));
+
                 ResourceList resourceList = resource(new URI(uri)).accept("text/xml").get(ResourceList.class);
                 if (resourceList != null) {
                     System.out.println(uri + " Found: " + resourceList);
@@ -250,13 +269,18 @@ public class RestGridClient extends RestClientSupport implements GridClient {
                         }
                     }
                 }
+                else {
+                    LOG.warn("No ResourceList found for " + uri);
+                }
+            } else {
+                LOG.warn("Ignoring agent " + agentDetails + " due to bad href " + href);
             }
         }
         return answer;
     }
 
     private RestProcessClient createProcessClient(AgentDetails agentDetails, String featureId, Resource resource) throws URISyntaxException {
-        return new RestProcessClient(resource.getHref());
+        return new RestProcessClient(agentDetails.getHref() + resource.getHref());
     }
 
     public ProfileDetails getProfile(String id) throws URISyntaxException {

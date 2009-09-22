@@ -11,9 +11,9 @@ import org.fusesource.cloudmix.scalautil.Collections._
  *
  * @version $Revision : 1.1 $
  */
+@Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
 class FeaturesResource(val agent: MopAgent) extends ResourceSupport {
   @GET
-  @Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
   def resources: ResourceList = {
     val answer = new ResourceList
     for (p <- processes.values) {
