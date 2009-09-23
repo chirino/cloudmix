@@ -30,7 +30,7 @@ class ProcessesResource(val agent: MopAgent) extends ResourceSupport {
   @Path("{id}")
   def processResource(@PathParam("id") id: String) = {
     def process = processes.get(id)
-    if (processes == null) {
+    if (process == null) {
       log.debug("could not find process for id: " + id)
       null
     }
