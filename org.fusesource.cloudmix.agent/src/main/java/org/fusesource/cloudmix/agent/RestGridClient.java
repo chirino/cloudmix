@@ -7,6 +7,7 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -14,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.security.PasswordProvider;
@@ -34,6 +33,9 @@ import org.fusesource.cloudmix.common.dto.Resource;
 import org.fusesource.cloudmix.common.dto.ResourceList;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
+
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 
 
 /**
@@ -152,6 +154,12 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         }
     }
 
+    public InputStream getLogStream() throws URISyntaxException {
+        WebResource.Builder resource =
+                resource(getRootUri()).accept("*/*");
+        return resource.get(ClientResponse.class).getEntityInputStream();
+    }
+    
     public void removeAgentDetails(String agentId) throws URISyntaxException {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");

@@ -126,19 +126,19 @@ public class MopAgent extends InstallerAgent {
     protected void uninstallFeature(Feature feature) throws Exception {
         System.out.println("Uninstalling FEATURE: " + feature);
 
-        String id = feature.getName();
-        synchronized (processes) {
-            MopProcess oldProcess = processes.get(id);
-            if (oldProcess != null) {
-                oldProcess.stop();
-            }
-        }
-
-        super.uninstallFeature(feature);
-        removeFeatureId(id);
+//        String id = feature.getName();
+//        synchronized (processes) {
+//            MopProcess oldProcess = processes.get(id);
+//            if (oldProcess != null) {
+//                oldProcess.stop();
+//            }
+//        }
+//
+//        super.uninstallFeature(feature);
+//        removeFeatureId(id);
     }
 
     public File createProcessDirectory(ProvisioningAction action) {
-        return new File(getWorkDirectory(), action.getId());
+        return new File(getWorkDirectory(), action.getFeature().replace(':', '_'));
     }
 }

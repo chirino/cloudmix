@@ -8,19 +8,25 @@
 package org.fusesource.cloudmix.testing;
 
 
+import java.io.BufferedInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.LogRecord;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
 import org.fusesource.cloudmix.agent.GridClients;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.CloudmixHelper;
@@ -32,7 +38,6 @@ import org.fusesource.cloudmix.common.dto.DependencyStatus;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -297,6 +302,27 @@ public abstract class TestController {
     }
 
 
+    protected void getFeatureLogFromAgent(AgentDetails agent, String featureId, String relativeLogPath, 
+        OutputStream os) throws Exception {
+        if (agent.getHref() == null) {
+            LOG.info("Agent href is null");
+        }
+        UriBuilder ub = UriBuilder.fromUri(agent.getHref());
+        URI uri = ub.path("directory").path(featureId.replace(':', '_')).path(relativeLogPath).build();
+        RestGridClient client = new RestGridClient(uri);
+        InputStream logStream = new BufferedInputStream(client.getLogStream());
+        byte[] buf = new byte[4096];
+        int len = 0;
+        while ((len = logStream.read(buf)) != -1) {
+            os.write(buf, 0, len);
+        }
+        
+    }
+    
+    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, String featureId, String relativeLogPath,
+            Map<String, List<String>> queries, OutputStream os) throws Exception {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Asserts that all the requested features have been provisioned properly
      */

@@ -3,8 +3,9 @@ package org.fusesource.cloudmix.agent.resources
 import com.google.common.base.Predicate
 import com.sun.jersey.api.view.ImplicitProduces
 import java.io.{FileReader, BufferedReader, File}
-import javax.ws.rs.GET
-import javax.ws.rs.core.{UriInfo, Context, MultivaluedMap}
+import java.util.List
+import javax.ws.rs.{GET, Produces, Path}
+import javax.ws.rs.core.{MultivaluedMap, Context, UriInfo}
 import org.fusesource.cloudmix.agent.logging.{LogRecord, LogHandler, LogPredicate}
 
 
@@ -20,18 +21,29 @@ class LogResource(file: File, parentPath: String) extends FileSystemResource(fil
   var handler: LogHandler = null  
   var lock: AnyRef = new Object()
   
-  @Context
-  var uInfo: UriInfo = null;
   
   @GET
+  @Path("/")
   def logRecords = {
+    doLogRecords(null)
+  }
+
+  // without @Path /servicemix.log/log will bind to the xml producing method only
+  // when a request is issued from FireFox
+  @Path("records")
+  @Produces(Array("application/xml"))
+  def logRecordsXml(@Context ui: UriInfo): List[LogRecord] = {
+      doLogRecords(ui)
+  }
+  
+  def doLogRecords(ui: UriInfo) = {
     lock.synchronized {
        if (handler == null) {
            handler = new LogHandler(new BufferedReader(new FileReader(file)));
        }
     }
 
-    val predicate = createPredicate()
+    val predicate = createPredicate(ui)
     if (predicate != null) {
       handler.findWithPredicate(predicate)
     } else {
@@ -39,26 +51,22 @@ class LogResource(file: File, parentPath: String) extends FileSystemResource(fil
     }
   }
   
-  def createPredicate(): Predicate[LogRecord] = {
-      if (uInfo != null) {
-         val queries = uInfo.getQueryParameters(true)
+  
+  def createPredicate(ui: UriInfo): Predicate[LogRecord] = {
+      if (ui != null) {
+         val queries = ui.getQueryParameters(true)
          if (queries.isEmpty()) {
              null
          } 
          val record = new LogRecord();
          
-         // lets start with single values only
-         // TODO : for multiple values like level=info&level=warn create 'or' predicates
-         // given that a single record can only meet a single criteria like level=info
-         // Ex : level=info&level=warn&cat=jetty&cat=felix will result in a composite
-         // 'or' predicate containing 4 LogPredicates
-         
          val levels = queries.get("level")
          if (levels != null && !levels.isEmpty()) {
              record.setLevel(levels.get(0))
-         } 
-      
-         new LogPredicate(record)
+             new LogPredicate(record)
+         } else {
+             null
+         }
       } else {
          null
       }
