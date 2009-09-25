@@ -15,13 +15,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.LogRecord;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.GridClients;
 import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.agent.logging.LogRecord;
 import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.ProcessClient;
@@ -302,15 +303,15 @@ public abstract class TestController {
     }
 
 
-    protected void getFeatureLogFromAgent(AgentDetails agent, String featureId, String relativeLogPath, 
-        OutputStream os) throws Exception {
-        if (agent.getHref() == null) {
-            LOG.info("Agent href is null");
+    protected void getFeatureLogFromAgent(AgentDetails agent, FeatureDetails feature, 
+            String relativeLogPath, OutputStream os) throws Exception {
+        if (!isSupportedAgent(agent)) {
+            return;
         }
-        UriBuilder ub = UriBuilder.fromUri(agent.getHref());
-        URI uri = ub.path("directory").path(featureId.replace(':', '_')).path(relativeLogPath).build();
-        RestGridClient client = new RestGridClient(uri);
-        InputStream logStream = new BufferedInputStream(client.getLogStream());
+        URI uri = createRequestURI(agent, feature, relativeLogPath);
+        RestGridClient client = new RestGridClient();
+        client.setRootUri(uri, false);
+        InputStream logStream = new BufferedInputStream(client.getInputStream());
         byte[] buf = new byte[4096];
         int len = 0;
         while ((len = logStream.read(buf)) != -1) {
@@ -319,9 +320,43 @@ public abstract class TestController {
         
     }
     
-    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, String featureId, String relativeLogPath,
-            Map<String, List<String>> queries, OutputStream os) throws Exception {
-        throw new UnsupportedOperationException();
+    private boolean isSupportedAgent(AgentDetails agent) {
+        if (!"mop".equals(agent.getContainerType().toLowerCase())) {
+            LOG.info("Unsupported agent type " + agent.getContainerType());
+            return false;
+        } 
+        if (agent.getHref() == null) {
+            LOG.info("Agent href is null, no log can be retrieved");
+            return false;
+        }
+        return true;
+    }
+    
+    private URI createRequestURI(AgentDetails agent, FeatureDetails feature, String relativeLogPath) {
+        UriBuilder ub = UriBuilder.fromUri(agent.getHref());
+        if ("mop".equals(agent.getContainerType().toLowerCase())) {
+            ub.path("directory");
+        }
+        //else if ("karaf".equals(agent.getContainerType().toLowerCase())) {
+        //   ub.path("instance"); ? 
+        //}
+        return ub.path(feature.getId().replace(':', '_')).path(relativeLogPath).build();
+    }
+    
+    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, FeatureDetails feature, 
+            String relativeLogPath, String queryName, String queryValue) throws Exception {
+        return getFeatureLogRecordsFromAgent(agent, feature, relativeLogPath,
+                Collections.singletonMap(queryName, Collections.singletonList(queryValue)));
+    }
+    
+    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, FeatureDetails feature, 
+            String relativeLogPath, Map<String, List<String>> queries) throws Exception {
+        if (!isSupportedAgent(agent)) {
+            return Collections.emptyList();
+        }
+        URI uri = createRequestURI(agent, feature, relativeLogPath);
+        RestGridClient client = new RestGridClient(uri);
+        return client.getLogRecords(queries);
     }
     /**
      * Asserts that all the requested features have been provisioned properly

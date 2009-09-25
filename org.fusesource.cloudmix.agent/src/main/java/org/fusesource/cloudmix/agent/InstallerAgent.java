@@ -32,8 +32,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.sun.jersey.api.NotFoundException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.logging.LogHandler;
@@ -48,6 +46,8 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.sun.jersey.api.NotFoundException;
 
 
 /**
@@ -155,7 +155,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     /**
      * Creates a LogHandler
      * 
-     * @param logPath points to a log file
+     * @param logPath points to a log path
      * @return LogHandler
      */
     public LogHandler getLogHandler(String logPath) {
@@ -179,6 +179,18 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     public LogHandler getLogHandler(InputStream logStream) {
         LogHandler handler = getParser() == null ? new LogHandler(logStream) : new LogHandler(logStream,
                                                                                               getParser());
+        return handler;
+    }
+    
+    /**
+     * Creates a LogHandler
+     * 
+     * @param logStream represents a log file
+     * @return LogHandler
+     */
+    public LogHandler getLogHandler(File logFile) {
+        LogHandler handler = getParser() == null ? new LogHandler(logFile) : new LogHandler(logFile,
+                                                                                            getParser());
         return handler;
     }
 

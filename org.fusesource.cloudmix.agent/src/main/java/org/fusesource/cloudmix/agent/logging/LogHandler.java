@@ -1,6 +1,9 @@
 package org.fusesource.cloudmix.agent.logging;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,10 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Predicate;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.google.common.base.Predicate;
 
 
 /**
@@ -43,7 +46,25 @@ public class LogHandler {
         this.logParser = logParser;
         parseLog(logStream);
     }
+    
+    public LogHandler(File logFile) {
+        parseFromFile(logFile);
+    }
 
+    public LogHandler(File logFile, LogParser logParser) {
+        this.logParser = logParser;
+        parseFromFile(logFile);
+    }
+
+    private void parseFromFile(File logFile) {
+        try {
+            parseLog(toReader(new FileInputStream(logFile)));
+        } catch (FileNotFoundException ex) {
+            LOG.error(logFile.getAbsolutePath() + " can not be found");
+            throw new RuntimeException(ex);
+        }
+    }
+    
     /**
      * Gets all the records
      * 

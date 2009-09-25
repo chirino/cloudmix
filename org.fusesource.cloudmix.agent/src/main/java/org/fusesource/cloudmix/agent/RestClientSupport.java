@@ -81,12 +81,16 @@ public class RestClientSupport {
     }
 
     public void setRootUri(URI rootUri) throws URISyntaxException {
-        if (!rootUri.toString().endsWith("/")) {
+        setRootUri(rootUri, true);
+    }
+
+    public void setRootUri(URI rootUri, boolean appendSlash) throws URISyntaxException {
+        if (appendSlash && !rootUri.toString().endsWith("/")) {
             rootUri = new URI(rootUri.toString() + "/");
         }
         this.rootUri = rootUri;
     }
-
+    
 
     protected URI append(URI uri, String... s) throws URISyntaxException {
         StringBuffer buffer = new StringBuffer(uri.toString());

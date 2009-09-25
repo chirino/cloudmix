@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.agent.logging.LogRecord;
 import org.fusesource.cloudmix.agent.security.PasswordProvider;
 import org.fusesource.cloudmix.agent.security.SecurityUtils;
 import org.fusesource.cloudmix.common.GridClient;
@@ -136,6 +137,13 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         getTemplate().put(resource, agentDetails);
     }
 
+    public List<LogRecord> getLogRecords(Map<String, List<String>> queries)  throws URISyntaxException  {
+        WebResource.Builder resource =
+            resource(append(getRootUri(), "/log")).accept("application/xml");
+        // TODO: how to tell Jersey to get List<LogRecord> ?
+        return Collections.emptyList();
+    }
+    
     public AgentDetails getAgentDetails(String agentId) throws URISyntaxException {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
@@ -154,10 +162,10 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         }
     }
 
-    public InputStream getLogStream() throws URISyntaxException {
+    public InputStream getInputStream() throws URISyntaxException {
         WebResource.Builder resource =
                 resource(getRootUri()).accept("*/*");
-        return resource.get(ClientResponse.class).getEntityInputStream();
+        return resource.get(InputStream.class);
     }
     
     public void removeAgentDetails(String agentId) throws URISyntaxException {
