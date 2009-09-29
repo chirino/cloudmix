@@ -15,8 +15,8 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
-import org.apache.felix.karaf.gshell.admin.AdminService;
-import org.apache.felix.karaf.gshell.admin.Instance;
+import org.apache.felix.karaf.shell.admin.AdminService;
+import org.apache.felix.karaf.shell.admin.Instance;
 import org.easymock.EasyMock;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.common.GridClient;
