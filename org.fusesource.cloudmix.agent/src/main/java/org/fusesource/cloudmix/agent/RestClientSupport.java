@@ -14,11 +14,15 @@ import java.net.URLEncoder;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
-
+import org.fusesource.cloudmix.agent.security.PasswordProvider;
+import org.fusesource.cloudmix.agent.security.SecurityUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -27,10 +31,15 @@ import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
  * @version $Revision: 1.1 $
  */
 public class RestClientSupport {
-
+    private static final transient Log LOG = LogFactory.getLog(RestClientSupport.class);
+    
     private Client client;
     private URI rootUri;
     private RestTemplate template = new RestTemplate();
+    private String username;
+    private PasswordProvider passwordProvider;
+    private String credentials;
+    private boolean loggedNoPassword;
 
     public RestClientSupport() {
     }
@@ -109,5 +118,63 @@ public class RestClientSupport {
 
         }
         return new URI(buffer.toString());
+    }
+
+    public void setUsername(String u) {
+        username = u;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setPasswordProvider(PasswordProvider pp) {
+        passwordProvider = pp;
+    }
+
+    public PasswordProvider getPasswordProvider() {
+        return passwordProvider;
+    }
+
+    public void setCredentials(String c) {
+        credentials = c;
+    }
+
+    public String getCredentials() {
+        if (credentials == null) {
+            // Determine credentials from username/password
+            if (username == null) {
+                return null;
+            }
+            LOG.debug("Getting credentials for user " + username);
+            if (passwordProvider == null) {
+                if (!loggedNoPassword) {
+                    loggedNoPassword = true;
+                    LOG.warn("cannot provide credentials for user \"" + username
+                            + "\", no password provider");
+                }
+
+                return null;
+            }
+            char[] password = passwordProvider.getPassword();
+            if (password == null) {
+                if (!loggedNoPassword) {
+                    loggedNoPassword = true;
+                    LOG.warn("cannot provide credentials for user \"" + username
+                            + "\", no password provided");
+                }
+                return null;
+            }
+            credentials = SecurityUtils.toBasicAuth(username, password);
+        }
+
+        return credentials;
+    }
+
+    protected WebResource resource(URI uri) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("about to use URI: " + uri);
+        }
+        return getClient(getCredentials()).resource(uri);
     }
 }

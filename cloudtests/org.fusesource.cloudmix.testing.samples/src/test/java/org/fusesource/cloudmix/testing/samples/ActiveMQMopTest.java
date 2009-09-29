@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.sun.jersey.api.client.filter.LoggingFilter;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.ProcessClient;
@@ -22,12 +23,16 @@ import org.fusesource.cloudmix.testing.TestController;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
  * @version $Revision$
  */
 public class ActiveMQMopTest extends TestController {
+    private static final transient Log LOG = LogFactory.getLog(ActiveMQMopTest.class);
+
     protected FeatureDetails broker;
     protected FeatureDetails producer;
     protected FeatureDetails consumer;
@@ -55,7 +60,27 @@ public class ActiveMQMopTest extends TestController {
         Assert.assertNotNull("Should have a processClient for a producer", processClient);
         System.out.println("ProcessClient: " + processClient);
 
-        Thread.sleep(1000000);
+        // now lets get the log so far!
+        String log = null;
+        for (int i = 0; i < 20; i++) {
+            if (i > 0) {
+                Thread.sleep(5000);
+                LOG.info("Reattempting to get the log");
+            }
+            try {
+                log = processClient.directoryResource("output.log").get(String.class);
+                if (log != null) {
+                    break;
+                }
+            } catch (UniformInterfaceException e) {
+                LOG.warn("Failed to find log " + e);
+            }
+        }
+        Assert.assertNotNull("Should not have a null log!", log);
+        System.out.println("Process Log >>>>");
+        System.out.println(log);
+
+        Thread.sleep(10000);
     }
 
 

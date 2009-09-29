@@ -7,10 +7,15 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.common;
 
+import com.sun.jersey.api.client.WebResource;
+
+import java.net.URISyntaxException;
+
 /**
  * An API for interacting with a process created to execute a feature within an agent
  *
  * @version $Revision: 1.1 $
  */
 public interface ProcessClient {
+    WebResource directoryResource(String uri) throws URISyntaxException;
 }

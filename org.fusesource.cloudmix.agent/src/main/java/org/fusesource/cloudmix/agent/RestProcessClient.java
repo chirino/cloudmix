@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.fusesource.cloudmix.common.ProcessClient;
+import com.sun.jersey.api.client.WebResource;
 
 
 /**
@@ -24,6 +25,10 @@ public class RestProcessClient extends RestClientSupport implements ProcessClien
     public RestProcessClient(String rootUri) throws URISyntaxException {
         this.root = rootUri;
         setRootUri(new URI(rootUri));
+    }
+
+    public WebResource directoryResource(String uri) throws URISyntaxException {
+        return resource(append(getRootUri(), "directory/", uri));
     }
 
     @Override

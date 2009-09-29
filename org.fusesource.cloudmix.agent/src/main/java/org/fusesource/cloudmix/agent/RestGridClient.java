@@ -50,11 +50,6 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     private URI featuresUri;
     private URI profilesUri;
 
-    private String username;
-    private PasswordProvider passwordProvider;
-    private String credentials;
-    private boolean loggedNoPassword;
-
     public RestGridClient() {
     }
 
@@ -64,57 +59,6 @@ public class RestGridClient extends RestClientSupport implements GridClient {
 
     public RestGridClient(URI rootUri) throws URISyntaxException {
         setRootUri(rootUri);
-    }
-
-    public void setUsername(String u) {
-        username = u;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setPasswordProvider(PasswordProvider pp) {
-        passwordProvider = pp;
-    }
-
-    public PasswordProvider getPasswordProvider() {
-        return passwordProvider;
-    }
-
-    public void setCredentials(String c) {
-        credentials = c;
-    }
-
-    public String getCredentials() {
-        if (credentials == null) {
-            // Determine credentials from username/password
-            if (username == null) {
-                return null;
-            }
-            LOG.debug("Getting credentials for user " + username);
-            if (passwordProvider == null) {
-                if (!loggedNoPassword) {
-                    loggedNoPassword = true;
-                    LOG.warn("cannot provide credentials for user \"" + username
-                            + "\", no password provider");
-                }
-
-                return null;
-            }
-            char[] password = passwordProvider.getPassword();
-            if (password == null) {
-                if (!loggedNoPassword) {
-                    loggedNoPassword = true;
-                    LOG.warn("cannot provide credentials for user \"" + username
-                            + "\", no password provided");
-                }
-                return null;
-            }
-            credentials = SecurityUtils.toBasicAuth(username, password);
-        }
-
-        return credentials;
     }
 
     public String addAgentDetails(AgentDetails agentDetails) throws URISyntaxException {
@@ -368,13 +312,6 @@ public class RestGridClient extends RestClientSupport implements GridClient {
             profilesUri = getRootUri().resolve("profiles");
         }
         return profilesUri;
-    }
-
-    private WebResource resource(URI uri) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("about to use URI: " + uri);
-        }
-        return getClient(getCredentials()).resource(uri);
     }
 
 }
