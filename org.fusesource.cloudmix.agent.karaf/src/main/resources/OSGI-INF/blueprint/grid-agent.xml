@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
+           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:cm="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
 
-  <ext:property-placeholder persistent-id="org.fusesource.cloudmix.agent.karaf" placeholder-prefix="${" placeholder-suffix="}">
-    <ext:default-properties>
-      <ext:property name="initialPollingDelay" value="1000"/>
-      <ext:property name="maxFeatures" value="25"/>
-      <ext:property name="pollingPeriod" value="500"/>
-      <ext:property name="profile" value="*"/>
-      <ext:property name="controllerRootUri" value="http://localhost:8181/"/>
-    </ext:default-properties>
-  </ext:property-placeholder>
+  
+  <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
+  
+  <cm:property-placeholder persistent-id="org.fusesource.cloudmix.agent.karaf">
+    <cm:default-properties>
+      <cm:property name="initialPollingDelay" value="1000"/>
+      <cm:property name="maxFeatures" value="25"/>
+      <cm:property name="pollingPeriod" value="500"/>
+      <cm:property name="profile" value="*"/>
+      <cm:property name="controllerRootUri" value="http://localhost:8181/"/>
+      <cm:property name="homeDir" value="$[karaf.home]"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
 
   <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller" init-method="start">
     <property name="installerAgent" ref="karafAgent"/>
@@ -27,7 +32,7 @@
 
   <!-- use the following password provider for file based password-->
   <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.FilePasswordProvider">
-    <property name="passwordFile" value="${karaf.home}/etc/agent.password"/>
+    <property name="passwordFile" value="${homeDir}/etc/agent.password"/>
   </bean>
 
   <bean id="karafAgent" class="org.fusesource.cloudmix.agent.karaf.KarafAgent" init-method="init">
@@ -36,8 +41,8 @@
     <property name="adminService" ref="adminService"/>
     <property name="maxFeatures" value="${maxFeatures}"/>
     <property name="profile" value="${profile}"/>
-    <property name="detailsPropertyFilePath" value="${karaf.home}/data/grid/agent.properties"/>
-    <property name="workDirectory" value="${karaf.home}/data/cloudmix"/>
+    <property name="detailsPropertyFilePath" value="${homeDir}/data/grid/agent.properties"/>
+    <property name="workDirectory" value="${homeDir}/data/cloudmix"/>
   </bean>
 
 
