@@ -18,7 +18,7 @@
     <property name="agentTimeout" value="1000"/>
   </bean>
 
-  <bean id="propertyEvaluator" class="org.fusesource.cloudmix.controller.properties.PropertyEvaluator">
+  <bean id="propertyEvaluator" class="org.fusesource.cloudmix.controller.properties.PropertiesEvaluator">
     <constructor-arg index="0" ref="gridController"/>
   </bean>
 </beans>
