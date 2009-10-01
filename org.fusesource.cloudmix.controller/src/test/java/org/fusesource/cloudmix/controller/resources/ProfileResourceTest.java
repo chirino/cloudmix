@@ -35,7 +35,7 @@ public class ProfileResourceTest extends TestCase {
     
     public void testGetProfileDetails() throws Exception {
         GridController gc = EasyMock.createMock(GridController.class);
-        EasyMock.expect(gc.getProfileDetails("aaa")).andReturn(new ProfileDetails("aaa"));
+        EasyMock.expect(gc.getProfile("aaa")).andReturn(new ProfileDetails("aaa"));
         EasyMock.replay(gc);
         
         ProfileResource pr = new ProfileResource(gc, "aaa");

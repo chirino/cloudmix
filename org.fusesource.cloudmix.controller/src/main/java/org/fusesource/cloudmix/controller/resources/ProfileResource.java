@@ -47,9 +47,14 @@ public class ProfileResource extends ResourceSupport {
         return new ProfileStatusResource(this);
     }
 
+    @Path("properties")
+    public PropertiesResource getProperties() {
+        return new PropertiesResource(this);
+    }
+
     @GET
     public ProfileDetails getProfileDetails() {
-        return controller.getProfileDetails(profileId);
+        return controller.getProfile(profileId);
     }
 
     @PUT

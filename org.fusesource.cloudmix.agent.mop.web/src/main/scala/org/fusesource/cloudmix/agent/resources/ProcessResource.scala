@@ -1,12 +1,12 @@
 package org.fusesource.cloudmix.agent.resources
 
-import _root_.org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
+import org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
 
-import _root_.com.sun.jersey.api.representation.Form
-import _root_.java.net.URI
-import _root_.javax.ws.rs.core.MediaType._
-import _root_.javax.ws.rs.core.{Response, HttpHeaders, UriInfo, UriBuilder, Context}
-import _root_.scala.collection.jcl.Conversions._
+import com.sun.jersey.api.representation.Form
+import java.net.URI
+import javax.ws.rs.core.MediaType._
+import javax.ws.rs.core.{Response, HttpHeaders, UriInfo, UriBuilder, Context}
+import scala.collection.jcl.Conversions._
 import javax.ws.rs.{Path, Consumes, POST, DELETE}
 import org.fusesource.cloudmix.agent.snippet.Agents
 

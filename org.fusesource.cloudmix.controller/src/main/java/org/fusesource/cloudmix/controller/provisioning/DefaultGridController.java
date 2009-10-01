@@ -8,7 +8,6 @@
 package org.fusesource.cloudmix.controller.provisioning;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -154,7 +153,7 @@ public class DefaultGridController implements GridController, GridClient {
         return agent.getHistory();
     }
 
-    public FeatureDetails getFeatureDetails(String featureId) {
+    public FeatureDetails getFeature(String featureId) {
         FeatureController rc = dataProvider.getFeature(featureId);
         if (rc == null) {
             throw new NotFoundException("Feature '" + featureId + "' does not exist");
@@ -279,7 +278,7 @@ public class DefaultGridController implements GridController, GridClient {
         dataProvider.addProfile(profileDetails.getId(), new ProfileController(this, profileDetails));
     }
 
-    public void removeProfile(ProfileDetails profile) throws URISyntaxException {
+    public void removeProfile(ProfileDetails profile) {
         String id = profile.getId();
         ObjectHelper.notNull(id, "profile.id");
         removeProfile(id);
@@ -312,12 +311,7 @@ public class DefaultGridController implements GridController, GridClient {
     }
 
     // TODO note the difference in APIs between this and getProfileDetails
-    public ProfileDetails getProfile(String id) throws URISyntaxException {
-        return getProfileDetails(id);
-    }
-
-    // TODO note the difference in APIs between this and getProfileDetails
-    public List<ProfileDetails> getProfiles() throws URISyntaxException {
+    public List<ProfileDetails> getProfiles() {
         return new ArrayList<ProfileDetails>(getProfileDetails());
     }
 
@@ -330,7 +324,7 @@ public class DefaultGridController implements GridController, GridClient {
         return answer;
     }
 
-    public ProfileDetails getProfileDetails(String profileId) {
+    public ProfileDetails getProfile(String profileId) {
         ProfileController rc = getProfileController(profileId);
         if (rc == null) {
             throw new NotFoundException("Profile '" + profileId + "' does not exist");
@@ -393,16 +387,16 @@ public class DefaultGridController implements GridController, GridClient {
 
     // GridClient API
     //-------------------------------------------------------------------------
-    public ProvisioningHistory pollAgentHistory(String agentId) throws URISyntaxException {
+    public ProvisioningHistory pollAgentHistory(String agentId) {
         // we are local so no need to poll
         return getAgentHistory(agentId);
     }
 
-    public List<FeatureDetails> getFeatures() throws URISyntaxException {
+    public List<FeatureDetails> getFeatures() {
         return new ArrayList<FeatureDetails>(getFeatureDetails());
     }
 
-    public void removeFeature(FeatureDetails feature) throws URISyntaxException {
+    public void removeFeature(FeatureDetails feature) {
         removeFeature(feature.getId());
     }
     

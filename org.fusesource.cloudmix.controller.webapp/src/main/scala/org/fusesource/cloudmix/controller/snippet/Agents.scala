@@ -4,14 +4,14 @@ import org.fusesource.cloudmix.common.dto.{AgentDetails}
 import org.fusesource.cloudmix.controller.resources._
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import _root_.net.liftweb.util.Helpers._
-import _root_.com.sun.jersey.lift.ResourceBean
-import _root_.com.sun.jersey.lift.Requests.uri
-import _root_.scala.xml._
-import _root_.scala.collection.jcl.Conversions._
-import _root_.java.util.ArrayList
-import _root_.java.util.Map.Entry
-import _root_.java.util.TreeMap
+import net.liftweb.util.Helpers._
+import com.sun.jersey.lift.ResourceBean
+import com.sun.jersey.lift.Requests.uri
+import scala.xml._
+import scala.collection.jcl.Conversions._
+import java.util.ArrayList
+import java.util.Map.Entry
+import java.util.TreeMap
 
 /**
  * Snippets for viewing agents

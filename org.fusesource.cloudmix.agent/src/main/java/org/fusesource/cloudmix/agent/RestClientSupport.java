@@ -18,6 +18,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.URIs;
+import org.fusesource.cloudmix.common.RuntimeURISyntaxException;
 import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
 import org.fusesource.cloudmix.agent.security.PasswordProvider;
 import org.fusesource.cloudmix.agent.security.SecurityUtils;
@@ -82,26 +84,26 @@ public class RestClientSupport {
         this.template = template;
     }
 
-    public URI getRootUri() throws URISyntaxException {
+    public URI getRootUri()  {
         if (rootUri == null) {
-            setRootUri(new URI(CloudmixHelper.getDefaultRootUrl()));
+            setRootUri(URIs.createURI(CloudmixHelper.getDefaultRootUrl()));
         }
         return rootUri;
     }
 
-    public void setRootUri(URI rootUri) throws URISyntaxException {
+    public void setRootUri(URI rootUri) {
         setRootUri(rootUri, true);
     }
 
-    public void setRootUri(URI rootUri, boolean appendSlash) throws URISyntaxException {
+    public void setRootUri(URI rootUri, boolean appendSlash) {
         if (appendSlash && !rootUri.toString().endsWith("/")) {
-            rootUri = new URI(rootUri.toString() + "/");
+            rootUri = URIs.createURI(rootUri.toString() + "/");
         }
         this.rootUri = rootUri;
     }
     
 
-    protected URI append(URI uri, String... s) throws URISyntaxException {
+    protected URI append(URI uri, String... s) {
         StringBuffer buffer = new StringBuffer(uri.toString());
         for (String s1 : s) {
             if (s1.contains("/")) {
@@ -111,13 +113,13 @@ public class RestClientSupport {
                     String urlEnString = URLEncoder.encode(s1, "UTF-8");
                     buffer.append(urlEnString);
                 } catch (Exception e) {
-                    throw new URISyntaxException(s1, e.toString());
+                    throw new RuntimeURISyntaxException(s1, e);
                 }
             }
 
 
         }
-        return new URI(buffer.toString());
+        return URIs.createURI(buffer.toString());
     }
 
     public void setUsername(String u) {

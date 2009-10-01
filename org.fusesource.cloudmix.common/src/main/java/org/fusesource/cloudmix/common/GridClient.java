@@ -7,61 +7,112 @@
  */
 package org.fusesource.cloudmix.common;
 
-import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 /**
+ * A client interface for working with the cloudmix grid.
+ * <p/>
+ * <ul>
+ * <li>
+ * a profile represents an environment (like development, testing, produciton) or can be
+ * a specific distributed test case which is isolated from other test cases
+ * </li>
+ * <li>
+ * a feature represents some code that is to be ran such as an executable jar, a war, an osgi bundle
+ * </li>
+ * <li>
+ * an agent runs some features
+ * </li>
+ * </ul>
+ *
  * @version $Revision$
  */
 public interface GridClient {
-    String addAgentDetails(AgentDetails agentDetails) throws URISyntaxException;
 
-    AgentDetails getAgentDetails(String agentId) throws URISyntaxException;
+    // Profiles
+    //-------------------------------------------------------------------------
 
-    Collection<AgentDetails> getAllAgentDetails() throws URISyntaxException;
+    List<ProfileDetails> getProfiles();
 
-    void removeAgentDetails(String agentId) throws URISyntaxException;
-    
-    void updateAgentDetails(String agentId, AgentDetails agentDetails) throws URISyntaxException;
+    ProfileDetails getProfile(String id);
 
-    ProvisioningHistory getAgentHistory(String agentId) throws URISyntaxException;
-
-    ProvisioningHistory pollAgentHistory(String agentId) throws URISyntaxException;
-
-    List<FeatureDetails> getFeatures() throws URISyntaxException;
-
-    void addFeature(FeatureDetails feature) throws URISyntaxException;
-
-    void removeFeature(String id) throws URISyntaxException;
-
-    void removeFeature(FeatureDetails feature) throws URISyntaxException;
-
-    void addAgentToFeature(String featureId,
-                           String agentId,
-                           Map<String, String> cfgOverridesProps) throws URISyntaxException;
-
-    void removeAgentFromFeature(String featureId, String agentId) throws URISyntaxException;
-
-    List<String> getAgentsAssignedToFeature(String id) throws URISyntaxException;
-
-    List<ProfileDetails> getProfiles() throws URISyntaxException;
-    ProfileDetails getProfile(String id) throws URISyntaxException;
-
-    void addProfile(ProfileDetails profile) throws URISyntaxException;
+    void addProfile(ProfileDetails profile);
 
     /**
      * Typically only used in testing where we create and destroy a profile per integration test
      */
-    void removeProfile(ProfileDetails profile) throws URISyntaxException;
-    void removeProfile(String profileId) throws URISyntaxException;
+    void removeProfile(ProfileDetails profile);
 
-    ProfileStatus getProfileStatus(String id) throws URISyntaxException;
+    void removeProfile(String profileId);
+
+    ProfileStatus getProfileStatus(String id);
+
+
+    // Agents
+    //-------------------------------------------------------------------------
+
+    String addAgentDetails(AgentDetails agentDetails);
+
+    AgentDetails getAgentDetails(String agentId);
+
+    Collection<AgentDetails> getAllAgentDetails();
+
+    void removeAgentDetails(String agentId);
+
+    void updateAgentDetails(String agentId, AgentDetails agentDetails);
+
+
+    // Features
+    //-------------------------------------------------------------------------
+
+    List<FeatureDetails> getFeatures();
+
+    FeatureDetails getFeature(String featureId);
+
+    void addFeature(FeatureDetails feature);
+
+    void removeFeature(String id);
+
+    void removeFeature(FeatureDetails feature);
+
+
+    // Provisitioning History
+    //-------------------------------------------------------------------------
+
+    /**
+     * Returns the current agent history
+     */
+    ProvisioningHistory getAgentHistory(String agentId);
+
+
+    /**
+     * Polls the agent history to see if its changed since the last time
+     * we looked - so could return null if nothing has changed since the last call
+     *
+     * @return the polling history if its changed or null
+     */
+    ProvisioningHistory pollAgentHistory(String agentId);
+
+
+
+    // Helper
+    //-------------------------------------------------------------------------
+
+    void addAgentToFeature(String featureId,
+                           String agentId,
+                           Map<String, String> cfgOverridesProps);
+
+    void removeAgentFromFeature(String featureId, String agentId);
+
+
+    List<String> getAgentsAssignedToFeature(String id);
+
 }

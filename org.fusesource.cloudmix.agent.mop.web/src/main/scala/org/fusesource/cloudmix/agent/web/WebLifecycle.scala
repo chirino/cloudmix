@@ -2,10 +2,10 @@ package org.fusesource.cloudmix.agent.web
 
 import java.lang.reflect.Field
 
-import _root_.javax.annotation.PostConstruct
-import _root_.javax.servlet.ServletContext
-import _root_.org.springframework.beans.factory.annotation.Autowired
-import _root_.org.springframework.stereotype.Component
+import javax.annotation.PostConstruct
+import javax.servlet.ServletContext
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import org.fusesource.cloudmix.scalautil.Logging
 import org.fusesource.cloudmix.agent.mop.MopAgent
 

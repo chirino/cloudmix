@@ -1,11 +1,10 @@
 package bootstrap.liftweb
 
-
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.http._
-import _root_.net.liftweb.sitemap._
-import _root_.net.liftweb.sitemap.Loc._
-import Helpers._
+import net.liftweb.util._
+import net.liftweb.util.Helpers._
+import net.liftweb.http._
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
 
 /**
  * A class that's instantiated early and run.  It allows the application

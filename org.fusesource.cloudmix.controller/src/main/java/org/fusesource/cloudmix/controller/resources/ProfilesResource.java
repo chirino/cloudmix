@@ -34,7 +34,7 @@ public class ProfilesResource extends ResourceSupport {
     
     @GET
     public ProfileDetailsList getProfileList() {
-        return new ProfileDetailsList(controller.getProfileDetails());
+        return new ProfileDetailsList(controller.getProfiles());
     }
     
     @Path("{id}")

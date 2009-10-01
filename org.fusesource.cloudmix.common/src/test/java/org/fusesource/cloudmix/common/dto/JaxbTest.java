@@ -45,6 +45,8 @@ public class JaxbTest extends TestCase {
         FeatureDetails details = new FeatureDetails();
         details.setId("serviceMixKernel");
         details.depends("activeMQBroker");
+        details.property("foo", "abc");
+        details.property("bar", "def");
         dump(details);
     }
 

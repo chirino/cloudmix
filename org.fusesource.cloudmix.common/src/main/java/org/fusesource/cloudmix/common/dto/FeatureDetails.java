@@ -36,6 +36,8 @@ public class FeatureDetails extends IdentifiedType {
     private List<Dependency> dependencies = new ArrayList<Dependency>();
     @XmlElement(name = "preferredMachine")
     private Set<String> preferredMachines = new HashSet<String>();
+    @XmlElement(name = "property")
+    private List<PropertyDefinition> properties = new ArrayList<PropertyDefinition>();
     @XmlAttribute
     private String [] packageTypes;
     @XmlAttribute(required = false)
@@ -83,6 +85,14 @@ public class FeatureDetails extends IdentifiedType {
         getPreferredMachines().add(preferredMachine);
     }
 
+    public void addProperty(String propertyId, String expression) {
+        addProperty(new PropertyDefinition(propertyId, expression));
+    }
+
+    public void addProperty(PropertyDefinition property) {
+        getProperties().add(property);
+    }
+
     // Fluent API
     //-------------------------------------------------------------------------
 
@@ -114,6 +124,11 @@ public class FeatureDetails extends IdentifiedType {
 
     public FeatureDetails ownsMachine() {
         setOwnsMachine(Boolean.TRUE);
+        return this;
+    }
+
+    public FeatureDetails property(String propertyId, String expression) {
+        addProperty(propertyId, expression);
         return this;
     }
 
@@ -220,5 +235,21 @@ public class FeatureDetails extends IdentifiedType {
      */
     public void setOwnedByProfileId(String ownedByProfileId) {
         this.ownedByProfileId = ownedByProfileId;
+    }
+
+    public List<PropertyDefinition> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Sets the configuration properties that should be created based on the provisioned features
+     * that can then be injected into other services. For example we may create a property which is
+     * the list of host names of all the features of A so that B can be injected with this list in its
+     * configuration
+     *
+     * @param properties the dynamic properties to be used for this feature
+     */
+    public void setProperties(List<PropertyDefinition> properties) {
+        this.properties = properties;
     }
 }

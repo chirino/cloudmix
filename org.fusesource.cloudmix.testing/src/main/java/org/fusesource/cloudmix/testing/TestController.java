@@ -27,7 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.agent.GridClients;
+import org.fusesource.cloudmix.common.GridClients;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.logging.LogRecord;
 import org.fusesource.cloudmix.common.CloudmixHelper;

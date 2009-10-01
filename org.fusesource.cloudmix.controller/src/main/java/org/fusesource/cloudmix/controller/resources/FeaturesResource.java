@@ -42,7 +42,7 @@ public class FeaturesResource extends ResourceSupport {
     @GET
     public FeatureDetailsList getFeaturesList() {
         LOG.debug("getFeatures() with controller: " + controller);
-        return new FeatureDetailsList(controller.getFeatureDetails());
+        return new FeatureDetailsList(controller.getFeatures());
     }
 
     @Path("{featureId}")

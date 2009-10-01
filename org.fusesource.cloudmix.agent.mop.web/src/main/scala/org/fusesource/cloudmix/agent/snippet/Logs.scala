@@ -1,11 +1,11 @@
 package org.fusesource.cloudmix.agent.snippet
 
-import _root_.org.fusesource.cloudmix.scalautil.TextFormatting._
+import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import _root_.com.sun.jersey.lift.ResourceBean
-import _root_.net.liftweb.util.Helpers._
-import _root_.scala.xml._
-import _root_.scala.collection.jcl.Conversions._
+import com.sun.jersey.lift.ResourceBean
+import net.liftweb.util.Helpers._
+import scala.xml._
+import scala.collection.jcl.Conversions._
 import java.io.File
 import org.fusesource.cloudmix.agent.resources.{LogResource, FileSystemResource, DirectoryResource}
 import org.fusesource.cloudmix.agent.logging.LogRecord

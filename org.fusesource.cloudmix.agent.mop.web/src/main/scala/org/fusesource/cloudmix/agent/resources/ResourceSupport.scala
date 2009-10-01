@@ -1,11 +1,11 @@
 package org.fusesource.cloudmix.agent.resources
 
 
-import _root_.org.fusesource.cloudmix.common.dto.AgentDetails
-import _root_.org.fusesource.cloudmix.scalautil.Logging
+import org.fusesource.cloudmix.common.dto.AgentDetails
+import org.fusesource.cloudmix.scalautil.Logging
 
-import _root_.com.sun.jersey.api.view.ImplicitProduces
-import _root_.javax.ws.rs.Produces
+import com.sun.jersey.api.view.ImplicitProduces
+import javax.ws.rs.Produces
 import org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
 import org.fusesource.mop.com.google.common.collect.ImmutableMap
 

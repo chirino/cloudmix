@@ -58,4 +58,8 @@ public class ObjectFactory {
     public Resource createResource() {
         return new Resource();
     }
+
+    public PropertyDefinition createPropertyDefinition() {
+        return new PropertyDefinition();
+    }
 }

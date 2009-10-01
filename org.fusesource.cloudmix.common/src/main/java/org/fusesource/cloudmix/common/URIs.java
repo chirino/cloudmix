@@ -5,36 +5,30 @@
  * The software in this package is published under the terms of the AGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.fusesource.cloudmix.agent;
+package org.fusesource.cloudmix.common;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.fusesource.cloudmix.common.ProcessClient;
-import org.fusesource.cloudmix.common.URIs;
-import com.sun.jersey.api.client.WebResource;
-
-
 /**
- * A client API for working with a process RESTfully
+ * A helper class for working with URIs
  *
  * @version $Revision: 1.1 $
  */
-public class RestProcessClient extends RestClientSupport implements ProcessClient {
-    private String root;
+public class URIs {
 
-    public RestProcessClient(String rootUri) {
-        this.root = rootUri;
-        setRootUri(URIs.createURI(rootUri));
+    /**
+     * Create a new URI without a checked exception
+     *
+     * @param uri the URI to create
+     * @return the newly created URI
+     * @throws RuntimeURISyntaxException if the String could not be turned into a URI 
+     */
+    public static URI createURI(String uri) {
+        try {
+            return new URI(uri);
+        } catch (URISyntaxException e) {
+            throw new RuntimeURISyntaxException(uri, e);
+        }
     }
-
-    public WebResource directoryResource(String uri) {
-        return resource(append(getRootUri(), "directory/", uri));
-    }
-
-    @Override
-    public String toString() {
-        return "RestProcessClient[rootUri: " + root + "]";
-    }
-
 }

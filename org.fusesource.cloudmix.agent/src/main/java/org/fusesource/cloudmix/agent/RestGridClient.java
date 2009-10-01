@@ -7,21 +7,15 @@
  */
 package org.fusesource.cloudmix.agent;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.logging.LogRecord;
-import org.fusesource.cloudmix.agent.security.PasswordProvider;
-import org.fusesource.cloudmix.agent.security.SecurityUtils;
 import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.GridClients;
 import org.fusesource.cloudmix.common.ProcessClient;
+import org.fusesource.cloudmix.common.URIs;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.AgentDetailsList;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
@@ -35,8 +29,12 @@ import org.fusesource.cloudmix.common.dto.ResourceList;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -53,21 +51,21 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     public RestGridClient() {
     }
 
-    public RestGridClient(String rootUri) throws URISyntaxException {
-        this(new URI(rootUri));
+    public RestGridClient(String rootUri) {
+        this(URIs.createURI(rootUri));
     }
 
-    public RestGridClient(URI rootUri) throws URISyntaxException {
+    public RestGridClient(URI rootUri) {
         setRootUri(rootUri);
     }
 
-    public String addAgentDetails(AgentDetails agentDetails) throws URISyntaxException {
+    public String addAgentDetails(AgentDetails agentDetails) {
         WebResource.Builder agentsResource = resource(getAgentsUri()).type("application/xml");
 
         ClientResponse response = agentsResource.post(ClientResponse.class, agentDetails);
         URI location = response.getLocation();
         if (location == null) {
-            throw new URISyntaxException("", "Error getting location from response!");
+            throw new IllegalArgumentException("No Location header returned from response!");
         }
         String path = location.getPath();
         // The agent id is the last part of that path..
@@ -75,26 +73,26 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return path;
     }
 
-    public void updateAgentDetails(String agentId, AgentDetails agentDetails) throws URISyntaxException {
+    public void updateAgentDetails(String agentId, AgentDetails agentDetails) {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
         getTemplate().put(resource, agentDetails);
     }
 
-    public List<LogRecord> getLogRecords(Map<String, List<String>> queries)  throws URISyntaxException  {
+    public List<LogRecord> getLogRecords(Map<String, List<String>> queries) {
         WebResource.Builder resource =
-            resource(append(getRootUri(), "/log")).accept("application/xml");
+                resource(append(getRootUri(), "/log")).accept("application/xml");
         // TODO: how to tell Jersey to get List<LogRecord> ?
         return Collections.emptyList();
     }
-    
-    public AgentDetails getAgentDetails(String agentId) throws URISyntaxException {
+
+    public AgentDetails getAgentDetails(String agentId) {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
         return getTemplate().get(resource, AgentDetails.class);
     }
 
-    public List<AgentDetails> getAllAgentDetails() throws URISyntaxException {
+    public List<AgentDetails> getAllAgentDetails() {
         WebResource.Builder resource = resource(getAgentsUri()).accept("application/xml");
 
         AgentDetailsList answer = getTemplate().get(resource, AgentDetailsList.class);
@@ -106,25 +104,25 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         }
     }
 
-    public InputStream getInputStream() throws URISyntaxException {
+    public InputStream getInputStream() {
         WebResource.Builder resource =
                 resource(getRootUri()).accept("*/*");
         return resource.get(InputStream.class);
     }
-    
-    public void removeAgentDetails(String agentId) throws URISyntaxException {
+
+    public void removeAgentDetails(String agentId) {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
         getTemplate().delete(resource);
     }
 
-    public ProvisioningHistory getAgentHistory(String agentId) throws URISyntaxException {
+    public ProvisioningHistory getAgentHistory(String agentId) {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId, "/history")).accept("application/xml");
         return getTemplate().get(resource, ProvisioningHistory.class);
     }
 
-    public ProvisioningHistory pollAgentHistory(String agentId) throws URISyntaxException {
+    public ProvisioningHistory pollAgentHistory(String agentId) {
         WebResource.Builder resource =
                 resource(append(getAgentsUri(), "/", agentId, "/history")).accept("application/xml");
         LOG.debug("polling agent history, agent id: " + agentId);
@@ -133,7 +131,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return getTemplate().poll(resource, ProvisioningHistory.class);
     }
 
-    public List<FeatureDetails> getFeatures() throws URISyntaxException {
+    public List<FeatureDetails> getFeatures() {
         WebResource.Builder resource = resource(getFeaturesUri()).accept("application/xml");
 
         FeatureDetailsList answer = getTemplate().get(resource, FeatureDetailsList.class);
@@ -145,20 +143,26 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         }
     }
 
-    public void addFeature(FeatureDetails feature) throws URISyntaxException {
+    public void addFeature(FeatureDetails feature) {
         String id = feature.getId();
         ObjectHelper.notNull(id, "FeatureDetails.id");
         WebResource.Builder resource = resource(append(getFeaturesUri(), "/", id)).type("application/xml");
         getTemplate().put(resource, feature);
     }
 
-    public void removeFeature(String id) throws URISyntaxException {
+    public void removeFeature(String id) {
         ObjectHelper.notNull(id, "feature.id");
         WebResource.Builder resource = resource(append(getFeaturesUri(), "/", id)).type("application/xml");
         getTemplate().delete(resource);
     }
 
-    public void removeFeature(FeatureDetails feature) throws URISyntaxException {
+    public FeatureDetails getFeature(String featureId) {
+        ObjectHelper.notNull(featureId, "featureId");
+        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId)).accept("application/xml");
+        return getTemplate().get(resource, FeatureDetails.class);
+    }
+
+    public void removeFeature(FeatureDetails feature) {
         String id = feature.getId();
         ObjectHelper.notNull(id, "feature.id");
         removeFeature(id);
@@ -166,21 +170,21 @@ public class RestGridClient extends RestClientSupport implements GridClient {
 
     public void addAgentToFeature(String featureId,
                                   String agentId,
-                                  Map<String, String> cfgOverridesProps) throws URISyntaxException {
+                                  Map<String, String> cfgOverridesProps) {
         WebResource.Builder resource =
                 resource(append(getFeaturesUri(), "/", featureId,
-                                "/agents/", agentId)).type("application/xml");
+                        "/agents/", agentId)).type("application/xml");
         getTemplate().put(resource);
     }
 
-    public void removeAgentFromFeature(String featureId, String agentId) throws URISyntaxException {
+    public void removeAgentFromFeature(String featureId, String agentId) {
         WebResource.Builder resource =
                 resource(append(getFeaturesUri(), "/", featureId,
-                                "/agents/", agentId)).type("application/xml");
+                        "/agents/", agentId)).type("application/xml");
         getTemplate().delete(resource);
     }
 
-    public List<String> getAgentsAssignedToFeature(String id) throws URISyntaxException {
+    public List<String> getAgentsAssignedToFeature(String id) {
         ObjectHelper.notNull(id, "feature.id");
         WebResource.Builder resource =
                 resource(append(getFeaturesUri(), "/", id, "/agents")).accept("application/xml");
@@ -192,9 +196,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return answer.getValues();
     }
 
-    public List<? extends ProcessClient> getProcessClientsForFeature(String featureId) 
-        throws URISyntaxException {
-        
+    public List<? extends ProcessClient> getProcessClientsForFeature(String featureId) {
+
         List<RestProcessClient> answer = new ArrayList<RestProcessClient>();
         List<AgentDetails> list = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
@@ -221,7 +224,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
                 LOG.debug("About to test feature URI: " + uri);
                 //System.out.println("Found: " + resource(new URI(uri)).accept("text/xml").get(String.class));
 
-                ResourceList resourceList = resource(new URI(uri)).accept("text/xml").get(ResourceList.class);
+                ResourceList resourceList = resource(URIs.createURI(uri)).accept("text/xml").get(ResourceList.class);
                 if (resourceList != null) {
                     System.out.println(uri + " Found: " + resourceList);
                     List<Resource> resources = resourceList.getResources();
@@ -242,23 +245,23 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     }
 
     private RestProcessClient createProcessClient(AgentDetails agentDetails, String featureId,
-                                                  Resource resource) throws URISyntaxException {
+                                                  Resource resource) {
         return new RestProcessClient(agentDetails.getHref() + resource.getHref());
     }
 
-    public ProfileDetails getProfile(String id) throws URISyntaxException {
+    public ProfileDetails getProfile(String id) {
         WebResource.Builder resource =
                 resource(append(getProfilesUri(), "/", id)).accept("application/xml");
         return getTemplate().get(resource, ProfileDetails.class);
     }
 
-    public ProfileStatus getProfileStatus(String id) throws URISyntaxException {
+    public ProfileStatus getProfileStatus(String id) {
         WebResource.Builder resource =
                 resource(append(getProfilesUri(), "/", id, "/status")).accept("application/xml");
         return getTemplate().get(resource, ProfileStatus.class);
     }
 
-    public List<ProfileDetails> getProfiles() throws URISyntaxException {
+    public List<ProfileDetails> getProfiles() {
         WebResource.Builder resource = resource(getProfilesUri()).accept("application/xml");
 
         ProfileDetailsList answer = getTemplate().get(resource, ProfileDetailsList.class);
@@ -270,20 +273,20 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         }
     }
 
-    public void addProfile(ProfileDetails profile) throws URISyntaxException {
+    public void addProfile(ProfileDetails profile) {
         String id = profile.getId();
         WebResource.Builder resource = resource(append(getProfilesUri(), "/", id)).type("application/xml");
         int status = getTemplate().put(resource, profile);
         System.out.println("updating profile " + profile + " status " + status);
     }
 
-    public void removeProfile(ProfileDetails profile) throws URISyntaxException {
+    public void removeProfile(ProfileDetails profile) {
         String id = profile.getId();
         ObjectHelper.notNull(id, "profile.id");
         removeProfile(id);
     }
 
-    public void removeProfile(String id) throws URISyntaxException {
+    public void removeProfile(String id) {
         ObjectHelper.notNull(id, "profile.id");
         WebResource.Builder resource = resource(append(getProfilesUri(), "/", id)).type("application/xml");
         getTemplate().delete(resource);
@@ -292,7 +295,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     // Properties
     //-------------------------------------------------------------------------
 
-    public URI getAgentsUri() throws URISyntaxException {
+    public URI getAgentsUri() {
         if (agentsUri == null) {
             agentsUri = getRootUri().resolve("agents");
             LOG.debug("agents URI : " + agentsUri);
@@ -300,14 +303,14 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return agentsUri;
     }
 
-    public URI getFeaturesUri() throws URISyntaxException {
+    public URI getFeaturesUri() {
         if (featuresUri == null) {
             featuresUri = getRootUri().resolve("features");
         }
         return featuresUri;
     }
 
-    public URI getProfilesUri() throws URISyntaxException {
+    public URI getProfilesUri() {
         if (profilesUri == null) {
             profilesUri = getRootUri().resolve("profiles");
         }

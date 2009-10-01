@@ -22,33 +22,14 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 /**
  * @version $Revision$
  */
-public interface GridController {
-    Collection<AgentDetails> getAllAgentDetails();
-    AgentDetails getAgentDetails(String agentId);
-    String addAgentDetails(AgentDetails agentDetails);
-    void removeAgentDetails(String agentId);
-    void updateAgentDetails(String agentId, AgentDetails agentDetails);
-    ProvisioningHistory getAgentHistory(String agentId);
+public interface GridController extends GridClient {
 
-    void addFeature(FeatureDetails featureDetails);
-    void removeFeature(String featureId);    
-    List<String> getAgentsAssignedToFeature(String featureId);
     List<String> getAgentsAssignedToFeature(String featureId, String profileId, boolean onlyIfDeployed);
-    void addAgentToFeature(String featureId, String agentId, Map<String, String> cfgOverridesProps);
-    void removeAgentFromFeature(String featureId, String agentId); 
 
-    Collection<FeatureDetails> getFeatureDetails();
-    FeatureDetails getFeatureDetails(String featureId);    
-    
+
     long getAgentTimeout();
     FeatureController getFeatureController(String featureId);
     FeatureController getFeatureController(Dependency dependency);
     int getFeatureInstanceCount(String id, String profileId, boolean onlyIfDeployed);
-    
-    void addProfile(ProfileDetails profileDetails);
-    void removeProfile(String profileId);
-    Collection<ProfileDetails> getProfileDetails();
-    ProfileDetails getProfileDetails(String profileId);
 
-    ProfileStatus getProfileStatus(String profileId);
 }

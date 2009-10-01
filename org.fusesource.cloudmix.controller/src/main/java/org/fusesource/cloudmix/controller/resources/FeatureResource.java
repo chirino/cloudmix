@@ -41,7 +41,7 @@ public class FeatureResource extends ResourceSupport {
 
     @GET
     public FeatureDetails getFeatureDetails() {
-        return controller.getFeatureDetails(featureId);
+        return controller.getFeature(featureId);
     }
 
     @PUT

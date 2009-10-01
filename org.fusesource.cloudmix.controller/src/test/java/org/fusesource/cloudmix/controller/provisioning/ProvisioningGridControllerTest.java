@@ -788,7 +788,7 @@ public class ProvisioningGridControllerTest extends TestCase {
         assertEquals(ProvisioningAction.INSTALL_COMMAND, ftToCmdMap.get("f23"));
         
         // now remove the feature that was in both profiles
-        pgc.getProfileDetails("prof2").getFeatures().remove(0);
+        pgc.getProfile("prof2").getFeatures().remove(0);
 
         pgc.call(); // Do the actual work
         

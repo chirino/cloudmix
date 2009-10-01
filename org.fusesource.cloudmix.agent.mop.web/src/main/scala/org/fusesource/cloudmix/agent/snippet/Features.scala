@@ -1,6 +1,6 @@
 package org.fusesource.cloudmix.agent.snippet
 
-import _root_.scala.collection.jcl.Conversions._
+import scala.collection.jcl.Conversions._
 import org.fusesource.cloudmix.agent.resources.{FeatureResource, FeaturesResource}
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 import org.fusesource.cloudmix.scalautil.Collections._

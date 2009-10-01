@@ -1,17 +1,17 @@
 package org.fusesource.cloudmix.agent.snippet
 
-import _root_.org.fusesource.cloudmix.common.dto.AgentDetails
-import _root_.org.fusesource.cloudmix.agent.mop.MopProcess
-import _root_.org.fusesource.cloudmix.agent.resources.{ProcessResource, ResourceSupport}
-import _root_.org.fusesource.cloudmix.scalautil.TextFormatting._
+import org.fusesource.cloudmix.common.dto.AgentDetails
+import org.fusesource.cloudmix.agent.mop.MopProcess
+import org.fusesource.cloudmix.agent.resources.{ProcessResource, ResourceSupport}
+import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import _root_.com.sun.jersey.lift.Requests.uri
-import _root_.com.sun.jersey.lift.ResourceBean
-import _root_.java.util.TreeMap
-import _root_.java.util.Map.Entry
-import _root_.net.liftweb.util.Helpers._
-import _root_.scala.xml._
-import _root_.scala.collection.jcl.Conversions._
+import com.sun.jersey.lift.Requests.uri
+import com.sun.jersey.lift.ResourceBean
+import java.util.TreeMap
+import java.util.Map.Entry
+import net.liftweb.util.Helpers._
+import scala.xml._
+import scala.collection.jcl.Conversions._
 
 /**
  * Snippets for viewing agents

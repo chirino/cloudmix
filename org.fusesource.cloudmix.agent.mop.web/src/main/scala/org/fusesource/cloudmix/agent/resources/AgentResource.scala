@@ -4,8 +4,8 @@ import javax.annotation.PostConstruct
 import javax.ws.rs.core.{UriInfo, Context}
 import org.fusesource.cloudmix.agent.mop.MopAgent
 
-import _root_.com.sun.jersey.spi.inject.Inject
-import _root_.javax.ws.rs.{Path}
+import com.sun.jersey.spi.inject.Inject
+import javax.ws.rs.{Path}
 /**
  * Represents the MOP Agent's resource
  *
