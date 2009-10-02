@@ -8,9 +8,9 @@
 package org.fusesource.cloudmix.controller.provisioning;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,10 +23,10 @@ import com.sun.jersey.api.NotFoundException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.ControllerDataProvider;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.URIs;
 import org.fusesource.cloudmix.common.controller.AgentController;
 import org.fusesource.cloudmix.common.controller.FeatureController;

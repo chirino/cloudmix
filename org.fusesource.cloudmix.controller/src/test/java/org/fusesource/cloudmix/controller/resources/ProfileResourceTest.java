@@ -16,12 +16,12 @@ import javax.ws.rs.PUT;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
+import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
-import org.fusesource.cloudmix.controller.properties.ExpressionFactory;
 import org.fusesource.cloudmix.controller.properties.Expression;
-import org.fusesource.cloudmix.agent.RestGridClient;
+import org.fusesource.cloudmix.controller.properties.ExpressionFactory;
+import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
 
 public class ProfileResourceTest extends TestCase {
     PropertiesEvaluator pe = new PropertiesEvaluator(new RestGridClient(), new ExpressionFactory() {

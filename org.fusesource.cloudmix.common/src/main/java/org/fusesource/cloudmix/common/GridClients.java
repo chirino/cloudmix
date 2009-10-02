@@ -7,13 +7,14 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.common;
 
-import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.dto.Dependency;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+
 
 
 /**
@@ -29,7 +30,8 @@ public final class GridClients {
     /**
      * Returns the agents currently assigned to the given feature
      */
-    public static List<AgentDetails> getAgentDetailsAssignedToFeature(GridClient gridClient, String featureId) {
+    public static List<AgentDetails> getAgentDetailsAssignedToFeature(GridClient gridClient, 
+                                                                      String featureId) {
 
         List<String> agentIds = gridClient.getAgentsAssignedToFeature(featureId);
         List<AgentDetails> answer = new ArrayList<AgentDetails>();
@@ -46,7 +48,8 @@ public final class GridClients {
     /**
      * Returns the feature details for the given profile
      */
-    public static List<FeatureDetails> getFeatureDetails(GridClient gridClient, ProfileDetails profileDetails) {
+    public static List<FeatureDetails> getFeatureDetails(GridClient gridClient,
+                                                         ProfileDetails profileDetails) {
         List<FeatureDetails> answer = new ArrayList<FeatureDetails>();
         if (profileDetails != null) {
             List<Dependency> list = profileDetails.getFeatures();

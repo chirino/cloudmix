@@ -7,7 +7,6 @@
  */
 package org.fusesource.cloudmix.agent.karaf;
 
-import static org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper.merge;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +37,7 @@ import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
+import static org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper.merge;
 
 public class KarafAgent extends InstallerAgent {
 

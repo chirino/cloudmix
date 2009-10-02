@@ -15,5 +15,5 @@ import java.util.Map;
  * @version $Revision: 1.1 $
  */
 public interface Expression {
-    Object evaluate(Map<String,Object> variables);
+    Object evaluate(Map<String, Object> variables);
 }

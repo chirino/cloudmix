@@ -8,7 +8,6 @@
 package org.fusesource.cloudmix.agent;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
@@ -17,15 +16,15 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import org.fusesource.cloudmix.common.CloudmixHelper;
-import org.fusesource.cloudmix.common.URIs;
-import org.fusesource.cloudmix.common.RuntimeURISyntaxException;
-import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
-import org.fusesource.cloudmix.common.jaxrs.PropertiesProvider;
-import org.fusesource.cloudmix.agent.security.PasswordProvider;
-import org.fusesource.cloudmix.agent.security.SecurityUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.agent.security.PasswordProvider;
+import org.fusesource.cloudmix.agent.security.SecurityUtils;
+import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.RuntimeURISyntaxException;
+import org.fusesource.cloudmix.common.URIs;
+import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
+import org.fusesource.cloudmix.common.jaxrs.PropertiesProvider;
 
 
 /**
@@ -52,7 +51,7 @@ public class RestClientSupport {
         return "RestClient[rootUri: " + rootUri + "]";
     }
 
-    public Client getClient(String credentials) {
+    public Client getClient(String credential) {
         //TODO: find a way around the classloader magic to get this working in Karaf 
         ClassLoader old = Thread.currentThread().getContextClassLoader();
         try {
@@ -64,8 +63,8 @@ public class RestClientSupport {
                 config.getClasses().add(PropertiesProvider.class);
 
                 client = Client.create(config);
-                if (credentials != null) {
-                    client.addFilter(new AuthClientFilter(credentials));
+                if (credential != null) {
+                    client.addFilter(new AuthClientFilter(credential));
                 }
             }
         } finally {
@@ -97,11 +96,11 @@ public class RestClientSupport {
         setRootUri(rootUri, true);
     }
 
-    public void setRootUri(URI rootUri, boolean appendSlash) {
-        if (appendSlash && !rootUri.toString().endsWith("/")) {
-            rootUri = URIs.createURI(rootUri.toString() + "/");
+    public void setRootUri(URI rooturi, boolean appendSlash) {
+        if (appendSlash && !rooturi.toString().endsWith("/")) {
+            rooturi = URIs.createURI(rooturi.toString() + "/");
         }
-        this.rootUri = rootUri;
+        this.rootUri = rooturi;
     }
     
 

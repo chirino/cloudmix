@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.controller.properties;
 
-import org.fusesource.cloudmix.common.dto.PropertyDefinition;
 import scala.tools.nsc.InterpreterLoop;
 
 /**

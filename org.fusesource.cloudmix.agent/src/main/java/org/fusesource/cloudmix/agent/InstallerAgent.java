@@ -32,6 +32,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.sun.jersey.api.NotFoundException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.logging.LogHandler;
@@ -47,7 +49,6 @@ import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.sun.jersey.api.NotFoundException;
 
 
 /**

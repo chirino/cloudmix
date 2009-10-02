@@ -7,6 +7,12 @@
  */
 package org.fusesource.cloudmix.common.controller;
 
+import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.Dependency;
@@ -15,11 +21,6 @@ import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.net.URI;
 
 class MockGridController implements GridController {
 

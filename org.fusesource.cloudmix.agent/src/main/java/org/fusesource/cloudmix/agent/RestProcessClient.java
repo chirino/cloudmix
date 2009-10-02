@@ -7,12 +7,10 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.agent;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.sun.jersey.api.client.WebResource;
 
 import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.common.URIs;
-import com.sun.jersey.api.client.WebResource;
 
 
 /**

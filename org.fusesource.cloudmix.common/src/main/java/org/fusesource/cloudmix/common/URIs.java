@@ -15,8 +15,11 @@ import java.net.URISyntaxException;
  *
  * @version $Revision: 1.1 $
  */
-public class URIs {
-
+public final class URIs {
+    private URIs() {
+        //never constructed
+    }
+    
     /**
      * Create a new URI without a checked exception
      *

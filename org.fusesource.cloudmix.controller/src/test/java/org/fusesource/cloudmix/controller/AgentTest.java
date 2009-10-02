@@ -14,8 +14,6 @@ import com.sun.jersey.api.client.Client;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @version $Revision$

@@ -7,6 +7,15 @@
  */
 package org.fusesource.cloudmix.agent;
 
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
@@ -28,14 +37,6 @@ import org.fusesource.cloudmix.common.dto.Resource;
 import org.fusesource.cloudmix.common.dto.ResourceList;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 
 /**
@@ -83,6 +84,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     public List<LogRecord> getLogRecords(Map<String, List<String>> queries) {
         WebResource.Builder resource =
                 resource(append(getRootUri(), "/log")).accept("application/xml");
+        assert resource != null;
         // TODO: how to tell Jersey to get List<LogRecord> ?
         return Collections.emptyList();
     }
@@ -159,7 +161,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
 
     public FeatureDetails getFeature(String featureId) {
         ObjectHelper.notNull(featureId, "featureId");
-        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId)).accept("application/xml");
+        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId))
+            .accept("application/xml");
         return getTemplate().get(resource, FeatureDetails.class);
     }
 
@@ -225,7 +228,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
                 LOG.debug("About to test feature URI: " + uri);
                 //System.out.println("Found: " + resource(new URI(uri)).accept("text/xml").get(String.class));
 
-                ResourceList resourceList = resource(URIs.createURI(uri)).accept("text/xml").get(ResourceList.class);
+                ResourceList resourceList = resource(URIs.createURI(uri)).accept("text/xml")
+                    .get(ResourceList.class);
                 if (resourceList != null) {
                     System.out.println(uri + " Found: " + resourceList);
                     List<Resource> resources = resourceList.getResources();
@@ -299,7 +303,8 @@ public class RestGridClient extends RestClientSupport implements GridClient {
      */
     public Properties getProperties(String profileId) {
         ObjectHelper.notNull(profileId, "profile.id");
-        WebResource.Builder resource = resource(append(getProfilesUri(), "/", profileId, "/properties")).accept("application/xml");
+        WebResource.Builder resource = resource(append(getProfilesUri(), "/", profileId, "/properties"))
+            .accept("application/xml");
         return getTemplate().get(resource, Properties.class);
     }
 

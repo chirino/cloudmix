@@ -7,7 +7,6 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.common;
 
-import java.net.URISyntaxException;
 
 /**
  * Avoid checked exceptions for bad URIs in the API

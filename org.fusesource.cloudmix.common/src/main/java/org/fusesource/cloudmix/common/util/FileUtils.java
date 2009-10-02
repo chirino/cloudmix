@@ -64,9 +64,11 @@ public final class FileUtils {
             LOGGER.warn("failed to delete file " + file);
         }
     }
-
     public static void copy(InputStream is, OutputStream os) throws IOException {
-        final byte[] buffer = new byte[BUFFER_SIZE];
+        copy(is, os, BUFFER_SIZE);
+    }
+    public static void copy(InputStream is, OutputStream os, int bufferSize) throws IOException {
+        final byte[] buffer = new byte[bufferSize];
 
         long total = 0;
         int n = is.read(buffer);

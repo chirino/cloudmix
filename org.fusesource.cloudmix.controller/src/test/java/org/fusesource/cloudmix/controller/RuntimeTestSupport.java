@@ -9,15 +9,16 @@ package org.fusesource.cloudmix.controller;
 
 import junit.framework.TestCase;
 
-import org.fusesource.cloudmix.common.jetty.WebServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.fusesource.cloudmix.common.jetty.WebServer;
 
 /**
  * @version $Revision$
  */
 public abstract class RuntimeTestSupport extends TestCase {
-    protected transient Log LOG = LogFactory.getLog(getClass());
+    protected static final Log LOG = LogFactory.getLog(RuntimeTestSupport.class);
 
     protected WebServer webServer;
 

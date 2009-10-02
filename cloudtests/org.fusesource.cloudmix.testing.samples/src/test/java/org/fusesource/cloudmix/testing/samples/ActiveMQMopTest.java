@@ -7,23 +7,20 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.testing.samples;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.filter.LoggingFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.testing.TestController;
-import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 
 /**
@@ -113,7 +110,8 @@ public class ActiveMQMopTest extends TestController {
         broker = createFeatureDetails("amq-test-broker",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version)
                 .maximumInstances("1")
-                .property("broker.url", "agents.map(\"tcp://\" + _.getHostname + \":61616\").mkString(\"failover:(\", \",\", \")\")");
+                .property("broker.url", "agents.map(\"tcp://\" + _.getHostname + \":61616\")"
+                          + ".mkString(\"failover:(\", \",\", \")\")");
 
         producer = createFeatureDetails("amq-test-producer",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.producer:" + version)

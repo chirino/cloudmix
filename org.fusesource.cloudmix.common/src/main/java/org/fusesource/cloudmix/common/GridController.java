@@ -7,17 +7,10 @@
  */
 package org.fusesource.cloudmix.common;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.fusesource.cloudmix.common.controller.FeatureController;
-import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.Dependency;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.common.dto.ProfileStatus;
-import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
 /**
  * @version $Revision$

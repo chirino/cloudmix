@@ -7,10 +7,11 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.controller.properties;
 
-import org.fusesource.cloudmix.common.dto.PropertyDefinition;
-import org.fusesource.cloudmix.controller.util.LRUCache;
 
 import java.util.Map;
+
+import org.fusesource.cloudmix.common.dto.PropertyDefinition;
+import org.fusesource.cloudmix.controller.util.LRUCache;
 
 /**
  * A cache of evaluators
@@ -20,7 +21,7 @@ import java.util.Map;
 public class ExpressionCache {
 
     private final ExpressionFactory expressionFactory;
-    private final Map<String,Expression> cache;
+    private final Map<String, Expression> cache;
 
     public ExpressionCache(ExpressionFactory expressionFactory) {
         this(5000, expressionFactory);
@@ -28,7 +29,7 @@ public class ExpressionCache {
 
     public ExpressionCache(int capacity, ExpressionFactory expressionFactory) {
         this.expressionFactory = expressionFactory;
-        this.cache = new LRUCache<String,Expression>(capacity);
+        this.cache = new LRUCache<String, Expression>(capacity);
     }
 
     public Expression getExpression(PropertyDefinition property) {

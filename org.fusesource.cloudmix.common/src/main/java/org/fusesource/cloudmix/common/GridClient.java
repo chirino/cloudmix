@@ -7,16 +7,17 @@
  */
 package org.fusesource.cloudmix.common;
 
+import java.net.URI;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.net.URI;
 
 /**
  * A client interface for working with the cloudmix grid.

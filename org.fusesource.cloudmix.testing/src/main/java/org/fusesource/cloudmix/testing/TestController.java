@@ -25,13 +25,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.ws.rs.core.UriBuilder;
 
+import com.sun.jersey.api.client.filter.LoggingFilter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fusesource.cloudmix.common.GridClients;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.agent.logging.LogRecord;
 import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.GridClients;
 import org.fusesource.cloudmix.common.ProcessClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.Dependency;
@@ -43,7 +45,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import com.sun.jersey.api.client.filter.LoggingFilter;
 
 
 /**
