@@ -18,9 +18,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * A polling spring bean which can poll any of the available agents such
- * as {@link InstallerAgent}
- *
+ * A polling spring bean which can poll any of the available agents such as
+ * {@link InstallerAgent}
+ * 
  * @version $Revision: 1.1 $
  */
 public class AgentPoller implements InitializingBean, DisposableBean {
@@ -29,6 +29,7 @@ public class AgentPoller implements InitializingBean, DisposableBean {
     private Timer timer;
     private long pollingPeriod = 1000L;
     private long initialPollingDelay = 500L;
+    private long lastConnectWarning = 0;
 
     public AgentPoller() {
     }
@@ -54,9 +55,23 @@ public class AgentPoller implements InitializingBean, DisposableBean {
         try {
             agent.call();
         } catch (ConnectException e) {
-            LOG.debug("polling attempt failed: depot server unavailable");
+            handleConnectException(e);
         } catch (Exception e) {
-            LOG.warn("Caught exception while polling Agent: ", e);
+            if (e.getCause() instanceof ConnectException) {
+                handleConnectException((ConnectException) e.getCause());
+            } else {
+                LOG.warn("Caught exception while polling Agent: ", e);
+            }
+        }
+    }
+
+    private void handleConnectException(ConnectException ce) {
+        long now = System.currentTimeMillis();
+        if (now - lastConnectWarning > 60000) {
+            LOG.warn("polling attempt failed: cloudmix server unavailable");
+            lastConnectWarning = now;
+        } else {
+            LOG.debug("polling attempt failed: cloudmix server unavailable");
         }
     }
 
@@ -102,6 +117,5 @@ public class AgentPoller implements InitializingBean, DisposableBean {
     public void setInstallerAgent(InstallerAgent agnt) {
         setAgent(agnt);
     }
-
 
 }
