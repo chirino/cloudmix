@@ -31,4 +31,29 @@ public class URIs {
             throw new RuntimeURISyntaxException(uri, e);
         }
     }
+
+    /**
+     * Appends the given URI paths together so that there is a / between each
+     * path
+     * @param paths
+     * @return
+     */
+    public static String appendPaths(String... paths) {
+        StringBuilder buffer = new StringBuilder();
+        int counter = 0;
+        for (String path : paths) {
+            if (counter++ > 0) {
+                buffer.append("/");
+            }
+            // TODO maybe a regex would be faster than these 2 loops?
+            while (path.startsWith("/")) {
+                path = path.substring(1);
+            }
+            while (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
+            buffer.append(path);
+        }
+        return buffer.toString();
+    }
 }

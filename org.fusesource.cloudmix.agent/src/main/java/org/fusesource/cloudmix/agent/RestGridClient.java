@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -292,6 +293,17 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         getTemplate().delete(resource);
     }
 
+
+    /**
+     * Returns the configuration properties for the given profile ID
+     */
+    public Properties getProperties(String profileId) {
+        ObjectHelper.notNull(profileId, "profile.id");
+        WebResource.Builder resource = resource(append(getProfilesUri(), "/", profileId, "/properties")).accept("application/xml");
+        return getTemplate().get(resource, Properties.class);
+    }
+
+
     // Properties
     //-------------------------------------------------------------------------
 
@@ -316,5 +328,4 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         }
         return profilesUri;
     }
-
 }

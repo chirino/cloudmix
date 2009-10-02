@@ -21,6 +21,7 @@ import org.fusesource.cloudmix.common.CloudmixHelper;
 import org.fusesource.cloudmix.common.URIs;
 import org.fusesource.cloudmix.common.RuntimeURISyntaxException;
 import org.fusesource.cloudmix.common.jaxrs.JAXBContextResolver;
+import org.fusesource.cloudmix.common.jaxrs.PropertiesProvider;
 import org.fusesource.cloudmix.agent.security.PasswordProvider;
 import org.fusesource.cloudmix.agent.security.SecurityUtils;
 import org.apache.commons.logging.Log;
@@ -60,6 +61,7 @@ public class RestClientSupport {
                 DefaultClientConfig config = new DefaultClientConfig();
                 config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, Boolean.FALSE);
                 config.getClasses().add(JAXBContextResolver.class);
+                config.getClasses().add(PropertiesProvider.class);
 
                 client = Client.create(config);
                 if (credentials != null) {

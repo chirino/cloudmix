@@ -7,25 +7,10 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.controller.properties;
 
-import org.fusesource.cloudmix.common.dto.PropertyDefinition;
-import scala.tools.nsc.InterpreterLoop;
-
 /**
+ * A factory of expressions which is language specific
  * @version $Revision: 1.1 $
  */
-public class PropertyEvaluator {
-    private final String expression;
-
-    public PropertyEvaluator(String expression) {
-        this.expression = expression;
-    }
-
-    public String getExpression() {
-        return expression;
-    }
-
-    public String getValue() {
-        InterpreterLoop interpreter = new InterpreterLoop();
-        return getExpression();
-    }
+public interface ExpressionFactory {
+    Expression createExpression(String expression);
 }

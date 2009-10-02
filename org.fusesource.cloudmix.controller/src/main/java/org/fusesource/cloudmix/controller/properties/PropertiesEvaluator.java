@@ -10,10 +10,14 @@ package org.fusesource.cloudmix.controller.properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.GridClient;
+import org.fusesource.cloudmix.common.GridClients;
+import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.common.dto.PropertyDefinition;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -23,10 +27,11 @@ public class PropertiesEvaluator {
     private static final transient Log LOG = LogFactory.getLog(PropertiesEvaluator.class);
 
     private final GridClient client;
-    private PropertyDefinitionCache cache = new PropertyDefinitionCache();
+    private final ExpressionCache cache;
 
-    public PropertiesEvaluator(GridClient client) {
+    public PropertiesEvaluator(GridClient client, ExpressionFactory expressionFactory) {
         this.client = client;
+        this.cache = new ExpressionCache(expressionFactory);
     }
 
     public Properties evaluateProperties() {
@@ -55,18 +60,28 @@ public class PropertiesEvaluator {
         List<PropertyDefinition> list = feature.getProperties();
         if (list != null) {
             for (PropertyDefinition property : list) {
-                PropertyEvaluator evaluator = cache.getEvaluator(property);
+                Expression evaluator = cache.getExpression(property);
                 if (evaluator != null) {
                     String id = property.getId();
                     if (answer.contains(id)) {
                         LOG.warn("Duplicate property definition id " + id + " from feature " + feature);
                     }
-                    String value = evaluator.getValue();
+                    Map<String, Object> variables = createVariables(feature);
+                    Object value = evaluator.evaluate(variables);
                     if (value != null) {
                         answer.put(id, value);
                     }
                 }
             }
         }
+    }
+
+    protected Map<String, Object> createVariables(FeatureDetails feature) {
+        Map<String, Object> answer = new HashMap<String, Object>();
+
+        List<AgentDetails> agents = GridClients.getAgentDetailsAssignedToFeature(client, feature.getId());
+        answer.put("agents", agents);
+
+        return answer;
     }
 }

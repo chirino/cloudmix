@@ -9,6 +9,7 @@ import com.sun.jersey.lift.ResourceBean
 import com.sun.jersey.lift.Requests.uri
 import scala.xml._
 import scala.collection.jcl.Conversions._
+import org.fusesource.cloudmix.common.URIs
 
 /**
  * Snippets for viewing features
@@ -29,7 +30,7 @@ object Features {
   }
 
   def agentFeatureLink(agent: AgentDetails, featureId: String): String = {
-    agent.getHref + "features/" + featureId
+    URIs.appendPaths(agent.getHref, "features", featureId)
   }
 }
 
@@ -68,9 +69,11 @@ class Features {
              if (name == null) {
                name = "agent"
              }
+             val featureLink = agentFeatureLink(agent, feature.getFeatureId)
+             println("featureLink is " + featureLink + " for agent " + agent + " with href " + agent.getHref)
              bind("agent", chooseTemplate("feature", "agent", xhtml),
                 "name" -> Text(name),
-                AttrBindParam("featureLink", Text(agentFeatureLink(agent, feature.getFeatureId)), "href"))
+                AttrBindParam("featureLink", Text(featureLink), "href"))
           })
 
 /*

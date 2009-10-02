@@ -6,6 +6,7 @@ import org.fusesource.cloudmix.agent.mop.MopAgent
 
 import com.sun.jersey.spi.inject.Inject
 import javax.ws.rs.{Path}
+
 /**
  * Represents the MOP Agent's resource
  *

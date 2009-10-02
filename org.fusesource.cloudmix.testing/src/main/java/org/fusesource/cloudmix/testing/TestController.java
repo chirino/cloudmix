@@ -43,8 +43,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-
-
+import com.sun.jersey.api.client.filter.LoggingFilter;
 
 
 /**
@@ -77,6 +76,7 @@ public abstract class TestController {
     protected String profileId;
     protected boolean provisioned;
     protected boolean destroyProfileAfter;
+    protected boolean logRestOperations;
 
 
     protected String getTestName() {
@@ -196,18 +196,6 @@ public abstract class TestController {
      */
     protected List<AgentDetails> getAgentsFor(String featureId) throws URISyntaxException {
         return GridClients.getAgentDetailsAssignedToFeature(getGridClient(), featureId);
-/*
-
-        List<String> agentIds = getGridClient().getAgentsAssignedToFeature(featureId);
-        List<AgentDetails> answer = new ArrayList<AgentDetails>();
-        for (String agentId : agentIds) {
-            AgentDetails agentDetails = getGridClient().getAgentDetails(agentId);
-            if (agentDetails != null) {
-                answer.add(agentDetails);
-            }
-        }
-        return answer;
-*/
     }
 
 
@@ -271,7 +259,11 @@ public abstract class TestController {
      */
     protected RestGridClient createGridController() throws URISyntaxException {
         System.out.println("About to create RestGridClient for: " + controllerUrl);
-        return new RestGridClient(controllerUrl);
+        RestGridClient answer = new RestGridClient(controllerUrl);
+        if (logRestOperations) {
+            answer.getClient(null).addFilter(new LoggingFilter());
+        }
+        return answer;
     }
 
 
@@ -358,6 +350,7 @@ public abstract class TestController {
         RestGridClient client = new RestGridClient(uri);
         return client.getLogRecords(queries);
     }
+    
     /**
      * Asserts that all the requested features have been provisioned properly
      */

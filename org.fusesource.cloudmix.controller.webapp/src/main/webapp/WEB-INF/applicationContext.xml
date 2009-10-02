@@ -18,7 +18,11 @@
     <property name="agentTimeout" value="1000"/>
   </bean>
 
+  <bean id="expressionFactory" class="org.fusesource.cloudmix.controller.properties.scala.ScalaExpressionFactory"/>
+
   <bean id="propertyEvaluator" class="org.fusesource.cloudmix.controller.properties.PropertiesEvaluator">
     <constructor-arg index="0" ref="gridController"/>
+    <constructor-arg index="1" ref="expressionFactory"/>
   </bean>
+
 </beans>

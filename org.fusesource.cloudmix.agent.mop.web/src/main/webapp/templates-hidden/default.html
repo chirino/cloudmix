@@ -16,7 +16,13 @@
   <div class="wrapper">
     <ul>
       <li class="webgen-menu-level1"><a href="/">Home</a></li>
-      <li class="webgen-menu-level1"><a href="/processes" title="The processes that this agent is running">Processes</a></li>
+      <li class="webgen-menu-level1">
+        <lift:templates.index>
+          <a template:cloudmixLink="/controller" title="The CloudMix Controller">Controller</a>
+        </lift:templates.index>
+      </li>
+      <li class="webgen-menu-level1"><a href="/processes" title="The processes that this agent is running">Processes</a>
+      </li>
       <li class="webgen-menu-level1"><a href="/features">Features</a></li>
       <li class="webgen-menu-level1"><a href="/properties" title="System Properties">Properties</a></li>
       <li class="webgen-menu-level1"><a href="/directory" title="Working Directory">Directory</a></li>

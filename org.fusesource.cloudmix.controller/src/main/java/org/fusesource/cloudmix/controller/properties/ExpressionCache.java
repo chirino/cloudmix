@@ -17,24 +17,26 @@ import java.util.Map;
  *
  * @version $Revision: 1.1 $
  */
-public class PropertyDefinitionCache {
+public class ExpressionCache {
 
-    private Map<String,PropertyEvaluator> cache;
+    private final ExpressionFactory expressionFactory;
+    private final Map<String,Expression> cache;
 
-    public PropertyDefinitionCache() {
-        this(5000);
+    public ExpressionCache(ExpressionFactory expressionFactory) {
+        this(5000, expressionFactory);
     }
 
-    public PropertyDefinitionCache(int capacity) {
-        this.cache = new LRUCache<String,PropertyEvaluator>(capacity);
+    public ExpressionCache(int capacity, ExpressionFactory expressionFactory) {
+        this.expressionFactory = expressionFactory;
+        this.cache = new LRUCache<String,Expression>(capacity);
     }
 
-    public PropertyEvaluator getEvaluator(PropertyDefinition property) {
+    public Expression getExpression(PropertyDefinition property) {
         String key = property.getExpression();
         synchronized (cache) {
-            PropertyEvaluator answer = cache.get(key);
+            Expression answer = cache.get(key);
             if (answer == null) {
-                answer = new PropertyEvaluator(key);
+                answer = expressionFactory.createExpression(key);
                 cache.put(key, answer);
             }
             return answer;

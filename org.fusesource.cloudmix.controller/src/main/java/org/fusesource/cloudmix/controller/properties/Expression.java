@@ -7,25 +7,13 @@
  **************************************************************************************/
 package org.fusesource.cloudmix.controller.properties;
 
-import org.fusesource.cloudmix.common.dto.PropertyDefinition;
-import scala.tools.nsc.InterpreterLoop;
+import java.util.Map;
 
 /**
+ * Represents an expression evaluated on the current variables
+ *
  * @version $Revision: 1.1 $
  */
-public class PropertyEvaluator {
-    private final String expression;
-
-    public PropertyEvaluator(String expression) {
-        this.expression = expression;
-    }
-
-    public String getExpression() {
-        return expression;
-    }
-
-    public String getValue() {
-        InterpreterLoop interpreter = new InterpreterLoop();
-        return getExpression();
-    }
+public interface Expression {
+    Object evaluate(Map<String,Object> variables);
 }

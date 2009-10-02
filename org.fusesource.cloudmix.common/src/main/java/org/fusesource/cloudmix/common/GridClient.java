@@ -16,6 +16,7 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.net.URI;
 
 /**
  * A client interface for working with the cloudmix grid.
@@ -37,6 +38,11 @@ import java.util.Map;
  */
 public interface GridClient {
 
+    /**
+     * Returns the root URI for accessing the controller
+     */
+    URI getRootUri();
+    
     // Profiles
     //-------------------------------------------------------------------------
 

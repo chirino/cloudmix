@@ -19,11 +19,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.URI;
 
 class MockGridController implements GridController {
 
     Map<String, FeatureController> fcs = new HashMap<String, FeatureController>();
     Map<String, Integer> featureInstancesCount = new HashMap<String, Integer>();
+
+    public URI getRootUri() {
+        return null;
+    }
 
     public void addFeature(FeatureDetails featureDetails) {
         fcs.put(featureDetails.getId(), new FeatureController(this, featureDetails));

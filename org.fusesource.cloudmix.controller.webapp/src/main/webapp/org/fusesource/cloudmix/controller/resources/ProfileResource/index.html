@@ -18,17 +18,20 @@
       <profile:description/>
     </p>
 
-    <p>
-      <a profile:propertiesLink="na" title="Property values for this feature">Configuration Properties</a>
-    </p>
+    <table width="100%">
+      <tr>
+        <td>
+          <a profile:propertiesLink="na" title="Property values for this feature">Configuration Properties</a>
+        </td>
+        <td align="right">
+          <form profile:action="na" method="post">
+            <input type="submit" name="kill" value="Kill this profile" onclick="return confirmDelete()"/>
+          </form>
+        </td>
+      </tr>
+    </table>
 
-    <p>
-    <form profile:action="na" method="post">
-      <input type="submit" name="kill" value="Kill this profile" onclick="return confirmDelete()"/>
-    </form>
-    </p>
-
-    <table>
+    <table width="100%">
       <tr>
         <th>Feature</th>
         <th>Provisioned?</th>

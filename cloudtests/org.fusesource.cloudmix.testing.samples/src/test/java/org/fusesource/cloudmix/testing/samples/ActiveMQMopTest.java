@@ -18,6 +18,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 import org.fusesource.cloudmix.testing.TestController;
 import org.junit.Assert;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -44,18 +45,31 @@ public class ActiveMQMopTest extends TestController {
         System.out.println("Worked!!!");
 
         List<AgentDetails> agents = getAgentsFor(broker);
-        Assert.assertTrue("has some agents", !agents.isEmpty());
+        assertTrue("has some agents", !agents.isEmpty());
 
         for (AgentDetails agent : agents) {
             System.out.println("Broker agent: " + agent.getHostname());
         }
 
+        System.out.println("Configuration Properties = {");
+        Properties properties = getConfigurationProperties();
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            System.out.println("  " + entry.getKey() + " " + entry.getValue());
+        }
+        System.out.println("}");
+
+        assertEquals("Number of configuration properties", 1, properties.size());
+        String brokerUrl = properties.getProperty("broker.url");
+        assertNotNull("should have broker.url configuration property", brokerUrl);
+        System.out.println("BrokerURL: " + brokerUrl);
+
+
 
         // show the processes
         List<? extends ProcessClient> producerProcesses = getProcessClientsFor(producer);
-        Assert.assertEquals("size of producer processes", 1, producerProcesses.size());
+        assertEquals("size of producer processes", 1, producerProcesses.size());
         ProcessClient processClient = producerProcesses.get(0);
-        Assert.assertNotNull("Should have a processClient for a producer", processClient);
+        assertNotNull("Should have a processClient for a producer", processClient);
         System.out.println("ProcessClient: " + processClient);
 
         // now lets get the log so far!
@@ -74,20 +88,26 @@ public class ActiveMQMopTest extends TestController {
                 LOG.warn("Failed to find log " + e);
             }
         }
-        Assert.assertNotNull("Should not have a null log!", log);
+        assertNotNull("Should not have a null log!", log);
         System.out.println("Process Log >>>>");
         System.out.println(log);
 
         Thread.sleep(10000);
     }
 
+    public Properties getConfigurationProperties() {
+        return gridClient.getProperties(profileId);
+    }
+
 
     protected void installFeatures() {
-        // TODO get this from system properties?
+/*
         Properties properties = System.getProperties();
         for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             System.out.println(" " + entry.getKey() + " = " + entry.getValue());
         }
+*/
+        // TODO get this from system properties?
         String version = "1.3-SNAPSHOT";
 
         broker = createFeatureDetails("amq-test-broker",
@@ -104,13 +124,5 @@ public class ActiveMQMopTest extends TestController {
                 .depends(broker).maximumInstances("3");
 
         addFeatures(broker, producer, consumer);
-    }
-
-    @Override
-    protected RestGridClient createGridController() throws URISyntaxException {
-        RestGridClient answer = super.createGridController();
-        answer.getClient(null).addFilter(new LoggingFilter());
-        return answer;
-
     }
 }

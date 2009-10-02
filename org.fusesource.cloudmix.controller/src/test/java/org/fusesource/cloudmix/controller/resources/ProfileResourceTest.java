@@ -19,10 +19,16 @@ import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
+import org.fusesource.cloudmix.controller.properties.ExpressionFactory;
+import org.fusesource.cloudmix.controller.properties.Expression;
 import org.fusesource.cloudmix.agent.RestGridClient;
 
 public class ProfileResourceTest extends TestCase {
-    PropertiesEvaluator pe = new PropertiesEvaluator(new RestGridClient());
+    PropertiesEvaluator pe = new PropertiesEvaluator(new RestGridClient(), new ExpressionFactory() {
+        public Expression createExpression(String expression) {
+            return null;
+        }
+    });
 
     public void testAnnotations() throws Exception {
         Class<ProfileResource> cls = ProfileResource.class;

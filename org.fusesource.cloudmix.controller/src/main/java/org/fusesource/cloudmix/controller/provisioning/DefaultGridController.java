@@ -10,6 +10,7 @@ package org.fusesource.cloudmix.controller.provisioning;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.ControllerDataProvider;
 import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.CloudmixHelper;
+import org.fusesource.cloudmix.common.URIs;
 import org.fusesource.cloudmix.common.controller.AgentController;
 import org.fusesource.cloudmix.common.controller.FeatureController;
 import org.fusesource.cloudmix.common.controller.ProfileController;
@@ -52,6 +55,10 @@ public class DefaultGridController implements GridController, GridClient {
     @Override
     public String toString() {
         return "DefaultGridController[agentTimout: " + agentTimeout + "]";
+    }
+
+    public URI getRootUri() {
+        return URIs.createURI(CloudmixHelper.getDefaultRootUrl());
     }
 
     public String addAgentDetails(AgentDetails details) {
