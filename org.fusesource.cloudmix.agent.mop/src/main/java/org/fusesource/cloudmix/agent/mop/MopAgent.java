@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
-import org.fusesource.mop.com.google.common.collect.ImmutableMap;
-import org.fusesource.mop.com.google.common.collect.Lists;
-import org.fusesource.mop.com.google.common.collect.Maps;
 
 /**
  * @version $Revision: 1.1 $

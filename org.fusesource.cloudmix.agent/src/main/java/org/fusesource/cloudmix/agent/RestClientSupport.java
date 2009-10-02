@@ -97,6 +97,9 @@ public class RestClientSupport {
     }
 
     public void setRootUri(URI rooturi, boolean appendSlash) {
+        if ("http://localhost:8181/".equals(rooturi.toString())) {
+            rooturi = URIs.createURI(CloudmixHelper.getDefaultRootUrl());
+        }
         if (appendSlash && !rooturi.toString().endsWith("/")) {
             rooturi = URIs.createURI(rooturi.toString() + "/");
         }
