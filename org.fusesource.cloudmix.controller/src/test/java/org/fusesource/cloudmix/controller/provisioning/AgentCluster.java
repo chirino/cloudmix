@@ -155,7 +155,7 @@ public class AgentCluster implements InitializingBean, DisposableBean {
      * Removes the given agent
      */
     public boolean removeAgent(InstallerAgent agent) {
-        System.out.println("Killing agent: " + agent);
+        LOG.info("Killing agent: " + agent);
         return agents.remove(agent);
     }
 
@@ -164,7 +164,7 @@ public class AgentCluster implements InitializingBean, DisposableBean {
      */
     public void removeAgents(Collection<InstallerAgent> someAgents) {
         this.agents.removeAll(someAgents);
-        System.out.println("Killing agents: " + someAgents);
+        LOG.info("Killing agents: " + someAgents);
     }
 
     public void dumpAgents() throws Exception {
@@ -174,24 +174,24 @@ public class AgentCluster implements InitializingBean, DisposableBean {
     }
 
     public void dumpAgent(InstallerAgent agent) throws Exception {
-        System.out.println("Agent: " + agent.getAgentId());
+        LOG.info("Agent: " + agent.getAgentId());
         ProvisioningHistory history = agent.getProvisioningHistory();
 
         Assert.assertNotNull("Should have a provision history for agent: " + agent, history);
         List<ProvisioningAction> list = history.getActions();
         for (ProvisioningAction action : list) {
-            System.out.println(">>>> " + action.getCommand()
+            LOG.info(">>>> " + action.getCommand()
                                + " " + action.getFeature()
                                + " " + action.getResource());
         }
-        System.out.println("Features installed: ");
+        LOG.info("Features installed: [");
         Set<String> currentFeatures = agent.getAgentDetails().getCurrentFeatures();
         if (currentFeatures != null) {
             for (String f : currentFeatures) {
-                System.out.println("      " + f);
+                LOG.info("      " + f);
             }
         }
-        System.out.println();
+        LOG.info("]");
     }
 
     public void afterPropertiesSet() throws Exception {

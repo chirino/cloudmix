@@ -7,7 +7,6 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
-import com.sun.jersey.spi.inject.Inject;
 import org.fusesource.cloudmix.common.GridClients;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
@@ -16,17 +15,13 @@ import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import java.util.List;
 import java.util.Properties;
+import java.util.Map;
 
 
-@Path("/properties")
-public class PropertiesResource extends ResourceSupport {
-    @Inject
-    private GridController controller;
-
-    @Inject
-    private PropertiesEvaluator propertiesEvaluator;
+public class PropertiesResource { // extends ResourceSupport {
 
     private ProfileResource profileResource;
 
@@ -35,8 +30,32 @@ public class PropertiesResource extends ResourceSupport {
     }
 
     @GET
+    @Produces("text/plain")
+    public String getPropertiesText() {
+        StringBuilder buffer = new StringBuilder();
+        Properties properties = getProperties();
+        for (Map.Entry entry : properties.entrySet()) {
+            buffer.append(entry.getKey());
+            buffer.append(" = ");
+            Object value = entry.getValue();
+            if (value instanceof Number) {
+                buffer.append(value);
+            }
+            else {
+                buffer.append('\"');
+                buffer.append(value);
+                buffer.append('\"');
+            }
+            buffer.append("\n");
+        }
+        return buffer.toString();
+    }
+
     public Properties getProperties() {
         ProfileDetails profile = profileResource.getProfileDetails();
+        GridController controller = profileResource.getController();
+        PropertiesEvaluator propertiesEvaluator = profileResource.getPropertiesEvaluator();
+
         List<FeatureDetails> features = GridClients.getFeatureDetails(controller, profile);
         return propertiesEvaluator.evaluateProperties(features);
     }

@@ -10,11 +10,15 @@ package org.fusesource.cloudmix.controller;
 import junit.framework.TestCase;
 
 import org.fusesource.cloudmix.common.jetty.WebServer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @version $Revision$
  */
 public abstract class RuntimeTestSupport extends TestCase {
+    protected transient Log LOG = LogFactory.getLog(getClass());
+
     protected WebServer webServer;
 
 
@@ -39,7 +43,7 @@ public abstract class RuntimeTestSupport extends TestCase {
         int port = 0;
         if (webServer != null) {
             port = webServer.getLocalPort();
-            System.out.println("Stopping the web server");
+            LOG.info("Stopping the web server");
             webServer.stop();
         }
         webServer = new WebServer();
@@ -47,7 +51,7 @@ public abstract class RuntimeTestSupport extends TestCase {
             webServer.setPort(port);
         }
         webServer.start();
-        System.out.println("Web Server restarted");
+        LOG.info("Web Server restarted");
     }
 
     protected int getPort() {

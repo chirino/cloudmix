@@ -23,6 +23,14 @@ object Profiles {
   def profileLink(profile: ProfileDetails): String = {
     uri("/profiles/" + profile.getId)
   }
+
+  def propertiesLink(profile: ProfileDetails): String = {
+    profileLink(profile) + "/properties"
+  }
+
+  def propertiesLink(resource: ProfileResource): String = {
+    profileLink(resource) + "/properties"
+  }
 }
 
 import Features._
@@ -39,6 +47,7 @@ class Profiles {
                     "name" -> asText(profile.getId),
                     "description" -> asMarkup(profile.getDescription),
                     AttrBindParam("action", Text(profileLink(profile)), "action"),
+                    AttrBindParam("propertiesLink", Text(propertiesLink(profile)), "href"),
                     AttrBindParam("link", Text(profileLink(profile)), "href"))
         }
 
@@ -57,6 +66,7 @@ class Profiles {
           "description" -> asMarkup(profile.getProfileDetails.getDescription),
           AttrBindParam("action", Text(profileLink(profile)), "action"),
           AttrBindParam("link", Text(profileLink(profile)), "href"),
+          AttrBindParam("propertiesLink", Text(propertiesLink(profile)), "href"),
 
 
           "feature" -> features.flatMap {

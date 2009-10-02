@@ -17,9 +17,9 @@ public class ProfilesResourceTest extends TestCase {
     public void testControllerAccessor() {
         ProfilesResource pr = new ProfilesResource();
         GridController gc = EasyMock.createNiceMock(GridController.class);
-        assertNotSame("Precondition failed", pr.controller, gc);
+        assertNotSame("Precondition failed", pr.getController(), gc);
         pr.setController(gc);
-        assertSame(gc, pr.controller);
+        assertSame(gc, pr.getController());
     }
     
     public void testGetProfile() {
@@ -28,8 +28,8 @@ public class ProfilesResourceTest extends TestCase {
         pr.setController(gc);
         
         ProfileResource res = pr.getProfile("123");
-        assertEquals("123", res.profileId);
-        assertSame(gc, res.controller);
+        assertEquals("123", res.getProfileId());
+        assertSame(gc, res.getController());
     }
 
 }

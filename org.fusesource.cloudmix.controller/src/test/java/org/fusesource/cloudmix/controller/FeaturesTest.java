@@ -35,7 +35,7 @@ public class FeaturesTest extends RuntimeTestSupport {
 
         Client client = new Client();
         String xml = client.resource(adminClient.getFeaturesUri()).accept("text/xml").get(String.class);
-        System.out.println("XMl: " + xml);
+        LOG.info("XMl: " + xml);
 
         List<String> agentsAssignedToFeature = adminClient.getAgentsAssignedToFeature("camelRouter-1.3.2.0");
         assertEquals(0, agentsAssignedToFeature.size());
@@ -57,7 +57,7 @@ public class FeaturesTest extends RuntimeTestSupport {
     }
 
     protected void logAgents() throws URISyntaxException {
-        System.out.println("Agents: " + adminClient.getAllAgentDetails());
+        LOG.info("Agents: " + adminClient.getAllAgentDetails());
     }
 
     protected void assertFeatureSize(int expectedSize, List<FeatureDetails> list) {

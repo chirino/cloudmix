@@ -14,11 +14,13 @@ import com.sun.jersey.api.client.Client;
 import org.fusesource.cloudmix.agent.InstallerAgent;
 import org.fusesource.cloudmix.agent.RestGridClient;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @version $Revision$
  */
-public class AgentTest extends RuntimeTestSupport {
+public class AgentTest extends RuntimeTestSupport {    
     protected InstallerAgent agent = new InstallerAgent();
     protected RestGridClient adminClient = new RestGridClient();
 
@@ -36,13 +38,13 @@ public class AgentTest extends RuntimeTestSupport {
 
         Client client = new Client();
         String xml = client.resource(adminClient.getAgentsUri()).accept("text/xml").get(String.class);
-        System.out.println("XMl: " + xml);
+        LOG.info("XMl: " + xml);
 
         String hostname = agent.getAgentDetails().getHostname();
 
         AgentDetails localMachine = null;
         for (AgentDetails machine : list) {
-            System.out.println("Machine: " + machine);
+            LOG.info("Machine: " + machine);
             if (hostname.equals(machine.getHostname())) {
                 if (localMachine == null) {
                     localMachine = machine;
@@ -54,7 +56,7 @@ public class AgentTest extends RuntimeTestSupport {
 
         assertNotNull("Should have found a local machine!", localMachine != null);
 
-        System.out.println("Local machine: " + localMachine);
+        LOG.info("Local machine: " + localMachine);
 
 
         // now lets sleep to force the timeout to kick in

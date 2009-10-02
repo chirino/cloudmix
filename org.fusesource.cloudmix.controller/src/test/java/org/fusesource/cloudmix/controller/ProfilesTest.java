@@ -38,11 +38,11 @@ public class ProfilesTest extends RuntimeTestSupport {
         assertProfileSize(2, adminClient.getProfiles());
         assertProfileExists(PROFILE_ID2);
 
-        System.out.println("Profiles: " + adminClient.getProfiles());
+        LOG.info("Profiles: " + adminClient.getProfiles());
 
         Client client = new Client();
         String xml = client.resource(adminClient.getProfilesUri()).accept("text/xml").get(String.class);
-        System.out.println("XML: " + xml);
+        LOG.info("XML: " + xml);
 
 
         adminClient.removeProfile(PROFILE_ID1);

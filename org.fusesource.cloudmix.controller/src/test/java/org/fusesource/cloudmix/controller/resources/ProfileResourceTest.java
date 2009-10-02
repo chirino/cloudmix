@@ -18,8 +18,12 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
+import org.fusesource.cloudmix.agent.RestGridClient;
 
 public class ProfileResourceTest extends TestCase {
+    PropertiesEvaluator pe = new PropertiesEvaluator(new RestGridClient());
+
     public void testAnnotations() throws Exception {
         Class<ProfileResource> cls = ProfileResource.class;
        
@@ -35,13 +39,14 @@ public class ProfileResourceTest extends TestCase {
     
     public void testGetProfileDetails() throws Exception {
         GridController gc = EasyMock.createMock(GridController.class);
+
         EasyMock.expect(gc.getProfile("aaa")).andReturn(new ProfileDetails("aaa"));
         EasyMock.replay(gc);
         
-        ProfileResource pr = new ProfileResource(gc, "aaa");
+        ProfileResource pr = new ProfileResource(gc, pe, "aaa");
         
-        assertEquals("aaa", pr.profileId);
-        assertSame(gc, pr.controller);
+        assertEquals("aaa", pr.getProfileId());
+        assertSame(gc, pr.getController());
         
         ProfileDetails pd = pr.getProfileDetails();
         assertEquals("aaa", pd.getId());
@@ -55,7 +60,7 @@ public class ProfileResourceTest extends TestCase {
         gc.addProfile(pd);
         EasyMock.replay(gc);
         
-        ProfileResource pr = new ProfileResource(gc, "123");
+        ProfileResource pr = new ProfileResource(gc, pe, "123");
         pr.addProfileDetails(pd);
         assertEquals("123", pd.getId());
         
@@ -67,7 +72,7 @@ public class ProfileResourceTest extends TestCase {
         gc.removeProfile("123");
         EasyMock.replay(gc);
         
-        ProfileResource pr = new ProfileResource(gc, "123");
+        ProfileResource pr = new ProfileResource(gc, pe, "123");
         pr.delete();
         
         EasyMock.verify(gc);         

@@ -27,15 +27,15 @@ public class MachineKeepAliveTest extends RuntimeTestSupport {
             client.resource(getRootUrl() + "agents").accept("application/xml");
         ClientResponse response = agentsResource.get(ClientResponse.class);
 
-        System.out.println("Response: " + response);
-        System.out.println("Status: " + response.getStatus());
-        System.out.println("Type: " + response.getType());
-        System.out.println("EntityTag: " + response.getEntityTag());
+        LOG.info("Response: " + response);
+        LOG.info("Status: " + response.getStatus());
+        LOG.info("Type: " + response.getType());
+        LOG.info("EntityTag: " + response.getEntityTag());
 
 
         AgentDetailsList list = response.getEntity(AgentDetailsList.class);
         assertNotNull("Should receive a machines list", list);
-        System.out.println("List: " + list);
+        LOG.info("List: " + list);
     }
 
     public void testKeepingMachineAlive() throws Exception {
@@ -44,19 +44,19 @@ public class MachineKeepAliveTest extends RuntimeTestSupport {
 
         AgentDetails details = new AgentDetails();
         ClientResponse response = agentsResource.post(ClientResponse.class, details);
-        System.out.println("Received status: " + response.getStatus());
+        LOG.info("Received status: " + response.getStatus());
 
         URI location = new URI(response.getLocation() + "/history");
         assertNotNull("Should have a location!", location);
 
-        System.out.println("Now polling: " + location);
+        LOG.info("Now polling: " + location);
         
         // now lets get the document from the location
         ProvisioningHistory history =
             client.resource(location).accept("application/xml").get(ProvisioningHistory.class);
         assertNotNull(history);
 
-        System.out.println("Received the new history: " + history);
+        LOG.info("Received the new history: " + history);
     }
 
     @Override

@@ -8,6 +8,7 @@
 package org.fusesource.cloudmix.controller.properties;
 
 import org.fusesource.cloudmix.common.dto.PropertyDefinition;
+//import scala.tools.nsc.InterpreterLoop;
 
 /**
  * @version $Revision: 1.1 $
@@ -24,6 +25,8 @@ public class PropertyEvaluator {
     }
 
     public String getValue() {
+        //InterpreterLoop interpreter = new InterpreterLoop();
+
         // TODO
         return getExpression();
     }
