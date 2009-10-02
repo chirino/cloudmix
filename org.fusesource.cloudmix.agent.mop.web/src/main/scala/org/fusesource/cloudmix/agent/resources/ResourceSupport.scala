@@ -7,7 +7,7 @@ import org.fusesource.cloudmix.scalautil.Logging
 import com.sun.jersey.api.view.ImplicitProduces
 import javax.ws.rs.Produces
 import org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
-import org.fusesource.mop.com.google.common.collect.ImmutableMap
+import java.util.Map
 
 /**
  * Base class for resources
@@ -23,6 +23,6 @@ abstract class ResourceSupport extends Logging {
     agent.getAgentDetails
   }
 
-  def processes : ImmutableMap[String,MopProcess] = agent.getProcesses()
+  def processes : Map[String,MopProcess] = agent.getProcesses()
 
 }
