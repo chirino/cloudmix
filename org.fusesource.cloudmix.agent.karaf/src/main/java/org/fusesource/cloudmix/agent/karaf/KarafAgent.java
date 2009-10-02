@@ -7,7 +7,16 @@
  */
 package org.fusesource.cloudmix.agent.karaf;
 
-import java.io.*;
+import static org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper.merge;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,14 +39,12 @@ import org.fusesource.cloudmix.common.dto.ConfigurationUpdate;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
 
-import static org.fusesource.cloudmix.agent.karaf.ConfigAdminHelper.merge;
-
 public class KarafAgent extends InstallerAgent {
 
     public static final String FEATURES_REPOSITORIES = "featuresRepositories";
     public static final String FEATURES_BOOT = "featuresBoot";
 
-    protected static final String VM_PROP_SMX_HOME = "servicemix.home";
+    protected static final String VM_PROP_SMX_HOME = "karaf.home";
 
     protected static final String AGENT_WORK_DIR = File.separator + "data" + File.separator + "cloudmix";
     protected static final String AGENT_PROPS_PATH_SUFFIX = "agent.properties";
@@ -181,6 +188,8 @@ public class KarafAgent extends InstallerAgent {
     protected void uninstallFeature(Feature feature) {
         LOGGER.info("Uninstalling CloudMix feature " + feature);
 
+        saveFeatureLog(feature);
+        
         Instance instance = adminService == null ? null : adminService.getInstance(getInstanceName(feature
             .getName()));
         if (instance != null) {
@@ -210,7 +219,6 @@ public class KarafAgent extends InstallerAgent {
                     featuresFile.delete();
                 }
                 feature.getAgentProperties().remove(FEATURE_FILE_KEY);
-
             } catch (Exception e) {
                 LOGGER.error("Error uninstalling feature " + featureName + ", exception " + e);
                 e.printStackTrace();
@@ -219,6 +227,36 @@ public class KarafAgent extends InstallerAgent {
         }
     }
 
+    private void saveFeatureLog(Feature feature) {
+        try {
+            File workDir = getWorkDirectory();
+            LOGGER.info("Copying feature log to " + workDir.getCanonicalPath() 
+                    + "/" + feature.getName());
+            
+            String path = System.getProperty(VM_PROP_SMX_HOME);
+            if (path == null) {
+                LOGGER.warn("Container home directory system property is not set,"
+                        + " feature log can not be copied");
+                return;
+            }
+            String featureName = feature.getName().replace(':', '_');
+            String featureLogPath = path + "/instances/" + featureName + "/data/log/karaf.log";
+            InputStream is = new FileInputStream(featureLogPath);
+            File outDir = new File(workDir.getCanonicalPath(), "/" + featureName);
+            outDir.mkdirs();
+            String outLogPath = outDir.getCanonicalPath() + "/karaf.log";
+            OutputStream os = new FileOutputStream(outLogPath);
+            // likely to work slower but better than invoking OS copy commands
+            FileUtils.copy(is, os, 1024 * 16);            
+        } catch (FileNotFoundException e) {
+            LOGGER.warn("Feature log is not available");
+            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.warn("Can not copy the feature log");
+            e.printStackTrace();
+        }
+    }
+    
     public String generateSMX4FeatureDoc(FeatureList fl) {
         StringBuilder sb = new StringBuilder().append("<features>\n");
         for (Feature feature : fl.getAllFeatures()) {
