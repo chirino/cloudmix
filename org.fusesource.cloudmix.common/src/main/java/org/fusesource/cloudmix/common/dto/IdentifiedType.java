@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlType(name = "identifiedType")
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class IdentifiedType {
+public abstract class IdentifiedType implements Comparable<IdentifiedType> {
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -69,5 +69,9 @@ public abstract class IdentifiedType {
      */
     public void setId(String value) {
         this.id = value;
+    }
+    
+    public int compareTo(IdentifiedType o) {
+        return id.compareTo(o.getId());
     }
 }

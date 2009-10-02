@@ -12,6 +12,7 @@ import scala.collection.jcl.Conversions._
 import java.util.ArrayList
 import java.util.Map.Entry
 import java.util.TreeMap
+import java.util.TreeSet
 
 /**
  * Snippets for viewing agents
@@ -50,8 +51,8 @@ class Agents {
       case agents: AgentsResource =>
         // TODO shame there's not a standard conversion to scala list for Collection
         // wonder if we can zap this in Scala 2.8?
-        def agentList = new ArrayList[AgentDetails](agents.getAgents)
-
+        def agentList = new ArrayList[AgentDetails](new TreeSet[AgentDetails](agents.getAgents))
+        
         agentList.flatMap {
           agent: AgentDetails =>
                   bind("agent", xhtml,
