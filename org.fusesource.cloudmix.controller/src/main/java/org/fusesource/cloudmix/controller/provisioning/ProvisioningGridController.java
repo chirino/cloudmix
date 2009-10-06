@@ -54,6 +54,9 @@ public class ProvisioningGridController extends DefaultGridController implements
     }
 
     public void destroy() throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("in destroy()");
+        }
         if (poller != null) {
             poller.destroy();
         }

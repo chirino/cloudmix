@@ -63,6 +63,10 @@ public class AgentPoller implements InitializingBean, DisposableBean {
                 LOG.warn("Caught exception while polling Agent: ", e);
             }
         }
+        catch (Error e) {
+            LOG.warn("Error in poll", e);
+            throw e;
+        }
     }
 
     private void handleConnectException(ConnectException ce) {
