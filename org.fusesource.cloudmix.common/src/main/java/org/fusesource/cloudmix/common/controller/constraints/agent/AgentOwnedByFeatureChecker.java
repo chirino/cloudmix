@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.controller.AgentController;
 import org.fusesource.cloudmix.common.controller.FeatureController;
 
@@ -19,23 +21,33 @@ import org.fusesource.cloudmix.common.controller.FeatureController;
  */
 public class AgentOwnedByFeatureChecker implements IAgentConstraintChecker {
 
+    private static final transient Log LOG = LogFactory.getLog(AgentOwnedByFeatureChecker.class);
+    
     public Collection<AgentController> applyConstraint(String profileId,
                                                        FeatureController fc,
                                                        Collection<AgentController> someCandidates) {
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtering on owned by: " + fc.getDetails().getId() + someCandidates);
+        List<AgentController> acceptedCandidates = null;
         if (someCandidates == null) {
-            return new ArrayList<AgentController>(0);
+            acceptedCandidates = new ArrayList<AgentController>(0);
         }
-        
-        if (profileId == null || fc == null || someCandidates.size() == 0) {
-            return new ArrayList<AgentController>(someCandidates);
+        else if (profileId == null || fc == null || someCandidates.size() == 0) {
+            acceptedCandidates =  new ArrayList<AgentController>(someCandidates);
         }
-        
-        List<AgentController> acceptedCandidates = new ArrayList<AgentController>();
-        for (AgentController ac : someCandidates) {
-            if (!ac.isLockedByOwningFeature()) {
-                acceptedCandidates.add(ac);
+        else
+        {
+            acceptedCandidates = new ArrayList<AgentController>();
+            for (AgentController ac : someCandidates) {
+                if (!ac.isLockedByOwningFeature()) {
+                    acceptedCandidates.add(ac);
+                }
             }
         }
+        
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtering on owned by: " + fc.getDetails().getId() + acceptedCandidates);
+        
         return acceptedCandidates;
     }
 

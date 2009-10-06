@@ -21,32 +21,38 @@ import org.fusesource.cloudmix.common.dto.Constants;
  * filters an agent list based their assigned feature
  */
 public class AgentProfileChecker implements IAgentConstraintChecker {
-    
+
     private static final transient Log LOG = LogFactory.getLog(AgentProfileChecker.class);
 
     public Collection<AgentController> applyConstraint(String profileId,
                                                        FeatureController fc,
                                                        Collection<AgentController> someCandidates) {
-        LOG.debug("filtering on profile: >" + profileId + "<");
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtering on profile: >" + profileId + "<");
 
+        List<AgentController> acceptedCandidates =null;
+        
         if (someCandidates == null) {
             return new ArrayList<AgentController>(0);
         }
-        
-        if (profileId == null || fc == null || someCandidates.size() == 0) {
+        else if (profileId == null || fc == null || someCandidates.size() == 0) {
             return new ArrayList<AgentController>(someCandidates);
         }
-        
-        List<AgentController> acceptedCandidates = new ArrayList<AgentController>();
-        for (AgentController ac : someCandidates) {
-            String agentProfile = ac.getDetails().getProfile();
-            if (Constants.WILDCARD_PROFILE_NAME.equals(agentProfile) || profileId.equals(agentProfile)) {
-                acceptedCandidates.add(ac);
+        else
+        {
+            acceptedCandidates = new ArrayList<AgentController>();
+            for (AgentController ac : someCandidates) {
+                String agentProfile = ac.getDetails().getProfile();
+                if (Constants.WILDCARD_PROFILE_NAME.equals(agentProfile) || profileId.equals(agentProfile)) {
+                    acceptedCandidates.add(ac);
+                }
             }
         }
+        
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtered on profile: >" + profileId + "<" + acceptedCandidates);
+    
         return acceptedCandidates;
     }
-    
-    
 
 }

@@ -32,13 +32,10 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-
 /**
  * @version $Revision$
  */
-public class ProvisioningGridController extends DefaultGridController implements InitializingBean,
-        DisposableBean,
-        Callable<Object> {
+public class ProvisioningGridController extends DefaultGridController implements InitializingBean, DisposableBean, Callable<Object> {
 
     private static final transient Log LOG = LogFactory.getLog(ProvisioningGridController.class);
 
@@ -75,8 +72,7 @@ public class ProvisioningGridController extends DefaultGridController implements
                 for (String fid : ac.getFeatures().toArray(new String[ac.getFeatures().size()])) {
                     removeAgentFromFeature(fid, agentId);
                     ProvisioningHistory history = ac.getHistory();
-                    history.addCfgUpdate(new AgentCfgUpdate(AgentCfgUpdate.PROPERTY_AGENT_FORCE_REGISTER,
-                            "true"));
+                    history.addCfgUpdate(new AgentCfgUpdate(AgentCfgUpdate.PROPERTY_AGENT_FORCE_REGISTER, "true"));
                 }
             }
         }
@@ -88,9 +84,7 @@ public class ProvisioningGridController extends DefaultGridController implements
             // TODO maybe something less drastic would do, like only uninstalling the features for which the
             // cfg overrides were modified
             if (profile.hasChanged()) {
-                LOG.info("profile '"
-                        + profile.getDetails().getId()
-                        + "' was updated: initiating redeploy...");
+                LOG.info("profile '" + profile.getDetails().getId() + "' was updated: initiating redeploy...");
 
                 List<String> toRemove = new ArrayList<String>();
                 for (Dependency dep : profile.getDetails().getFeatures()) {
@@ -110,23 +104,29 @@ public class ProvisioningGridController extends DefaultGridController implements
             List<FeatureController> deployableFeatures = profile.getDeployableFeatures();
             for (FeatureController fc : deployableFeatures) {
                 String featureId = decodeURL(fc.getId());
-                Collection<AgentController> agentTrackers = agentTrackers();
-                AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers);
+                try {
+                    Collection<AgentController> agentTrackers = agentTrackers();
+                    AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers);
 
+                    if (agent == null) {
+                        LOG.debug("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
 
-                if (agent == null) {
-                    LOG.debug("for feature: " + featureId + " no agent selected from possible agents " 
-                              + agentTrackers.size());
+                    } else {
+                        LOG.debug("for feature: " + featureId + " found adequate agent: " + agent.getDetails());
 
-                } else {
-                    LOG.debug("for feature: " + featureId + " found adequate agent: "
-                            + agent.getDetails());
-
-                    Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile,
-                            featureId);
-                    List<ProvisioningAction> list = addAgentToFeature(agent, fc.getId(), cfgOverridesProps);
-                    answer.addAll(list);
+                        Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile, featureId);
+                        List<ProvisioningAction> list = addAgentToFeature(agent, fc.getId(), cfgOverridesProps);
+                        answer.addAll(list);
+                    }
+                } catch (RuntimeException re) {
+                    LOG.error("Provisioning Error", re);
+                    throw re;
                 }
+                catch (Error e) {
+                    LOG.error("Provisioning Error", e);
+                    throw e;
+                }
+                
 
             }
 
@@ -152,9 +152,7 @@ public class ProvisioningGridController extends DefaultGridController implements
         // (... or only an unpublished one...) or
         for (AgentController ac : agentTrackers()) {
             String assignedProfile = ac.getDetails().getProfile();
-            boolean agentProfileGone = assignedProfile == null 
-                || hasProfileGone(assignedProfile) 
-                && !assignedProfile.equals(Constants.WILDCARD_PROFILE_NAME);
+            boolean agentProfileGone = assignedProfile == null || hasProfileGone(assignedProfile) && !assignedProfile.equals(Constants.WILDCARD_PROFILE_NAME);
             if (ac.getFeatures() != null && !ac.getFeatures().isEmpty()) {
                 String agentId = ac.getDetails().getId();
                 String[] featuresCopy = ac.getFeatures().toArray(new String[ac.getFeatures().size()]);
@@ -171,9 +169,7 @@ public class ProvisioningGridController extends DefaultGridController implements
                         if (featureController != null) {
                             deleteFeature = false;
                             FeatureDetails details = featureController.getDetails();
-                            if (details != null
-                                && details.getOwnedByProfileId() != null
-                                && hasProfileGone(details.getOwnedByProfileId())) {
+                            if (details != null && details.getOwnedByProfileId() != null && hasProfileGone(details.getOwnedByProfileId())) {
                                 deleteFeature = true;
                             }
                         }
@@ -196,8 +192,7 @@ public class ProvisioningGridController extends DefaultGridController implements
         return getProfileController(assignedProfile) == null;
     }
 
-    private Map<String, String> getFeatureConfigurationOverrides(ProfileController profile,
-                                                                 String featureId) {
+    private Map<String, String> getFeatureConfigurationOverrides(ProfileController profile, String featureId) {
         Map<String, String> cfgOverridesProps = null;
 
         LOG.debug("getFeatureConfigurationOverrides, relevant feature id: " + featureId);
@@ -205,8 +200,7 @@ public class ProvisioningGridController extends DefaultGridController implements
 
         for (Dependency dep : profile.getDetails().getFeatures()) {
             LOG.debug("getFeatureConfigurationOverrides, dep id: " + dep.getFeatureId());
-            LOG.debug("getFeatureConfigurationOverrides, dep overrides: "
-                    + (dep.getCfgUpdates() == null ? 0 : dep.getCfgUpdates().size()));
+            LOG.debug("getFeatureConfigurationOverrides, dep overrides: " + (dep.getCfgUpdates() == null ? 0 : dep.getCfgUpdates().size()));
 
             if (featureId.equals(decodeURL(dep.getFeatureId())) && dep.getCfgUpdates() != null) {
 

@@ -26,22 +26,28 @@ public class AgentLivenessChecker implements IAgentConstraintChecker {
     public Collection<AgentController> applyConstraint(String profileId,
                                                        FeatureController fc,
                                                        Collection<AgentController> someCandidates) {
-        LOG.debug("filtering on liveness...");
-
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtering on liveness...");
+        List<AgentController> acceptedCandidates;
+        
         if (someCandidates == null) {
-            return new ArrayList<AgentController>(0);
+            acceptedCandidates = new ArrayList<AgentController>(0);
         }
-        
-        if (profileId == null || fc == null || someCandidates.size() == 0) {
-            return new ArrayList<AgentController>(someCandidates);
+        else if (profileId == null || fc == null || someCandidates.size() == 0) {
+            acceptedCandidates = new ArrayList<AgentController>(someCandidates);
         }
-        
-        List<AgentController> acceptedCandidates = new ArrayList<AgentController>();
-        for (AgentController ac : someCandidates) {
-            if (!ac.isDeActivated()) {
-                acceptedCandidates.add(ac);
+        else
+        {
+            acceptedCandidates = new ArrayList<AgentController>();
+            for (AgentController ac : someCandidates) {
+                if (!ac.isDeActivated()) {
+                    acceptedCandidates.add(ac);
+                }
             }
         }
+        
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtered on Liveness: " + acceptedCandidates);
         return acceptedCandidates;
     }
     

@@ -10,6 +10,8 @@ package org.fusesource.cloudmix.common.controller.constraints.feature;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.controller.FeatureController;
 
 /**
@@ -18,21 +20,32 @@ import org.fusesource.cloudmix.common.controller.FeatureController;
  */
 public class FeatureDependancyChecker implements IFeatureConstraintChecker {
 
+    private static final transient Log LOG = LogFactory.getLog(FeatureDependancyChecker.class);
+    
     public List<FeatureController> applyConstraint(String profileId, List<FeatureController> someCandidates) {
+        
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtering on dependencies: >" + profileId + "< " + someCandidates);
+
+        List<FeatureController> acceptedCandidates = null;
+        
         if (someCandidates == null) {
-            return new ArrayList<FeatureController>(0);
+            acceptedCandidates = new ArrayList<FeatureController>(0);
+        }else if (profileId == null || someCandidates.size() == 0) {
+            acceptedCandidates = new ArrayList<FeatureController>(someCandidates);
         }
-        
-        if (profileId == null || someCandidates.size() == 0) {
-            return new ArrayList<FeatureController>(someCandidates);
-        }
-        
-        List<FeatureController> acceptedCandidates = new ArrayList<FeatureController>();
-        for (FeatureController fc : someCandidates) {
-            if (fc.areDependanciesInstanciated(profileId)) {
-                acceptedCandidates.add(fc);
+        else
+        {
+            acceptedCandidates = new ArrayList<FeatureController>();
+            for (FeatureController fc : someCandidates) {
+                if (fc.areDependanciesInstanciated(profileId)) {
+                    acceptedCandidates.add(fc);
+                }
             }
         }
+        
+        if(LOG.isDebugEnabled())
+            LOG.debug("filtered on dependencies: >" + profileId + "< " + acceptedCandidates);
         return acceptedCandidates;
     }
 
