@@ -472,7 +472,7 @@ public class DefaultGridController implements GridController, GridClient {
                 l.add(agent);
             }
         }
-        LOG.debug("Default GridController, live agents available: " + l.size());
+        //LOG.debug("Default GridController, live agents available: " + l.size());
         return l;
     }
     

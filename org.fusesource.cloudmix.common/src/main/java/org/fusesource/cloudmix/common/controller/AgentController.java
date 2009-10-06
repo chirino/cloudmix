@@ -8,6 +8,7 @@
 package org.fusesource.cloudmix.common.controller;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.fusesource.cloudmix.common.GridController;
@@ -18,7 +19,6 @@ import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
  * @version $Revision$
  */
 public class AgentController {
-    
 
     AgentDetails details;
     ProvisioningHistory history;
@@ -28,8 +28,8 @@ public class AgentController {
     final Set<String> features = new HashSet<String>();
 
     private final GridController grid;
-    
-    public AgentController(GridController aGrid, AgentDetails someDetails) {        
+
+    public AgentController(GridController aGrid, AgentDetails someDetails) {
         grid = aGrid;
         details = someDetails;
         deActivated = false;
@@ -42,18 +42,18 @@ public class AgentController {
     public void setDetails(AgentDetails details) {
         this.details = details;
     }
-    
+
     public boolean isDeActivated() {
         return deActivated;
     }
 
     /**
-     * only to be used when the represented agent has to be taken off the grid permanently
+     * only to be used when the represented agent has to be taken off the grid
+     * permanently
      */
     public void deActivate() {
         deActivated = true;
     }
-
 
     public ProvisioningHistory getHistory() {
         return history;
@@ -95,8 +95,7 @@ public class AgentController {
         }
         return false;
     }
-    
-    
+
     public boolean isPackageSupported(String packageType) {
         for (String testType : getDetails().getSupportPackageTypes()) {
             if (packageType.compareTo(testType) == 0) {
@@ -105,7 +104,7 @@ public class AgentController {
         }
         return false;
     }
-    
+
     public boolean areAllPackagesSupported(String[] packageTypes) {
         for (String packageType : packageTypes) {
             if (!isPackageSupported(packageType)) {
@@ -113,5 +112,9 @@ public class AgentController {
             }
         }
         return true;
+    }
+
+    public String toString() {
+        return "AgentController for " + details.getId();
     }
 }

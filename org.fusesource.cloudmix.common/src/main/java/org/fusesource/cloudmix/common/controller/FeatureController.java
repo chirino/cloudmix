@@ -32,8 +32,7 @@ import org.fusesource.cloudmix.common.dto.FeatureDetails;
 public class FeatureController {
     private static final transient Log LOG = LogFactory.getLog(FeatureController.class);
 
-    private static final List<IAgentConstraintChecker> CHECKERS = 
-        new ArrayList<IAgentConstraintChecker>();
+    private static final List<IAgentConstraintChecker> CHECKERS = new ArrayList<IAgentConstraintChecker>();
 
     static {
         CHECKERS.add(new AgentProfileChecker());
@@ -52,23 +51,19 @@ public class FeatureController {
         this.details = details;
     }
 
-    public AgentController selectAgentForDeployment(String profileID,
-                                                    Collection<AgentController> candidates) {
-        
+    public AgentController selectAgentForDeployment(String profileID, Collection<AgentController> candidates) {
+
         for (IAgentConstraintChecker checker : CHECKERS) {
             candidates = checker.applyConstraint(profileID, this, candidates);
-            LOG.debug("Number of candidates after running checker "
-                      + checker.getClass().getSimpleName()
-                      + ": "
-                      + candidates.size());
+            LOG.debug("Number of candidates after running checker " + checker.getClass().getSimpleName() + ": " + candidates.size());
         }
-        
+
         return getAgentWithTheLeastAmountOfFeatures(candidates);
     }
 
     public boolean areDependanciesInstanciated(String profileID) {
         List<Dependency> list = getDependencies();
-        
+
         for (Dependency dependency : list) {
             FeatureController controller = client.getFeatureController(dependency);
             if (controller == null) {
@@ -90,7 +85,7 @@ public class FeatureController {
         for (AgentController agent : agents) {
             if (answer == null) {
                 answer = agent;
-            
+
             } else if (agent.getFeatures().size() < answer.getFeatures().size()) {
                 answer = agent;
             }
@@ -100,19 +95,19 @@ public class FeatureController {
 
     /**
      * checks that a given agent is on one of the preferred host of the feature.
-     * Note that if the feature doesn't specify any particular host then any host is deemed "preferred"
+     * Note that if the feature doesn't specify any particular host then any
+     * host is deemed "preferred"
+     * 
      * @param agent
      * @return
      */
     public boolean isAgentOnAPreferredMachine(AgentController agent) {
-        return getDetails().getPreferredMachines() == null
-                || getDetails().getPreferredMachines().size() == 0
-                || getDetails().getPreferredMachines().contains(agent.getDetails().getHostname());
+        return getDetails().getPreferredMachines() == null || getDetails().getPreferredMachines().size() == 0 || getDetails().getPreferredMachines().contains(agent.getDetails().getHostname());
     }
 
     /**
      * Returns true if the minimum number of instances are currently deployed.
-     *
+     * 
      * @return true if the minimum number of instances are currently deployed
      */
     public boolean hasAtLeastMinimumInstances(String profileID) {
@@ -124,13 +119,14 @@ public class FeatureController {
     /**
      * Returns true if the maximum number of instances are currently assigned to
      * be deployed (i.e. no more can be deployed)
-     *
-     * @return true if the maximum number of instances are currently assigned to be deployed
+     * 
+     * @return true if the maximum number of instances are currently assigned to
+     *         be deployed
      */
     public boolean canDeployMoreInstances(String profileID) {
         int actual = instanceCount(profileID, false);
         int expected = Integer.parseInt(getDetails().getMaximumInstances());
-        
+
         return actual < expected;
     }
 
@@ -140,7 +136,7 @@ public class FeatureController {
     private int instanceCount(String profileID, boolean onlyIfDeployed) {
         return client.getFeatureInstanceCount(getId(), profileID, onlyIfDeployed);
     }
-    
+
     // Properties
     //-------------------------------------------------------------------------
 
@@ -168,5 +164,9 @@ public class FeatureController {
         DependencyStatus answer = new DependencyStatus(getId());
         answer.setProvisioned(hasAtLeastMinimumInstances(profileId));
         return answer;
+    }
+
+    public String toString() {
+        return "FeatureController for " + details.getId();
     }
 }

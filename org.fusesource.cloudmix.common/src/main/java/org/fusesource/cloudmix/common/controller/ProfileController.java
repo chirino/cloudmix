@@ -78,6 +78,7 @@ public class ProfileController {
         
         for (IFeatureConstraintChecker checker : CHECKERS) {
             candidates = checker.applyConstraint(details.getId(), candidates);
+            LOG.debug("Number of candidates after running checker " + checker.getClass().getSimpleName() + ": " + candidates.size());
         }
         
         return candidates;
