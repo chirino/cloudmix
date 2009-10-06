@@ -53,6 +53,8 @@ public class FeatureController {
 
     public AgentController selectAgentForDeployment(String profileID, Collection<AgentController> candidates) {
 
+        LOG.debug("Selecting agent for deployment for " + profileID + " feature " + this + " from: " + candidates);
+        
         for (IAgentConstraintChecker checker : CHECKERS) {
             candidates = checker.applyConstraint(profileID, this, candidates);
             LOG.debug("Number of candidates after running checker " + checker.getClass().getSimpleName() + ": " + candidates.size());
