@@ -63,6 +63,9 @@ public class ProvisioningGridController extends DefaultGridController implements
      * Lets poll to see if there are any new features we can provision
      */
     public Object call() throws Exception {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("in call()");
+        }
         List<ProvisioningAction> answer = new ArrayList<ProvisioningAction>();
 
         // cleaning up all features from de-activated agents 
@@ -121,12 +124,10 @@ public class ProvisioningGridController extends DefaultGridController implements
                 } catch (RuntimeException re) {
                     LOG.error("Provisioning Error", re);
                     throw re;
-                }
-                catch (Error e) {
+                } catch (Error e) {
                     LOG.error("Provisioning Error", e);
                     throw e;
                 }
-                
 
             }
 
