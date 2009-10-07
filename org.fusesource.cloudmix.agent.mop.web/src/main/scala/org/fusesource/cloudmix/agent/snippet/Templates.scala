@@ -24,7 +24,7 @@ class Templates {
     // var client = appContext.get("gridClient")
     // var cloudmixLink = client.getRootUri
 
-    val cloudmixLink = CloudmixHelper.getDefaultRootUrl
+    val cloudmixLink = System.getProperty("agent.controller.uri", CloudmixHelper.getDefaultRootUrl)
 
     bind("template", xhtml,
       AttrBindParam("cloudmixLink", Text(cloudmixLink), "href"))

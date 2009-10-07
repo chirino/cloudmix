@@ -65,12 +65,13 @@ class Features {
 
           "agent" -> agents.flatMap {
             agent: AgentDetails =>
-             var name = agent.getName
+             var name = agent.getId
              if (name == null) {
                name = "agent"
              }
              val featureLink = agentFeatureLink(agent, feature.getFeatureId)
              println("featureLink is " + featureLink + " for agent " + agent + " with href " + agent.getHref)
+             
              bind("agent", chooseTemplate("feature", "agent", xhtml),
                 "name" -> Text(name),
                 AttrBindParam("featureLink", Text(featureLink), "href"))
