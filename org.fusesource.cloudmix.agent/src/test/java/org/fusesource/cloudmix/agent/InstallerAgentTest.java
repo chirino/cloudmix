@@ -60,7 +60,7 @@ public class InstallerAgentTest extends TestCase {
 
     public void testPersistAgentConfig() throws Exception {
         
-        File propFile = new File("testPersistAgentConfig.properties");
+        File propFile = new File("target" + File.separator + "test-data" + File.separator + "testPersistAgentConfig.properties");
 
         if (propFile.exists()) {
             propFile.delete();
