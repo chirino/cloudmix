@@ -64,7 +64,8 @@ public class ProfileController {
     public ProfileStatus getStatus() {
         String profileId = getDetails().getId();
         ProfileStatus answer = new ProfileStatus(profileId);
-        List<FeatureController> features = getDeployableFeatures();
+        //List<FeatureController> features = getDeployableFeatures();
+        List<FeatureController> features = getFeatureControllersForDependencies();
         for (FeatureController feature : features) {
             DependencyStatus featureStatus = feature.getStatus(profileId);
             answer.getFeatures().add(featureStatus);

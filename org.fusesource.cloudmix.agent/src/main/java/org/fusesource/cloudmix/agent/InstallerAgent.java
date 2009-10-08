@@ -49,10 +49,9 @@ import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 import org.springframework.beans.factory.InitializingBean;
 
-
-
 /**
- * Polls for features that should be installed/uninstalled and executes those installations.
+ * Polls for features that should be installed/uninstalled and executes those
+ * installations.
  * 
  * @version $Revision: 1.1 $
  */
@@ -131,8 +130,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
         } catch (URISyntaxException e) {
             //ignore
         }
-        return "InstallerAgent[id: " + agentId + " hostName: " + getHostName() 
-            + " profile: " + getProfile() + "]";
+        return "InstallerAgent[id: " + agentId + " hostName: " + getHostName() + " profile: " + getProfile() + "]";
     }
 
     /**
@@ -156,7 +154,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     /**
      * Creates a LogHandler
      * 
-     * @param logPath points to a log path
+     * @param logPath
+     *            points to a log path
      * @return LogHandler
      */
     public LogHandler getLogHandler(String logPath) {
@@ -174,24 +173,24 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     /**
      * Creates a LogHandler
      * 
-     * @param logStream represents a log stream
+     * @param logStream
+     *            represents a log stream
      * @return LogHandler
      */
     public LogHandler getLogHandler(InputStream logStream) {
-        LogHandler handler = getParser() == null ? new LogHandler(logStream) : new LogHandler(logStream,
-                                                                                              getParser());
+        LogHandler handler = getParser() == null ? new LogHandler(logStream) : new LogHandler(logStream, getParser());
         return handler;
     }
-    
+
     /**
      * Creates a LogHandler
      * 
-     * @param logStream represents a log file
+     * @param logStream
+     *            represents a log file
      * @return LogHandler
      */
     public LogHandler getLogHandler(File logFile) {
-        LogHandler handler = getParser() == null ? new LogHandler(logFile) : new LogHandler(logFile,
-                                                                                            getParser());
+        LogHandler handler = getParser() == null ? new LogHandler(logFile) : new LogHandler(logFile, getParser());
         return handler;
     }
 
@@ -303,8 +302,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     /**
      * Sets the base link to this agent's web application.
      * <p/>
-     * If this is a different link to the previously registered one then this will be updated on the
-     * controller
+     * If this is a different link to the previously registered one then this
+     * will be updated on the controller
      */
     public void setBaseHref(String href) {
         this.baseHref = href;
@@ -390,16 +389,19 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     }
 
     /**
-     * sets the path to the property file storing the properties of the agent modifiable remotely
+     * sets the path to the property file storing the properties of the agent
+     * modifiable remotely
      * 
-     * @param path to the Java property file
+     * @param path
+     *            to the Java property file
      */
     public void setDetailsPropertyFilePath(String path) {
         propertyFilePath = path;
     }
 
     /**
-     * gets the path to the property file storing the properties of the agent modifiable remotely
+     * gets the path to the property file storing the properties of the agent
+     * modifiable remotely
      */
     public String getDetailsPropertyFilePath() {
         return propertyFilePath;
@@ -464,7 +466,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     }
 
     /**
-     * persist the agents details locally so they can be retrieved later after a shutdown
+     * persist the agents details locally so they can be retrieved later after a
+     * shutdown
      * 
      * @return true if the details were persisted successfully, false otherwise
      */
@@ -537,13 +540,10 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("timestamp of previous provisioning history: " + lastAppliedHistory);
-            LOG.debug("timestamp of current provisioning history: "
-                      + (aProvisioningHistory != null ? aProvisioningHistory.getLastModified() : "???"));
+            LOG.debug("timestamp of current provisioning history: " + (aProvisioningHistory != null ? aProvisioningHistory.getLastModified() : "???"));
         }
 
-        if (aProvisioningHistory != null
-            && (lastAppliedHistory == null || (lastAppliedHistory.getTime() != aProvisioningHistory
-                .getLastModified().getTime()))) {
+        if (aProvisioningHistory != null && (lastAppliedHistory == null || (lastAppliedHistory.getTime() != aProvisioningHistory.getLastModified().getTime()))) {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("provisioning instructions changed since last poll: " + aProvisioningHistory);
@@ -560,20 +560,17 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
                 boolean cfgUpdated = false;
                 for (AgentCfgUpdate update : cfgUpdates) {
-                    if (AgentCfgUpdate.PROPERTY_AGENT_NAME.equals(update.getProperty())
-                        && changed(getAgentDetails().getName(), update.getValue())) {
+                    if (AgentCfgUpdate.PROPERTY_AGENT_NAME.equals(update.getProperty()) && changed(getAgentDetails().getName(), update.getValue())) {
                         setAgentName(update.getValue());
                         getAgentDetails().setName(update.getValue());
                         cfgUpdated = true;
 
-                    } else if (AgentCfgUpdate.PROPERTY_PROFILE_ID.equals(update.getProperty())
-                               && changed(getAgentDetails().getProfile(), update.getValue())) {
+                    } else if (AgentCfgUpdate.PROPERTY_PROFILE_ID.equals(update.getProperty()) && changed(getAgentDetails().getProfile(), update.getValue())) {
                         setProfile(update.getValue());
                         getAgentDetails().setProfile(update.getValue());
                         cfgUpdated = true;
 
-                    } else if (AgentCfgUpdate.PROPERTY_AGENT_FORCE_REGISTER.equals(update.getProperty())
-                               && "true".equals(update.getValue())) {
+                    } else if (AgentCfgUpdate.PROPERTY_AGENT_FORCE_REGISTER.equals(update.getProperty()) && "true".equals(update.getValue())) {
                         forceAgentReregistration();
                         cfgUpdated = true;
                     }
@@ -587,13 +584,10 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
             if (lastActionsCount != aProvisioningHistory.getActions().size()) {
 
-                LOG.debug("provisioning actions changed since last poll (was " + lastActionsCount
-                          + " and now " + aProvisioningHistory.getActions().size());
+                LOG.debug("provisioning actions changed since last poll (was " + lastActionsCount + " and now " + aProvisioningHistory.getActions().size());
                 try {
-                    Map<String, ProvisioningAction> installActions 
-                        = new HashMap<String, ProvisioningAction>();
-                    Map<String, ProvisioningAction> uninstallActions 
-                        = new HashMap<String, ProvisioningAction>();
+                    Map<String, ProvisioningAction> installActions = new HashMap<String, ProvisioningAction>();
+                    Map<String, ProvisioningAction> uninstallActions = new HashMap<String, ProvisioningAction>();
                     getEffectiveActions(installActions, uninstallActions);
 
                     LOG.debug("onProvisioningHistoryChanged - uninstall " + uninstallActions);
@@ -611,7 +605,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
                     for (ProvisioningAction action : installActions.values()) {
                         String credentials = null;
                         if (getClient() instanceof RestGridClient) {
-                            credentials = ((RestGridClient)getClient()).getCredentials();
+                            credentials = ((RestGridClient) getClient()).getCredentials();
                         }
                         String resource = action.getResource();
                         if (resource == null) {
@@ -627,7 +621,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
                     updateAgentDetails();
                 }
 
-                lastActionsCount = aProvisioningHistory.getActions().size();
+                
             }
             lastAppliedHistory = aProvisioningHistory.getLastModified();
 
@@ -639,8 +633,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
     }
 
-    protected void installFeatures(ProvisioningAction action, String credentials, String resource)
-        throws Exception {
+    protected void installFeatures(ProvisioningAction action, String credentials, String resource) throws Exception {
         FeatureList features = new FeatureList(resource, credentials);
         Feature feature = features.getFeature(action.getFeature());
         if (feature != null) {
@@ -654,8 +647,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
         }
     }
 
-    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides)
-        throws Exception {
+    protected void installFeature(Feature feature, List<ConfigurationUpdate> featureCfgOverrides) throws Exception {
 
         LOG.info("Installing feature " + feature.getName());
         installProperties(feature, featureCfgOverrides);
@@ -750,17 +742,53 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     }
 
     /**
-     * Calculates the effective actions to be taken by the agent. This is based on the history. The history
-     * could instruct to install a feature and then uninstall it later, in that case the net effect is 0. This
-     * method walks the history and computes the effective actions for install and uninstall.
+     * Get's the list of installed actions
      * 
-     * @param installActions This map will be filled with the install actions to perform
-     * @param uninstallActions This map will be fille with the uninstall actions to perform
+     * @param installActions
+     *            This map will be filled with the install actions to perform
      */
-    public void getEffectiveActions(Map<String, ProvisioningAction> installActions,
-                                    Map<String, ProvisioningAction> uninstallActions) {
+    public Map<String, ProvisioningAction> getInstalledActions()
+    {
+        Map<String, ProvisioningAction> installActions = new HashMap<String, ProvisioningAction>();
+        ProvisioningHistory history = getProvisioningHistory();
+        
+        if (history == null) {
+            return installActions;
+        }
+
+        List<ProvisioningAction> actions = history.getActions();
+        if (actions == null) {
+            return installActions;
+        }
+
+        for (int i = 0; i < actions.size(); i++) {
+            ProvisioningAction action = actions.get(i);
+            if (ProvisioningAction.INSTALL_COMMAND.equals(action.getCommand())) {
+                LOG.debug("added installed action :" + action.getFeature());
+                installActions.put(action.getFeature(), action);
+            } else if (ProvisioningAction.UNINSTALL_COMMAND.equals(action.getCommand())) {
+                LOG.debug("removed action :" + action.getFeature());
+                installActions.remove(action.getFeature());
+            }
+        }
+        return installActions;
+    }
+    
+    /**
+     * Calculates the effective actions to be taken by the agent. This is based
+     * on the history. The history could instruct to install a feature and then
+     * uninstall it later, in that case the net effect is 0. This method walks
+     * the history and computes the effective actions for install and uninstall.
+     * 
+     * @param installActions
+     *            This map will be filled with the install actions to perform
+     * @param uninstallActions
+     *            This map will be fille with the uninstall actions to perform
+     */
+    public void getEffectiveActions(Map<String, ProvisioningAction> installActions, Map<String, ProvisioningAction> uninstallActions) {
 
         ProvisioningHistory history = getProvisioningHistory();
+        
         if (history == null) {
             return;
         }
@@ -770,10 +798,16 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
             return;
         }
 
-        for (ProvisioningAction action : actions) {
+        for (int i = 0; i < actions.size(); i++) {
+            ProvisioningAction action = actions.get(i);
+            boolean isNew = i >= lastActionsCount;
             if (ProvisioningAction.INSTALL_COMMAND.equals(action.getCommand())) {
-                LOG.debug("install action :" + action.getFeature());
-                installActions.put(action.getFeature(), action);
+                LOG.debug("install action :" + action.getFeature() + " new: " + isNew);
+                //Only add to install actions if this is a new action, otherwise
+                //we'll end up reprovisioning the feature:
+                if (isNew) {
+                    installActions.put(action.getFeature(), action);
+                }
                 uninstallActions.remove(action.getFeature());
             } else if (ProvisioningAction.UNINSTALL_COMMAND.equals(action.getCommand())) {
                 LOG.debug("uninstall action :" + action.getFeature());
@@ -781,6 +815,8 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
                 installActions.remove(action.getFeature());
             }
         }
+        
+        lastActionsCount = history.getActions().size();
     }
 
     // convenience
@@ -844,8 +880,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     public void init() throws Exception {
         File dir = getWorkDirectory();
 
-        LOG.info("Starting CloudMix Agent with client: " + getClient() + " profile: " + getProfile()
-                 + " workingDir: " + dir);
+        LOG.info("Starting CloudMix Agent with client: " + getClient() + " profile: " + getProfile() + " workingDir: " + dir);
 
         if (dir == null) {
             LOG.warn("No work directory specified.  Not persisting agent state.");
@@ -929,7 +964,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
             // Object o = xstream.fromXML(is);
             ObjectInputStream ois = new ObjectInputStream(is);
             Object o = ois.readObject();
-            agentState = (AgentState)o;
+            agentState = (AgentState) o;
 
             is.close();
         } catch (Exception e) {

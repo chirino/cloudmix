@@ -102,6 +102,32 @@ public class FeatureControllerTest extends TestCase {
         assertSame(a1, fc.selectAgentForDeployment("default", agents));
     }
     
+    public void testValidateContainerType() {
+        
+        GridController cl = EasyMock.createMock(GridController.class);
+        AgentDetails ad1 = new AgentDetails();
+        ad1.setContainerType("mop");
+        AgentController a1 = new AgentController(cl, ad1);
+        
+        AgentDetails ad2 = new AgentDetails();        
+        ad2.setContainerType("smx4");
+        AgentController a2 = new AgentController(cl, ad2);
+        
+        AgentDetails ad3 = new AgentDetails();
+        AgentController a3 = new AgentController(cl, ad3);
+        
+        FeatureDetails fd = new FeatureDetails("f1");
+        fd.validContainerType("mop").maximumInstances("3");
+        FeatureController fc = new FeatureController(cl, fd);
+        
+        List<AgentController> agents = Arrays.asList(a1, a2, a3);
+
+        // Normal behaviour
+        assertSame(null, fc.selectAgentForDeployment("production", agents));
+        assertSame(a1, fc.selectAgentForDeployment("default", agents));
+        
+    }
+    
     public void testResourceAPI() {
         FeatureDetails fd = new FeatureDetails("f1");
         fd.setResource("http://localhost/123");

@@ -39,9 +39,11 @@ public class FeatureDetails extends IdentifiedType {
     @XmlElement(name = "property")
     private List<PropertyDefinition> properties = new ArrayList<PropertyDefinition>();
     @XmlAttribute
-    private String [] packageTypes;
+    private String[] packageTypes;
     @XmlAttribute(required = false)
     private String ownedByProfileId;
+    @XmlAttribute(required = false)
+    private List<String> validContainerTypes = new ArrayList<String>();
 
     public FeatureDetails() {
     }
@@ -54,31 +56,33 @@ public class FeatureDetails extends IdentifiedType {
         super(id);
         this.resource = resource;
     }
-    
+
     public long getDigest() {
         long rc = 17;
 
         // need to make sure that the order in which these lists are processed is not significant
         for (Dependency dep : dependencies) {
             // rc = 37 * rc + dep.getDigest() is not good because it is order-significant
-            rc += dep.getDigest(); 
+            rc += dep.getDigest();
         }
         for (String pm : preferredMachines) {
+            rc += pm.hashCode();
+        }
+        
+        for (String pm : validContainerTypes) {
             rc += pm.hashCode();
         }
 
         rc = 37 * rc + minimumInstances.hashCode();
         rc = 37 * rc + maximumInstances.hashCode();
         rc = 37 * rc + (ownsMachine.booleanValue() ? 1 : 2);
+        
         return rc;
     }
 
     @Override
     public String toString() {
-        return "Feature[id: " + getId()
-                    + " min: " + getMinimumInstances()
-                    + " max: " + getMaximumInstances()
-                    + "]";
+        return "Feature[id: " + getId() + " min: " + getMinimumInstances() + " max: " + getMaximumInstances() + "]";
     }
 
     public void addPreferredMachine(String preferredMachine) {
@@ -122,6 +126,11 @@ public class FeatureDetails extends IdentifiedType {
         return this;
     }
 
+    public FeatureDetails validContainerType(String containerType) {
+        validContainerTypes.add(containerType);
+        return this;
+    }
+
     public FeatureDetails ownsMachine() {
         setOwnsMachine(Boolean.TRUE);
         return this;
@@ -152,8 +161,8 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets the dependent features which must be provisioned (to their minimum instance count)
-     * before this feature can be provisioned
+     * Sets the dependent features which must be provisioned (to their minimum
+     * instance count) before this feature can be provisioned
      */
     public void setDependencies(List<Dependency> dependencies) {
         this.dependencies = dependencies;
@@ -164,8 +173,9 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets the maximum number of instances of the feature as an expression so that it can be
-     * dynamic based on the number of agents or instances of some other feature et
+     * Sets the maximum number of instances of the feature as an expression so
+     * that it can be dynamic based on the number of agents or instances of some
+     * other feature et
      */
     public void setMaximumInstances(String maximumInstances) {
         this.maximumInstances = maximumInstances;
@@ -176,8 +186,9 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets the minimum number of instances of the feature as an expression so that it can be
-     * dynamic based on the number of agents or instances of some other feature et
+     * Sets the minimum number of instances of the feature as an expression so
+     * that it can be dynamic based on the number of agents or instances of some
+     * other feature et
      */
     public void setMinimumInstances(String minimumInstances) {
         this.minimumInstances = minimumInstances;
@@ -188,7 +199,8 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets list of preferred machine host names on which the feature should be provisioned
+     * Sets list of preferred machine host names on which the feature should be
+     * provisioned
      */
     public void setPreferredMachines(Set<String> preferredMachines) {
         this.preferredMachines = preferredMachines;
@@ -199,8 +211,9 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets whether or not this feature owns the entire machine. i.e. an empty agent is required to provision
-     * this feature and no other features are allowed to be provisioned on the same agent once this feature is
+     * Sets whether or not this feature owns the entire machine. i.e. an empty
+     * agent is required to provision this feature and no other features are
+     * allowed to be provisioned on the same agent once this feature is
      * provisioned
      */
     public void setOwnsMachine(Boolean ownsMachine) {
@@ -220,21 +233,46 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets the profile which is the exclusive owner of this feature (for features which are 
-     * local only to a single profile) otherwise leave null so that the feature can be used 
-     * in any profile.
-     *
-     * If a feature is associated with a single profile, then deleting a profile should also 
-     * delete the associated features. This is used when integration testing, where a profile 
-     * is created temporarily, a number of features added for that profile - then the profile 
-     * is deleted.
-     *
-     *
-     * @param ownedByProfileId the profile which should own this feature; or null to imply 
-     * the feature is used for any profile
+     * Sets the profile which is the exclusive owner of this feature (for
+     * features which are local only to a single profile) otherwise leave null
+     * so that the feature can be used in any profile.
+     * 
+     * If a feature is associated with a single profile, then deleting a profile
+     * should also delete the associated features. This is used when integration
+     * testing, where a profile is created temporarily, a number of features
+     * added for that profile - then the profile is deleted.
+     * 
+     * 
+     * @param ownedByProfileId
+     *            the profile which should own this feature; or null to imply
+     *            the feature is used for any profile
      */
     public void setOwnedByProfileId(String ownedByProfileId) {
         this.ownedByProfileId = ownedByProfileId;
+    }
+
+    /**
+     * The required type of container needed to host this feature, an empty list
+     * signifies any container type will do.
+     * 
+     * @param validContainerTypes
+     *            the validContainerTypes to set
+     */
+    public void setValidContainerTypes(List<String> validContainerTypes) {
+        this.validContainerTypes = validContainerTypes;
+        if (this.validContainerTypes == null) {
+            this.validContainerTypes = new ArrayList<String>(0);
+        }
+    }
+
+    /**
+     * The required type of container needed to host this feature, an empty list
+     * signifies any container type will do.
+     * 
+     * @return the validContainerTypes
+     */
+    public List<String> getValidContainerTypes() {
+        return validContainerTypes;
     }
 
     public List<PropertyDefinition> getProperties() {
@@ -242,12 +280,14 @@ public class FeatureDetails extends IdentifiedType {
     }
 
     /**
-     * Sets the configuration properties that should be created based on the provisioned features
-     * that can then be injected into other services. For example we may create a property which is
-     * the list of host names of all the features of A so that B can be injected with this list in its
+     * Sets the configuration properties that should be created based on the
+     * provisioned features that can then be injected into other services. For
+     * example we may create a property which is the list of host names of all
+     * the features of A so that B can be injected with this list in its
      * configuration
-     *
-     * @param properties the dynamic properties to be used for this feature
+     * 
+     * @param properties
+     *            the dynamic properties to be used for this feature
      */
     public void setProperties(List<PropertyDefinition> properties) {
         this.properties = properties;

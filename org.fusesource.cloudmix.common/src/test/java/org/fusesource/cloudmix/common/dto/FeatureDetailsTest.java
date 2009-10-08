@@ -44,5 +44,13 @@ public class FeatureDetailsTest extends TestCase {
         assertFalse(fd1.getDigest() == fd2.getDigest());
         fd2.setDependencies(Arrays.asList(new Dependency("aa"), new Dependency("bb")));
         assertEquals(fd1.getDigest(), fd2.getDigest());
+        
+        fd1.setValidContainerTypes(Arrays.asList("aa", "bb"));
+        fd2.setValidContainerTypes(Arrays.asList(new String[] {}));
+        assertFalse(fd1.getDigest() == fd2.getDigest());
+        fd2.setValidContainerTypes(Arrays.asList("aa", "bb"));
+        assertEquals(fd1.getDigest(), fd2.getDigest());
+        
+
     }
 }

@@ -82,8 +82,6 @@ public class ProvisioningTestSupport extends RuntimeTestSupport {
     }
     
     public static Collection<ProvisioningAction> agentInstallActions(InstallerAgent agent) {
-        Map<String, ProvisioningAction> installActions = new HashMap<String, ProvisioningAction>();
-        agent.getEffectiveActions(installActions, new HashMap<String, ProvisioningAction>());
-        return installActions.values();
+        return agent.getInstalledActions().values();
     }    
 }

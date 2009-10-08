@@ -139,7 +139,7 @@ public class KarafAgentTest extends TestCase {
                 return cl;
             }
         };
-        workdir = new File("testworkdir");
+        workdir = new File("target" + File.separator + "testworkdir");
         FileUtils.createDirectory(workdir);
 
         fs = new MockFeaturesService();

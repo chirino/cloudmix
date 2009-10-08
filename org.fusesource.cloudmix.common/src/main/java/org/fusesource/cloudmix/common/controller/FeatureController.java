@@ -15,6 +15,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.GridController;
+import org.fusesource.cloudmix.common.controller.constraints.agent.AgentContainerTypeChecker;
 import org.fusesource.cloudmix.common.controller.constraints.agent.AgentLivenessChecker;
 import org.fusesource.cloudmix.common.controller.constraints.agent.AgentMaxFeaturesChecker;
 import org.fusesource.cloudmix.common.controller.constraints.agent.AgentOwnedByFeatureChecker;
@@ -41,6 +42,7 @@ public class FeatureController {
         CHECKERS.add(new AgentOwnedByFeatureChecker());
         CHECKERS.add(new AgentMaxFeaturesChecker());
         CHECKERS.add(new AgentPreferedHostChecker());
+        CHECKERS.add(new AgentContainerTypeChecker());
     }
 
     private GridController client;

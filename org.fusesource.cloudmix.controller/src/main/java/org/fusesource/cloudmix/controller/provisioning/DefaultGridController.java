@@ -49,8 +49,8 @@ import org.mortbay.util.UrlEncoded;
 public class DefaultGridController implements GridController, GridClient {
     private static final transient Log LOG = LogFactory.getLog(DefaultGridController.class);
     private AtomicLong counter = new AtomicLong(0);
-    private long agentTimeout = 3000L;    
-    private ControllerDataProvider dataProvider = new SimpleControllerDataProvider(this);    
+    private long agentTimeout = 3000L;
+    private ControllerDataProvider dataProvider = new SimpleControllerDataProvider(this);
 
     @Override
     public String toString() {
@@ -72,7 +72,7 @@ public class DefaultGridController implements GridController, GridClient {
         // lets create a history from the current process lists...
         ProcessList processList = details.getProcesses();
         if (processList != null) {
-            processList.populateHistory(history);    
+            processList.populateHistory(history);
         }
 
         agent.setHistory(history);
@@ -87,9 +87,9 @@ public class DefaultGridController implements GridController, GridClient {
 
         return rc.getDetails().getId();
     }
-    
+
     public void updateAgentDetails(String agentId, AgentDetails agentDetails) {
-        AgentController ac = dataProvider.getAgent(agentId);        
+        AgentController ac = dataProvider.getAgent(agentId);
         if (ac == null) {
             LOG.warn("Could not find agent with ID " + agentId);
             return;
@@ -101,24 +101,24 @@ public class DefaultGridController implements GridController, GridClient {
 
     private String constructAgentId(AgentDetails details) {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append(details.getProfile());
-        sb.append('_');        
-        
+        sb.append('_');
+
         String hostname = details.getHostname();
         int idx = hostname.indexOf('.');
         if (idx > 0) {
             hostname = hostname.substring(0, idx);
         }
-        sb.append(hostname);       
-        sb.append('_');   
+        sb.append(hostname);
+        sb.append('_');
 
         sb.append(details.getContainerType());
-        sb.append('_');        
-        
+        sb.append('_');
+
         sb.append(counter.incrementAndGet());
-        String unEncId = sb.toString(); 
-        
+        String unEncId = sb.toString();
+
         try {
             return URLEncoder.encode(unEncId, "UTF-8");
         } catch (UnsupportedEncodingException uee) {
@@ -169,7 +169,7 @@ public class DefaultGridController implements GridController, GridClient {
     }
 
     public Collection<FeatureDetails> getFeatureDetails() {
-        List<FeatureDetails> answer = new ArrayList<FeatureDetails>();        
+        List<FeatureDetails> answer = new ArrayList<FeatureDetails>();
         Collection<FeatureController> featureControllers = dataProvider.getFeatures();
         for (FeatureController featureController : featureControllers) {
             answer.add(featureController.getDetails());
@@ -177,7 +177,7 @@ public class DefaultGridController implements GridController, GridClient {
         return answer;
     }
 
-    public void addFeature(FeatureDetails featureDetails) {        
+    public void addFeature(FeatureDetails featureDetails) {
         dataProvider.addFeature(featureDetails.getId(), new FeatureController(this, featureDetails));
     }
 
@@ -196,10 +196,8 @@ public class DefaultGridController implements GridController, GridClient {
         addAgentToFeature(agent, featureId, cfgOverridesProps);
     }
 
-    protected List<ProvisioningAction> addAgentToFeature(AgentController agent,
-                                                         String featureId,
-                                                         Map<String, String> cfgOverridesProps) {
-        
+    protected List<ProvisioningAction> addAgentToFeature(AgentController agent, String featureId, Map<String, String> cfgOverridesProps) {
+
         if (featureId == null) {
             throw new IllegalArgumentException("featuredId should not be null");
         }
@@ -220,14 +218,14 @@ public class DefaultGridController implements GridController, GridClient {
         if (agent == null) {
             throw new NotFoundException("Agent '" + agentId + "' does not exist");
         }
-        
+
         // There is a chance that the feature cannot be found
         // in which case there is no issue with removing it :)
         // FeatureController feature = dataProvider.getFeature(featureId);
         // if (feature == null) {
         //     throw new NotFoundException("Feature '" + featureId + "' does not exist");
         // }        
-        
+
         List<ProvisioningAction> actions = null;
         if (agent.getFeatures().remove(featureId)) {
             // If the agent did not have this removed yet..
@@ -236,16 +234,14 @@ public class DefaultGridController implements GridController, GridClient {
                 agent.getHistory().addAction(action);
             }
         }
-        
+
     }
 
     public List<String> getAgentsAssignedToFeature(String featureId) {
         return getAgentsAssignedToFeature(featureId, null, false);
     }
-    
-    public List<String> getAgentsAssignedToFeature(String featureId, 
-                                                   String profileId,
-                                                   boolean onlyIfDeployed) {
+
+    public List<String> getAgentsAssignedToFeature(String featureId, String profileId, boolean onlyIfDeployed) {
         List<String> rc = new ArrayList<String>();
 
         // Return all the agents that have not timed out and that have the feature assigned.
@@ -254,8 +250,8 @@ public class DefaultGridController implements GridController, GridClient {
             //if (profileId != null && !profileId.equals(agent.getDetails().getProfile())) {
             if (profileId != null && !agent.getDetails().matchesProfile(profileId)) {
                 continue;
-            }                
-            
+            }
+
             if (agent.getFeatures().contains(featureId)) {
                 boolean addFeature = false;
                 if (onlyIfDeployed) {
@@ -271,7 +267,7 @@ public class DefaultGridController implements GridController, GridClient {
                 } else {
                     addFeature = true;
                 }
-                
+
                 if (addFeature) {
                     rc.add(agent.getDetails().getId());
                 }
@@ -280,7 +276,7 @@ public class DefaultGridController implements GridController, GridClient {
 
         return rc;
     }
-    
+
     public void addProfile(ProfileDetails profileDetails) {
         dataProvider.addProfile(profileDetails.getId(), new ProfileController(this, profileDetails));
     }
@@ -303,9 +299,9 @@ public class DefaultGridController implements GridController, GridClient {
 
     /**
      * Deletes the features for a given profile.
-     *
-     * An implementation might have a more optimal way of implementing this than brute force
-     * iterating through all features.
+     * 
+     * An implementation might have a more optimal way of implementing this than
+     * brute force iterating through all features.
      */
     protected void deleteFeaturesForProfile(String profileId) {
         Collection<FeatureDetails> features = getFeatureDetails();
@@ -323,7 +319,7 @@ public class DefaultGridController implements GridController, GridClient {
     }
 
     public Collection<ProfileDetails> getProfileDetails() {
-        List<ProfileDetails> answer = new ArrayList<ProfileDetails>();        
+        List<ProfileDetails> answer = new ArrayList<ProfileDetails>();
         Collection<ProfileController> profileControllers = dataProvider.getProfiles();
         for (ProfileController profileController : profileControllers) {
             answer.add(profileController.getDetails());
@@ -372,7 +368,7 @@ public class DefaultGridController implements GridController, GridClient {
         List<String> agents = getAgentsAssignedToFeature(featureId, profileId, onlyIfDeployed);
         return agents.size();
     }
-    
+
     // Properties
     //-------------------------------------------------------------------------
     public long getAgentTimeout() {
@@ -382,15 +378,15 @@ public class DefaultGridController implements GridController, GridClient {
     public void setAgentTimeout(long machineTimeout) {
         this.agentTimeout = machineTimeout;
     }
-    
+
     public ControllerDataProvider getDataProvider() {
         return dataProvider;
     }
-    
+
     public void setDataProvider(ControllerDataProvider dp) {
         dataProvider = dp;
         dataProvider.setGrid(this);
-    }    
+    }
 
     // GridClient API
     //-------------------------------------------------------------------------
@@ -406,40 +402,37 @@ public class DefaultGridController implements GridController, GridClient {
     public void removeFeature(FeatureDetails feature) {
         removeFeature(feature.getId());
     }
-    
-    
+
     // Implementation methods
     //-------------------------------------------------------------------------
 
     /**
-     * This could get much more complicated.  Should it dive into dependencies? The more work we do here,
-     * the dumber the agent can stay.
-     *
+     * This could get much more complicated. Should it dive into dependencies?
+     * The more work we do here, the dumber the agent can stay.
+     * 
      * @param agent
      * @return
      */
-    protected List<ProvisioningAction> getInstallActionsFor(AgentController agent,
-                                                            String featureId,
-                                                            Map<String, String> cfgOverridesProps) {
+    protected List<ProvisioningAction> getInstallActionsFor(AgentController agent, String featureId, Map<String, String> cfgOverridesProps) {
         List<ProvisioningAction> rc = new ArrayList<ProvisioningAction>();
 
         ProvisioningAction action = new ProvisioningAction();
         action.setId(agent.getNextHistoryId());
         action.setCommand("install");
         action.setFeature(featureId);
-        
+
         FeatureController fc = dataProvider.getFeature(featureId);
         if (fc == null) {
             fc = dataProvider.getFeature(encodeURL(featureId));
         }
         action.setResource(fc.getResource());
-        
+
         if (cfgOverridesProps != null && cfgOverridesProps.size() > 0) {
             for (String key : cfgOverridesProps.keySet()) {
                 action.addCfgOverride(new ConfigurationUpdate(key, cfgOverridesProps.get(key)));
             }
         }
-        
+
         rc.add(action);
 
         return rc;
@@ -475,7 +468,7 @@ public class DefaultGridController implements GridController, GridClient {
         LOG.debug("Default GridController, live agents available: " + l.size());
         return l;
     }
-    
+
     protected Collection<AgentController> agentTrackers(String profileID) {
         Collection<AgentController> agents = agentTrackers();
 
@@ -487,15 +480,15 @@ public class DefaultGridController implements GridController, GridClient {
         }
         return l;
     }
-     
+
     protected Collection<FeatureController> featureControllers() {
         return dataProvider.getFeatures();
     }
-    
+
     protected Collection<ProfileController> profileControllers() {
         return dataProvider.getProfiles();
     }
-    
+
     protected static String encodeURL(String name) {
         try {
             return URLEncoder.encode(name, "UTF-8");
@@ -504,7 +497,7 @@ public class DefaultGridController implements GridController, GridClient {
             return name;
         }
     }
-    
+
     protected static String decodeURL(String url) {
         try {
             return URLDecoder.decode(url, "UTF-8");
@@ -514,6 +507,4 @@ public class DefaultGridController implements GridController, GridClient {
         }
     }
 
-
 }
-

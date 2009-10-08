@@ -35,12 +35,17 @@ import org.fusesource.cloudmix.common.jaxrs.PropertiesProvider;
 public class RestClientSupport {
     private static final transient Log LOG = LogFactory.getLog(RestClientSupport.class);
     
+    public static final String PROPERTY_REQUEST_READ_TIMEOUT = "cloudmix.rest.read.timeout";
+    public static final Integer DEFAULT_READ_TIMEOUT = Integer.getInteger(PROPERTY_REQUEST_READ_TIMEOUT, 0);
+   
+    
     private Client client;
     private URI rootUri;
     private RestTemplate template = new RestTemplate();
     private String username;
     private PasswordProvider passwordProvider;
     private String credentials;
+    private int readTimeout = DEFAULT_READ_TIMEOUT;
     private boolean loggedNoPassword;
 
     public RestClientSupport() {
@@ -59,6 +64,7 @@ public class RestClientSupport {
             if (client == null) {
                 DefaultClientConfig config = new DefaultClientConfig();
                 config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, Boolean.FALSE);
+                config.getProperties().put(ClientConfig.PROPERTY_READ_TIMEOUT, readTimeout);
                 config.getClasses().add(JAXBContextResolver.class);
                 config.getClasses().add(PropertiesProvider.class);
 
@@ -175,6 +181,14 @@ public class RestClientSupport {
         }
 
         return credentials;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
     }
 
     protected WebResource resource(URI uri) {

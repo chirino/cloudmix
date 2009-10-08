@@ -110,28 +110,20 @@ public class ProvisioningGridController extends DefaultGridController implements
             List<FeatureController> deployableFeatures = profile.getDeployableFeatures();
             for (FeatureController fc : deployableFeatures) {
                 String featureId = decodeURL(fc.getId());
-                try {
-                    Collection<AgentController> agentTrackers = agentTrackers();
-                    AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers);
+                
+                Collection<AgentController> agentTrackers = agentTrackers();
+                AgentController agent = fc.selectAgentForDeployment(profileID, agentTrackers);
 
-                    if (agent == null) {
-                        LOG.debug("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
+                if (agent == null) {
+                    LOG.debug("for feature: " + featureId + " no agent selected from possible agents " + agentTrackers.size());
 
-                    } else {
-                        LOG.debug("for feature: " + featureId + " found adequate agent: " + agent.getDetails());
+                } else {
+                    LOG.debug("for feature: " + featureId + " found adequate agent: " + agent.getDetails());
 
-                        Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile, featureId);
-                        List<ProvisioningAction> list = addAgentToFeature(agent, fc.getId(), cfgOverridesProps);
-                        answer.addAll(list);
-                    }
-                } catch (RuntimeException re) {
-                    LOG.error("Provisioning Error", re);
-                    throw re;
-                } catch (Error e) {
-                    LOG.error("Provisioning Error", e);
-                    throw e;
+                    Map<String, String> cfgOverridesProps = getFeatureConfigurationOverrides(profile, featureId);
+                    List<ProvisioningAction> list = addAgentToFeature(agent, fc.getId(), cfgOverridesProps);
+                    answer.addAll(list);
                 }
-
             }
 
             // cleaning up redundant features from agents that still have a profile assigned

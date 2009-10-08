@@ -15,10 +15,9 @@ import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * A helper class to wrap up retry logic.
- *
+ * 
  * @version $Revision: 1.1 $
  */
 public class RestTemplate {
@@ -29,30 +28,47 @@ public class RestTemplate {
 
     public <T> T get(WebResource.Builder resource, Class<T> resultType) {
         T answer = null;
+        
         for (int i = 0; i < retryAttempts && answer == null; i++) {
+            
             ClientResponse response = resource.get(ClientResponse.class);
-            if (response != null && response.getStatus() < 300) {
-                answer = response.getEntity(resultType);
+            
+            if (response != null) {
+                if (response.getStatus() < 300) {
+                    answer = response.getEntity(resultType);
+                } else if (response.getStatus() == 404) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug(resource + " bad response: " + response.getStatus() + "-" + response.getResponseStatus().getReasonPhrase() + "[attempt: " + i + "]");
+                    }
+                    break;
+                } else {
+                    if (LOG.isWarnEnabled()) {
+                        LOG.warn(resource + " bad response: " + response.getStatus() + "-" + response.getResponseStatus().getReasonPhrase() + "[attempt: " + i + "]");
+                    }
+                }
             }
         }
         return answer;
     }
 
     /**
-     * Polls the given resource only returning the value if its changed since the last time we asked for it
+     * Polls the given resource only returning the value if its changed since
+     * the last time we asked for it
      */
     public <T> T poll(WebResource.Builder request, Class<T> resultType) {
         for (int i = 0; i < retryAttempts; i++) {
 
-            /* I think we should ignore the If-Modified-Since header...
-            if (pollLastModifiedDate != null) {
-                request = request.header("If-Modified-Since", pollLastModifiedDate);
-            } */
+            /*
+             * I think we should ignore the If-Modified-Since header... if
+             * (pollLastModifiedDate != null) { request =
+             * request.header("If-Modified-Since", pollLastModifiedDate); }
+             */
             if (pollETag != null) {
                 request = request.header("If-None-Match", pollETag);
             }
-
+            
             ClientResponse response = request.get(ClientResponse.class);
+            
             int status = response.getStatus();
 
             // is the response unmodified
@@ -85,7 +101,6 @@ public class RestTemplate {
         }
         return null;
     }
-
 
     public int put(final WebResource.Builder resource, final Object body) {
         return retryLoop(new RestOperation() {
@@ -127,9 +142,9 @@ public class RestTemplate {
         this.retryAttempts = retryAttempts;
     }
 
-
     /**
-     * Performs the given operation {@link #getRetryAttempts()} times returning the final error code
+     * Performs the given operation {@link #getRetryAttempts()} times returning
+     * the final error code
      */
     protected int retryLoop(RestOperation operation) {
         int status = -1;

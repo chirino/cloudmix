@@ -192,36 +192,58 @@ public class InstallerAgentTest extends TestCase {
         assertSame(a1, installActions.get("f1"));
         assertEquals(0, uninstallActions.size());
         
-        // install f2
+        installActions.clear();
+        uninstallActions.clear();
+        
+        // install f2, (f1 should not show up again)
         ProvisioningAction a2 = new ProvisioningAction(
                 ProvisioningAction.INSTALL_COMMAND, "f2", "http://somewhere2");
         ia.getProvisioningHistory().addAction(a2);
         ia.getEffectiveActions(installActions, uninstallActions);
-        assertEquals(2, installActions.size());
-        assertSame(a1, installActions.get("f1"));
+        assertEquals(1, installActions.size());
+        assertSame(null, installActions.get("f1"));
         assertSame(a2, installActions.get("f2"));
         assertEquals(0, uninstallActions.size());
+        
+        installActions.clear();
+        uninstallActions.clear();
+        
+        // install f1 again which should result in it showing up in the install
+        // list (to replace the old one)
+        ProvisioningAction a2_5 = new ProvisioningAction(
+                ProvisioningAction.INSTALL_COMMAND, "f1", "http://somewhere2");
+        ia.getProvisioningHistory().addAction(a2_5);
+        ia.getEffectiveActions(installActions, uninstallActions);
+        assertEquals(1, installActions.size());
+        assertSame(a2_5, installActions.get("f1"));
+        assertSame(null, installActions.get("f2"));
+        assertEquals(0, uninstallActions.size());
+        
+        installActions.clear();
+        uninstallActions.clear();
         
         // uninstall f1, which should not tell me to install any more
         ProvisioningAction a3 = new ProvisioningAction(
                 ProvisioningAction.UNINSTALL_COMMAND, "f1", null);
         ia.getProvisioningHistory().addAction(a3);
         ia.getEffectiveActions(installActions, uninstallActions);
-        assertEquals(1, installActions.size());
-        assertEquals("f2", installActions.keySet().iterator().next());
-        assertSame(a2, installActions.get("f2"));
+        assertEquals(0, installActions.size());
+        assertSame(null, installActions.get("f2"));
         assertEquals(1, uninstallActions.size());
         assertEquals("f1", uninstallActions.keySet().iterator().next());
         assertSame(a3, uninstallActions.get("f1"));
+        
+        installActions.clear();
+        uninstallActions.clear();
         
         // install f1 again, which means it should not tell me to uninstall any more
         ProvisioningAction a4 = new ProvisioningAction(
                 ProvisioningAction.INSTALL_COMMAND, "f1", "http://somewhere1");
         ia.getProvisioningHistory().addAction(a4);
         ia.getEffectiveActions(installActions, uninstallActions);
-        assertEquals(2, installActions.size());
+        assertEquals(1, installActions.size());
         assertSame(a4, installActions.get("f1"));
-        assertSame(a2, installActions.get("f2"));
+        assertSame(null, installActions.get("f2"));
         assertEquals(0, uninstallActions.size());      
         
         EasyMock.verify(client);
