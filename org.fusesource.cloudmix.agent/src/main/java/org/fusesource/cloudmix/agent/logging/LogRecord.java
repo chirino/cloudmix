@@ -2,7 +2,7 @@ package org.fusesource.cloudmix.agent.logging;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "log")
 public class LogRecord {
 
     private String message;
