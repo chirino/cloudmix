@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.logging.Log;
@@ -38,13 +37,11 @@ import org.fusesource.cloudmix.common.dto.ResourceList;
 import org.fusesource.cloudmix.common.dto.StringList;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
 
-
 /**
  * @version $Revision: 61256 $
  */
 public class RestGridClient extends RestClientSupport implements GridClient {
     private static final transient Log LOG = LogFactory.getLog(RestGridClient.class);
-
 
     private URI agentsUri;
     private URI featuresUri;
@@ -76,22 +73,19 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     }
 
     public void updateAgentDetails(String agentId, AgentDetails agentDetails) {
-        WebResource.Builder resource =
-                resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
+        WebResource.Builder resource = resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
         getTemplate().put(resource, agentDetails);
     }
 
     public List<LogRecord> getLogRecords(Map<String, List<String>> queries) {
-        WebResource.Builder resource =
-                resource(append(getRootUri(), "/log")).accept("application/xml");
+        WebResource.Builder resource = resource(append(getRootUri(), "/log")).accept("application/xml");
         assert resource != null;
         // TODO: how to tell Jersey to get List<LogRecord> ?
         return Collections.emptyList();
     }
 
     public AgentDetails getAgentDetails(String agentId) {
-        WebResource.Builder resource =
-                resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
+        WebResource.Builder resource = resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
         return getTemplate().get(resource, AgentDetails.class);
     }
 
@@ -108,26 +102,22 @@ public class RestGridClient extends RestClientSupport implements GridClient {
     }
 
     public InputStream getInputStream() {
-        WebResource.Builder resource =
-                resource(getRootUri()).accept("*/*");
+        WebResource.Builder resource = resource(getRootUri()).accept("*/*");
         return resource.get(InputStream.class);
     }
 
     public void removeAgentDetails(String agentId) {
-        WebResource.Builder resource =
-                resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
+        WebResource.Builder resource = resource(append(getAgentsUri(), "/", agentId)).accept("application/xml");
         getTemplate().delete(resource);
     }
 
     public ProvisioningHistory getAgentHistory(String agentId) {
-        WebResource.Builder resource =
-                resource(append(getAgentsUri(), "/", agentId, "/history")).accept("application/xml");
+        WebResource.Builder resource = resource(append(getAgentsUri(), "/", agentId, "/history")).accept("application/xml");
         return getTemplate().get(resource, ProvisioningHistory.class);
     }
 
     public ProvisioningHistory pollAgentHistory(String agentId) {
-        WebResource.Builder resource =
-                resource(append(getAgentsUri(), "/", agentId, "/history")).accept("application/xml");
+        WebResource.Builder resource = resource(append(getAgentsUri(), "/", agentId, "/history")).accept("application/xml");
         LOG.debug("polling agent history, agent id: " + agentId);
         LOG.debug("polling agent history, resource: " + resource);
 
@@ -161,8 +151,7 @@ public class RestGridClient extends RestClientSupport implements GridClient {
 
     public FeatureDetails getFeature(String featureId) {
         ObjectHelper.notNull(featureId, "featureId");
-        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId))
-            .accept("application/xml");
+        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId)).accept("application/xml");
         return getTemplate().get(resource, FeatureDetails.class);
     }
 
@@ -172,26 +161,19 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         removeFeature(id);
     }
 
-    public void addAgentToFeature(String featureId,
-                                  String agentId,
-                                  Map<String, String> cfgOverridesProps) {
-        WebResource.Builder resource =
-                resource(append(getFeaturesUri(), "/", featureId,
-                        "/agents/", agentId)).type("application/xml");
+    public void addAgentToFeature(String featureId, String agentId, Map<String, String> cfgOverridesProps) {
+        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId, "/agents/", agentId)).type("application/xml");
         getTemplate().put(resource);
     }
 
     public void removeAgentFromFeature(String featureId, String agentId) {
-        WebResource.Builder resource =
-                resource(append(getFeaturesUri(), "/", featureId,
-                        "/agents/", agentId)).type("application/xml");
+        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", featureId, "/agents/", agentId)).type("application/xml");
         getTemplate().delete(resource);
     }
 
     public List<String> getAgentsAssignedToFeature(String id) {
         ObjectHelper.notNull(id, "feature.id");
-        WebResource.Builder resource =
-                resource(append(getFeaturesUri(), "/", id, "/agents")).accept("application/xml");
+        WebResource.Builder resource = resource(append(getFeaturesUri(), "/", id, "/agents")).accept("application/xml");
         StringList answer = getTemplate().get(resource, StringList.class);
         if (answer == null) {
             // TODO just return empty list?
@@ -228,10 +210,9 @@ public class RestGridClient extends RestClientSupport implements GridClient {
                 LOG.debug("About to test feature URI: " + uri);
                 //System.out.println("Found: " + resource(new URI(uri)).accept("text/xml").get(String.class));
 
-                ResourceList resourceList = resource(URIs.createURI(uri)).accept("text/xml")
-                    .get(ResourceList.class);
+                ResourceList resourceList = resource(URIs.createURI(uri)).accept("text/xml").get(ResourceList.class);
                 if (resourceList != null) {
-                    System.out.println(uri + " Found: " + resourceList);
+                    LOG.debug(uri + " Found: " + resourceList);
                     List<Resource> resources = resourceList.getResources();
                     for (Resource resource : resources) {
                         RestProcessClient client = createProcessClient(agentDetails, featureId, resource);
@@ -249,20 +230,23 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         return answer;
     }
 
-    private RestProcessClient createProcessClient(AgentDetails agentDetails, String featureId,
-                                                  Resource resource) {
-        return new RestProcessClient(agentDetails.getHref() + resource.getHref());
+    private RestProcessClient createProcessClient(AgentDetails agentDetails, String featureId, Resource resource) {
+        String agentHref = agentDetails.getHref();
+        String resourceHref = resource.getHref();
+        //Make sure we don't end up with a double slash
+        if (resourceHref.startsWith("/") && agentHref.endsWith("/")) {
+            resourceHref = resourceHref.substring(1);
+        }
+        return new RestProcessClient(agentHref + resourceHref);
     }
 
     public ProfileDetails getProfile(String id) {
-        WebResource.Builder resource =
-                resource(append(getProfilesUri(), "/", id)).accept("application/xml");
+        WebResource.Builder resource = resource(append(getProfilesUri(), "/", id)).accept("application/xml");
         return getTemplate().get(resource, ProfileDetails.class);
     }
 
     public ProfileStatus getProfileStatus(String id) {
-        WebResource.Builder resource =
-                resource(append(getProfilesUri(), "/", id, "/status")).accept("application/xml");
+        WebResource.Builder resource = resource(append(getProfilesUri(), "/", id, "/status")).accept("application/xml");
         return getTemplate().get(resource, ProfileStatus.class);
     }
 
@@ -297,17 +281,14 @@ public class RestGridClient extends RestClientSupport implements GridClient {
         getTemplate().delete(resource);
     }
 
-
     /**
      * Returns the configuration properties for the given profile ID
      */
     public Properties getProperties(String profileId) {
         ObjectHelper.notNull(profileId, "profile.id");
-        WebResource.Builder resource = resource(append(getProfilesUri(), "/", profileId, "/properties"))
-            .accept("application/xml");
+        WebResource.Builder resource = resource(append(getProfilesUri(), "/", profileId, "/properties")).accept("application/xml");
         return getTemplate().get(resource, Properties.class);
     }
-
 
     // Properties
     //-------------------------------------------------------------------------
