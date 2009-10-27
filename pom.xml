@@ -35,8 +35,8 @@
 
     <!-- TODO move to next milestone ASAP -->
     <!--<lift-version>1.1-M5</lift-version>-->
-    <lift-version>1.1-SNAPSHOT</lift-version>
-    <scala.version>2.7.5</scala.version>
+    <lift-version>1.1-M6</lift-version>
+    <scala.version>2.7.6</scala.version>
     <scala-plugin-version>2.9.1</scala-plugin-version>
     <slf4j-version>1.3.0</slf4j-version>
     <servlet-version>2.5</servlet-version>
