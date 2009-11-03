@@ -15,8 +15,9 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
-import org.apache.felix.karaf.shell.admin.AdminService;
-import org.apache.felix.karaf.shell.admin.Instance;
+import org.apache.felix.karaf.admin.AdminService;
+import org.apache.felix.karaf.admin.Instance;
+import org.apache.felix.karaf.admin.InstanceSettings;
 import org.easymock.EasyMock;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.common.GridClient;
@@ -189,18 +190,22 @@ public class KarafAgentInstancesTest extends TestCase {
             public void changePort(int arg0) throws Exception {
                 throw new UnsupportedOperationException("Not implemented");
             }
+   
+            
         }
 
         private Map<String, Instance> instances = new HashMap<String, Instance>();
 
-        public Instance createInstance(final String name, int port, String location) throws Exception {
-            assertEquals("The agent should not assign a port number", 0, port);
-            assertNull("The agent should not assign a location", location);
+
+        public Instance createInstance(String name, InstanceSettings settings) throws Exception {
+            assertEquals("The agent should not assign a port number", 0, settings.getPort());
+            assertNull("The agent should not assign a location", settings.getLocation());
 
             Instance instance = new MockAdminInstance(name);
             createInstanceLocation(instance);
             instances.put(name, instance);
             return instance;
+
         }
 
         private void createInstanceLocation(Instance instance) throws IOException {

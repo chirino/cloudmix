@@ -66,6 +66,6 @@
 
   <reference id="featuresService" interface="org.apache.felix.karaf.features.FeaturesService"/>
   
-  <reference id="adminService" interface="org.apache.felix.karaf.shell.admin.AdminService"/>
+  <reference id="adminService" interface="org.apache.felix.karaf.admin.AdminService"/>
 
 </blueprint>

@@ -11,6 +11,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,15 @@ public class KarafAgentTest extends TestCase {
             for (Bundle b : f.getBundles()) {
                 bundles.add(b.getUri());
             }
+        }
+
+        public void installFeature(String name, String version, EnumSet<Option> options) throws Exception {
+        }
+
+        public void installFeature(Feature f, EnumSet<Option> options) throws Exception {
+        }
+        
+        public void installFeatures(Set<Feature> features, EnumSet<Option> options) throws Exception {
         }
 
         public Feature[] listFeatures() throws Exception {

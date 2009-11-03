@@ -89,8 +89,8 @@
       </exclusions>      
     </dependency>
     <dependency>
-      <groupId>org.apache.felix.karaf.shell</groupId>
-      <artifactId>org.apache.felix.karaf.shell.admin</artifactId>
+      <groupId>org.apache.felix.karaf.admin</groupId>
+      <artifactId>org.apache.felix.karaf.admin.core</artifactId>
       <version>${karaf-version}</version>
       <scope>provided</scope>
     </dependency>

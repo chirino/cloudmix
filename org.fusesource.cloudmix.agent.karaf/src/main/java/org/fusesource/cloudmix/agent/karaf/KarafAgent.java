@@ -27,8 +27,9 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.felix.karaf.features.FeaturesService;
-import org.apache.felix.karaf.shell.admin.AdminService;
-import org.apache.felix.karaf.shell.admin.Instance;
+import org.apache.felix.karaf.admin.AdminService;
+import org.apache.felix.karaf.admin.Instance;
+import org.apache.felix.karaf.admin.InstanceSettings;
 import org.fusesource.cloudmix.agent.Bundle;
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.FeatureList;
@@ -95,7 +96,7 @@ public class KarafAgent extends InstallerAgent {
 
         if (resource.startsWith("karaf:")) {
             String name = getInstanceName(feat.getName());
-            Instance instance = adminService.createInstance(name, 0, null);
+            Instance instance = adminService.createInstance(name, new InstanceSettings(0, null, null, null));
             configureInstance(instance, resource);
             instance.start(null);
         } else {
