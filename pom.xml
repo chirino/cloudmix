@@ -23,7 +23,7 @@
     <camel-version>1.6.1.0-fuse</camel-version>
     <enunciate-version>1.8.1</enunciate-version>
     <felix-version>1.4.0</felix-version>
-    <karaf-version>1.1.0.1-fuse-SNAPSHOT</karaf-version>
+    <karaf-version>1.1.0.2-fuse-SNAPSHOT</karaf-version>
     <javax-persistence-version>1.0.2</javax-persistence-version>
     <jersey-version>1.1.2-ea</jersey-version>
     <jetty.port>8181</jetty.port>
@@ -105,6 +105,30 @@
     <url>http://fusesource.com/issues/browse/CLOUDMIX</url>
   </issueManagement>
 
+    <repositories>
+      <repository>
+        <id>open.iona.m2-snapshot</id>
+        <name>IONA Snapshots Repository</name>
+        <url>http://repo.open.iona.com/maven2-snapshot/</url>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+        <releases>
+           <enabled>false</enabled>
+        </releases>
+      </repository>
+      <repository>
+         <id>open.iona.m2</id>
+        <name>IONA Repository</name>
+        <url>http://repo.open.iona.com/maven2/</url>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+        <releases>
+           <enabled>true</enabled>
+        </releases>
+      </repository>
+    </repositories>
 
   <pluginRepositories>
     <pluginRepository>
