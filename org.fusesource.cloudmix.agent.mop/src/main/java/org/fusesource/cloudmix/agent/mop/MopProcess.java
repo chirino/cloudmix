@@ -8,10 +8,12 @@
 package org.fusesource.cloudmix.agent.mop;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.collect.Lists;
@@ -22,8 +24,6 @@ import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
 import org.fusesource.mop.MOP;
 import org.fusesource.mop.ProcessRunner;
-
-
 
 /**
  * @version $Revision: 1.1 $
@@ -42,9 +42,7 @@ public class MopProcess {
     private File workDirectory;
     private String featureId;
 
-    public MopProcess(MopAgent mopAgent, ProvisioningAction action,
-                      String credentials, String commandLine,
-                      ClassLoader mopClassLoader) {
+    public MopProcess(MopAgent mopAgent, ProvisioningAction action, String credentials, String commandLine, ClassLoader mopClassLoader) {
         this.action = action;
         this.featureId = action.getFeature();
         this.credentials = credentials;
@@ -89,13 +87,17 @@ public class MopProcess {
             throw new IllegalArgumentException("No arguments specified");
         }
 
-        // lets ensure the first statement is a fork to ensure we spin off into a separate child process
-        String first = argList.get(0);
-        if (!first.startsWith("fork")) {
+        //Propagate repository props to the forked process:
+        for (Entry<String, String> entry : mop.getRepository().getRepositorySystemProps().entrySet()) {
+            mop.setSystemProperty(entry.getKey(), entry.getValue());
+        }
+        
+        // lets ensure the command will spin off to another process:
+        if (!(argList.contains("fork") || argList.contains("exec"))) {
+            LOG.info("Adding Fork To MopProcess: " + argList);
             argList.add(0, "fork");
         }
-
-
+        
         // lets transform the class loader to exclude the parent (to avoid maven & jetty plugin dependencies)
         // lets run in a background thread
         thread = new Thread("Feature: " + getId() + "MOP " + argList) {
@@ -105,8 +107,12 @@ public class MopProcess {
                 dumpClassLoader(mopClassLoader);
 
                 File dir = getWorkDirectory();
-                LOG.info("Creating work directory " + dir + " for feature " + getId());
                 FileUtils.createDirectory(dir);
+                try {
+                    LOG.info("Created working directory " + dir.getCanonicalPath() + " for feature " + getId());
+                } catch (IOException e1) {
+                    LOG.error("Problem with working directory for " + dir + " for feature " + getId());
+                }
 
                 mop.setWorkingDirectory(dir);
 
@@ -158,7 +164,7 @@ public class MopProcess {
     public boolean isCompleted() {
         return completed.get();
     }
-    
+
     private void clear() {
         completed.set(true);
         mop = null;
