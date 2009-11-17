@@ -13,7 +13,7 @@
 
     <cloudmix.osgi.import.pkg>org.fusesource.cloudmix.common,
       org.fusesource.cloudmix.controller.provisioning,
-      orgorg.fusesource.cloudmix.controller.security *</cloudmix.osgi.import.pkg>
+      org.fusesource.cloudmix.controller.security, *</cloudmix.osgi.import.pkg>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>

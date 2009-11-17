@@ -17,6 +17,7 @@
   <properties>
     <cloudmix.osgi.import.pkg>
       org.apache.commons.logging,
+      org.apache.felix.karaf.admin,
       org.apache.felix.karaf.features,
       com.sun.jersey.core.impl.provider.header,
       com.sun.jersey.core.impl.provider.entity,
