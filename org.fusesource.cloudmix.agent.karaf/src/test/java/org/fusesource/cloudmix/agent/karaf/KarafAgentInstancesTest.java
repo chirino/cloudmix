@@ -190,8 +190,10 @@ public class KarafAgentInstancesTest extends TestCase {
             public void changePort(int arg0) throws Exception {
                 throw new UnsupportedOperationException("Not implemented");
             }
-   
-            
+
+            public boolean isRoot() {
+                return false;
+            }           
         }
 
         private Map<String, Instance> instances = new HashMap<String, Instance>();
