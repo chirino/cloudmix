@@ -110,8 +110,13 @@ public class ActiveMQMopTest extends TestController {
         broker = createFeatureDetails("amq-test-broker",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.broker:" + version)
                 .maximumInstances("1")
+                .property("broker.url", "Strings.mkString(('tcp://' + hostname + ':61616' in agents), 'failover:(', ',', ')')");
+
+                /*
+                // Scala version
                 .property("broker.url", "agents.map(\"tcp://\" + _.getHostname + \":61616\")"
                           + ".mkString(\"failover:(\", \",\", \")\")");
+                */
 
         producer = createFeatureDetails("amq-test-producer",
                 "mop:jar org.fusesource.cloudmix:org.fusesource.cloudmix.tests.producer:" + version)

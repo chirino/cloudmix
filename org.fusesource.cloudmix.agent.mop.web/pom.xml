@@ -21,35 +21,6 @@
     <jetty.port>0</jetty.port>
   </properties>
 
-    <repositories>
-         <repository>
-           <id>scala-tools.org</id>
-           <name>Scala Tools Maven2 Repository</name>
-           <url>http://scala-tools.org/repo-releases</url>
-           <snapshots>
-               <enabled>false</enabled>
-           </snapshots>
-           <releases>
-               <enabled>true</enabled>
-           </releases>
-         </repository>
-         <repository>
-           <id>scala-tools-snapshots.org</id>
-           <name>Scala Tools Maven2 Snapshot Repository</name>
-           <url>http://scala-tools.org/repo-snapshots</url>
-           <snapshots>
-               <enabled>true</enabled>
-           </snapshots>
-           <releases>
-               <enabled>false</enabled>
-           </releases>
-         </repository>
-         <repository>
-             <id>java.net.m2</id>
-             <url>http://download.java.net/maven/2</url>
-         </repository>
-    </repositories>
-
   <dependencies>
     <dependency>
       <groupId>org.fusesource.cloudmix</groupId>

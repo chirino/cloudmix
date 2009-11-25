@@ -59,6 +59,14 @@ public class AgentDetails extends IdentifiedType {
     @XmlElement(required = false)
     private List<W3CEndpointReference> endpointReferences = new ArrayList<W3CEndpointReference>();
 
+    public AgentDetails() {
+    }
+
+    public AgentDetails(String id, String name, String hostname) {
+        super(id);
+        this.name = name;
+        this.hostname = hostname;
+    }
 
     @Override
     public String toString() {
