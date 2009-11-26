@@ -7,20 +7,7 @@
  */
 package org.fusesource.cloudmix.controller.provisioning;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.sun.jersey.api.NotFoundException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.common.CloudmixHelper;
@@ -41,7 +28,23 @@ import org.fusesource.cloudmix.common.dto.ProfileStatus;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.dto.ProvisioningHistory;
 import org.fusesource.cloudmix.common.util.ObjectHelper;
+import org.fusesource.cloudmix.controller.properties.ExpressionFactory;
+import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
+import org.fusesource.cloudmix.controller.properties.mvel.MvelExpressionFactory;
 import org.mortbay.util.UrlEncoded;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @version $Revision$
@@ -51,6 +54,8 @@ public class DefaultGridController implements GridController, GridClient {
     private AtomicLong counter = new AtomicLong(0);
     private long agentTimeout = 3000L;
     private ControllerDataProvider dataProvider = new SimpleControllerDataProvider(this);
+    private PropertiesEvaluator propertiesEvaluator;
+    private ExpressionFactory expressionFactory = new MvelExpressionFactory();
 
     @Override
     public String toString() {
@@ -299,7 +304,7 @@ public class DefaultGridController implements GridController, GridClient {
 
     /**
      * Deletes the features for a given profile.
-     * 
+     * <p/>
      * An implementation might have a more optimal way of implementing this than
      * brute force iterating through all features.
      */
@@ -314,6 +319,7 @@ public class DefaultGridController implements GridController, GridClient {
     }
 
     // TODO note the difference in APIs between this and getProfileDetails
+
     public List<ProfileDetails> getProfiles() {
         return new ArrayList<ProfileDetails>(getProfileDetails());
     }
@@ -341,6 +347,10 @@ public class DefaultGridController implements GridController, GridClient {
             throw new NotFoundException("Profile '" + profileId + "' does not exist");
         }
         return rc.getStatus();
+    }
+
+    public Properties getProperties(String profileId) {
+        return getPropertiesEvaluator().evaluateProperties(profileId);
     }
 
     protected ProfileController getProfileController(String profileId) {
@@ -371,12 +381,32 @@ public class DefaultGridController implements GridController, GridClient {
 
     // Properties
     //-------------------------------------------------------------------------
+
     public long getAgentTimeout() {
         return agentTimeout;
     }
 
     public void setAgentTimeout(long machineTimeout) {
         this.agentTimeout = machineTimeout;
+    }
+
+    public PropertiesEvaluator getPropertiesEvaluator() {
+        if (propertiesEvaluator == null) {
+            propertiesEvaluator = new PropertiesEvaluator(this, expressionFactory);
+        }
+        return propertiesEvaluator;
+    }
+
+    public void setPropertiesEvaluator(PropertiesEvaluator propertiesEvaluator) {
+        this.propertiesEvaluator = propertiesEvaluator;
+    }
+
+    public ExpressionFactory getExpressionFactory() {
+        return expressionFactory;
+    }
+
+    public void setExpressionFactory(ExpressionFactory expressionFactory) {
+        this.expressionFactory = expressionFactory;
     }
 
     public ControllerDataProvider getDataProvider() {
@@ -390,6 +420,7 @@ public class DefaultGridController implements GridController, GridClient {
 
     // GridClient API
     //-------------------------------------------------------------------------
+
     public ProvisioningHistory pollAgentHistory(String agentId) {
         // we are local so no need to poll
         return getAgentHistory(agentId);
@@ -409,7 +440,7 @@ public class DefaultGridController implements GridController, GridClient {
     /**
      * This could get much more complicated. Should it dive into dependencies?
      * The more work we do here, the dumber the agent can stay.
-     * 
+     *
      * @param agent
      * @return
      */

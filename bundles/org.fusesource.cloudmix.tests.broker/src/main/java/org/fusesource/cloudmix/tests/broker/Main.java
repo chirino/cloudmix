@@ -24,8 +24,10 @@ public final class Main {
         //never constructed
     }
     
+    private static final boolean verbose = true;
+
     public static void main(String[] args) {
-        if (args.length > 0 && args[0].equals("-debug")) {
+        if (verbose || (args.length > 0 && args[0].equals("-debug"))) {
             Map<Object, Object> properties = new TreeMap<Object, Object>();
             properties.putAll(System.getProperties());
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {

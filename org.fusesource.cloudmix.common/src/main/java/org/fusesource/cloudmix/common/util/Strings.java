@@ -43,4 +43,12 @@ public class Strings {
     public static String mkString(Iterable iterable) {
         return mkString(iterable, ",");
     }
+
+    public static String asString(Object value) {
+        return asString(value, null);
+    }
+
+    public static String asString(Object value, String defaultIfNull) {
+        return value == null ? defaultIfNull : value.toString();
+    }
 }

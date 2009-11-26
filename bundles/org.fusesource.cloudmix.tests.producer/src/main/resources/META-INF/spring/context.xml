@@ -29,7 +29,7 @@
   </bean>
 
   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="brokerURL" value="discovery:(multicast://default)?initialReconnectDelay=100"/>
+    <property name="brokerURL" value="${broker.url}"/>
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
   </bean>
 </beans>

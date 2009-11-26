@@ -12,12 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import org.fusesource.cloudmix.agent.Feature;
 import org.fusesource.cloudmix.agent.InstallerAgent;
+import org.fusesource.cloudmix.common.GridClients;
+import org.fusesource.cloudmix.common.dto.Dependency;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 
 /**
@@ -141,5 +145,19 @@ public class MopAgent extends InstallerAgent {
 
     public File createProcessDirectory(ProvisioningAction action) {
         return new File(getWorkDirectory(), action.getFeature().replace(':', '_'));
+    }
+
+    public String getProfileFor(ProvisioningAction action) {
+        String feature = action.getFeature();
+        List<ProfileDetails> list = getClient().getProfiles();
+        for (ProfileDetails profileDetails : list) {
+            List<Dependency> dependencies = profileDetails.getFeatures();
+            for (Dependency dependency : dependencies) {
+                if (Objects.equal(dependency.getFeatureId(), feature)) {
+                    return profileDetails.getId();
+                }
+            }
+        }
+        return null;
     }
 }

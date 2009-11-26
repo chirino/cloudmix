@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,8 +21,10 @@ import com.google.common.collect.Lists;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.dto.ProvisioningAction;
 import org.fusesource.cloudmix.common.util.FileUtils;
+import org.fusesource.cloudmix.common.util.Strings;
 import org.fusesource.mop.MOP;
 import org.fusesource.mop.ProcessRunner;
 
@@ -31,6 +34,7 @@ import org.fusesource.mop.ProcessRunner;
 public class MopProcess {
     private static final transient Log LOG = LogFactory.getLog(MopProcess.class);
 
+    private MopAgent mopAgent;
     private ProvisioningAction action;
     private String credentials;
     private String commandLine;
@@ -43,6 +47,7 @@ public class MopProcess {
     private String featureId;
 
     public MopProcess(MopAgent mopAgent, ProvisioningAction action, String credentials, String commandLine, ClassLoader mopClassLoader) {
+        this.mopAgent = mopAgent;
         this.action = action;
         this.featureId = action.getFeature();
         this.credentials = credentials;
@@ -87,7 +92,24 @@ public class MopProcess {
             throw new IllegalArgumentException("No arguments specified");
         }
 
-        //Propagate repository props to the forked process:
+        // Propagate the profile properties to the forked process...
+        String profile = mopAgent.getProfileFor(action);
+        if (profile == null) {
+            LOG.warn("Could not find profile ID for action " + action);
+        } else {
+            GridClient gridClient = mopAgent.getClient();
+            Properties properties = gridClient.getProperties(profile);
+            if (properties == null) {
+                LOG.warn("No properties available for profile: " + profile);
+            } else {
+                for (Entry<Object, Object> entry : properties.entrySet()) {
+                    mop.setSystemProperty(Strings.asString(entry.getKey()), Strings.asString(entry.getValue()));
+                }
+            }
+        }
+
+
+        // Propagate repository props to the forked process:
         for (Entry<String, String> entry : mop.getRepository().getRepositorySystemProps().entrySet()) {
             mop.setSystemProperty(entry.getKey(), entry.getValue());
         }

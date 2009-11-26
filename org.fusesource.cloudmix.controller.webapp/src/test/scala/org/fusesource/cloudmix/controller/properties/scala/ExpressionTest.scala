@@ -2,7 +2,8 @@ package org.fusesource.cloudmix.controller.properties.scala
 
 
 import org.junit.Test
-import org.junit.Assert._
+import org.fusesource.cloudmix.common.dto.AgentDetails
+import java.util.{ArrayList, HashMap}
 
 
 /*
@@ -19,8 +20,6 @@ class ExpressionTest {
   @Test  
 }
 */
-import java.util.{HashMap => JavaHashMap}
-
 
 /**
  * @version $Revision : 1.1 $
@@ -29,21 +28,33 @@ import java.util.{HashMap => JavaHashMap}
 
 @Test
 class ExpressionTest {
-
-  //"parse expression" in {
+  val factory = new ScalaExpressionFactory
 
   @Test
-  def testParsing = {
-    val factory = new ScalaExpressionFactory
-    val expression = factory.createExpression("2 * 2")
+  def testParsing: Unit = {
+    evaluteExpression("2 * 2")
+    evaluteExpression("agents.size()")
+    evaluteExpression("agents.size()")
+    evaluteExpression("agents.map(\"tcp://\" + _.getHostname + \":61616\").mkString(\"failover:(\", \",\", \")\")");
+  }
+
+
+  def evaluteExpression(text: String) = {
+    val expression = factory.createExpression(text)
 
     println("Created expression " + expression)
-    
-    val variables = new JavaHashMap[String,Object]()
+
+    val variables = new HashMap[String, Object]()
+    val agents = new ArrayList[AgentDetails]
+    agents.add(new AgentDetails("a", "AgentA", "host1"))
+    agents.add(new AgentDetails("b", "AgentB", "host2"))
+
+    variables.put("agents", agents)
 
     val answer = expression.evaluate(variables)
 
     println("Evaluated expression with result: " + answer)
+
+    answer
   }
-  
 }

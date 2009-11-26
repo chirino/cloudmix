@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.fusesource.cloudmix.common.GridController;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
@@ -127,6 +128,10 @@ class MockGridController implements GridController {
     }
 
     public ProfileStatus getProfileStatus(String profileId) {
+        return null;
+    }
+
+    public Properties getProperties(String profileId) {
         return null;
     }
 

@@ -5,26 +5,17 @@
  * The software in this package is published under the terms of the AGPL license      *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package org.fusesource.cloudmix.controller.properties;
+package org.fusesource.cloudmix.controller.properties.mvel;
 
-import scala.tools.nsc.InterpreterLoop;
+import org.fusesource.cloudmix.controller.properties.Expression;
+import org.fusesource.cloudmix.controller.properties.ExpressionFactory;
 
 /**
+ * A factory of expressions using <a href="http://mvel.codehaus.org/">MVEL</a>
  * @version $Revision: 1.1 $
  */
-public class PropertyEvaluator {
-    private final String expression;
-
-    public PropertyEvaluator(String expression) {
-        this.expression = expression;
-    }
-
-    public String getExpression() {
-        return expression;
-    }
-
-    public String getValue() {
-        InterpreterLoop interpreter = new InterpreterLoop();
-        return getExpression();
+public class MvelExpressionFactory implements ExpressionFactory {
+    public Expression createExpression(String expression) {
+        return new MvelExpression(expression);
     }
 }

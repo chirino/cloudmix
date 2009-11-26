@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
@@ -61,7 +62,11 @@ public interface GridClient {
     void removeProfile(String profileId);
 
     ProfileStatus getProfileStatus(String id);
-
+    
+    /**
+     * Returns the configuration properties for the given profile ID
+     */
+    Properties getProperties(String profileId);
 
     // Agents
     //-------------------------------------------------------------------------

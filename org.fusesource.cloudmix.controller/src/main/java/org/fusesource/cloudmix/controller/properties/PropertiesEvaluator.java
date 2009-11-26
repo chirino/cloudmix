@@ -18,6 +18,7 @@ import org.fusesource.cloudmix.common.GridClient;
 import org.fusesource.cloudmix.common.GridClients;
 import org.fusesource.cloudmix.common.dto.AgentDetails;
 import org.fusesource.cloudmix.common.dto.FeatureDetails;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
 import org.fusesource.cloudmix.common.dto.PropertyDefinition;
 
 
@@ -44,6 +45,27 @@ public class PropertiesEvaluator {
         }
         return answer;
     }
+
+
+    /**
+     * Evaluate the properties for the given profile
+     */
+    public Properties evaluateProperties(ProfileDetails profile) {
+        List<FeatureDetails> features = GridClients.getFeatureDetails(client, profile);
+        return evaluateProperties(features);
+    }
+
+    /**
+     * Evaluate the properties for the given profile ID
+     */
+    public Properties evaluateProperties(String profileId) {
+        ProfileDetails details = client.getProfile(profileId);
+        if (details == null) {
+            throw new IllegalArgumentException("No ProfileDetails for profileId: " + profileId);
+        }
+        return evaluateProperties(details);
+    }
+
 
     public Properties evaluateProperties(List<FeatureDetails> features) {
         Properties answer = new Properties();

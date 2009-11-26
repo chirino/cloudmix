@@ -22,8 +22,7 @@ class ScalaExpression(expression: String) extends Expression {
                            jarPathOfClass("scala.ScalaObject"))
 
   def evaluate(variables: Map[String, Object]): AnyRef = {
-      // TODO
-      //settings.classpath.value = (origBootclasspath :: pathList).mkString(java.io.File.separator)
+      settings.classpath.value = (origBootclasspath :: pathList).mkString(java.io.File.separator)
 
       val out = new java.io.StringWriter()
       val interpreter = new Interpreter(settings, new PrintWriter(out))
@@ -37,6 +36,7 @@ class ScalaExpression(expression: String) extends Expression {
           val typeName = value.getClass.getCanonicalName
           println("scala value " + key + " = " + value + " typeName: " + typeName)
 
+          // TODO
           //interpreter.bind(key, typeName, value)
         }
       }

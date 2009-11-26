@@ -7,17 +7,12 @@
  */
 package org.fusesource.cloudmix.controller.resources;
 
-import java.util.List;
-import java.util.Properties;
+import org.fusesource.cloudmix.common.dto.ProfileDetails;
+import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
-
-import org.fusesource.cloudmix.common.GridClients;
-import org.fusesource.cloudmix.common.GridController;
-import org.fusesource.cloudmix.common.dto.FeatureDetails;
-import org.fusesource.cloudmix.common.dto.ProfileDetails;
-import org.fusesource.cloudmix.controller.properties.PropertiesEvaluator;
+import java.util.Properties;
 
 
 
@@ -36,11 +31,8 @@ public class PropertiesResource {
     @Produces("text/plain")
     public Properties getProperties() {
         ProfileDetails profile = profileResource.getProfileDetails();
-        GridController controller = profileResource.getController();
         PropertiesEvaluator propertiesEvaluator = profileResource.getPropertiesEvaluator();
-
-        List<FeatureDetails> features = GridClients.getFeatureDetails(controller, profile);
-        return propertiesEvaluator.evaluateProperties(features);
+        return propertiesEvaluator.evaluateProperties(profile);
     }
 
 }

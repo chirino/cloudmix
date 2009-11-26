@@ -22,9 +22,8 @@
 
     <!-- The transport connectors ActiveMQ will listen to -->
     <transportConnectors>
-      <transportConnector name="openwire" uri="tcp://localhost:${openwirePort}" discoveryUri="multicast://default"/>
-      <!-- <transportConnector name="ssl" uri="ssl://localhost:61617"/> -->
-      <transportConnector name="stomp" uri="stomp://localhost:${stompPort}"/>
+      <transportConnector name="openwire" uri="tcp://localhost:61616"/>
+      <transportConnector name="stomp" uri="stomp://localhost:61618"/>
     </transportConnectors>
 
   </broker>
