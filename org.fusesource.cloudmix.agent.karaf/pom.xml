@@ -32,7 +32,7 @@
       org.fusesource.cloudmix.common.dto,
       org.fusesource.cloudmix.common.util,
       org.fusesource.cloudmix.common,
-      javax.ws.rs.*,
+      javax.ws.rs;version="[1.1,1.2)",
       *
     </cloudmix.osgi.import.pkg>
   </properties>
