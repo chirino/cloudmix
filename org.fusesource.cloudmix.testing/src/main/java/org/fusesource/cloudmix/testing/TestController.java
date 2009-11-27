@@ -8,25 +8,7 @@
 package org.fusesource.cloudmix.testing;
 
 
-import java.io.BufferedInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.ws.rs.core.UriBuilder;
-
 import com.sun.jersey.api.client.filter.LoggingFilter;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fusesource.cloudmix.agent.RestGridClient;
@@ -46,6 +28,25 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
+import javax.ws.rs.core.UriBuilder;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 /**
  * Creates a new temporary environment for a distributed test,
@@ -54,7 +55,7 @@ import org.junit.rules.TestName;
  * @version $Revision: 1.1 $
  */
 public abstract class TestController {
-    
+
     /**
      * The name of the file which all the newly created profile IDs are written on each test run.
      * You can then clean up your test cloud by deleting all of the profiles in this file
@@ -65,9 +66,9 @@ public abstract class TestController {
 
     //CHECKSTYLE:OFF
     @Rule
-    public TestName testName = new TestName(); 
+    public TestName testName = new TestName();
     //CHECKSTYLE:ON
-    
+
     protected long startupTimeout = 60 * 1000;
     protected String controllerUrl = CloudmixHelper.getDefaultRootUrl();
 
@@ -77,6 +78,7 @@ public abstract class TestController {
     protected String profileId;
     protected boolean provisioned;
     protected boolean destroyProfileAfter;
+    protected boolean destroyOtherProfilesOnStartup = true;
     protected boolean logRestOperations;
 
 
@@ -106,8 +108,8 @@ public abstract class TestController {
 
     /**
      * Asserts that the test cloud is setup and provisioned properly within the given {@link #startupTimeout}.
-     * 
-     * This method should be called within each test method so that the profile is setup 
+     * <p/>
+     * This method should be called within each test method so that the profile is setup
      * correctly with the class of the test and the test method name.
      */
     public void checkProvisioned() throws Exception {
@@ -122,6 +124,24 @@ public abstract class TestController {
             // lets register the features
             GridClient controller = getGridClient();
 
+            // allow system property to override this value
+            String systemProperty = "cloudmix.destroyOtherProfilesOnStartup";
+            String flag = System.getProperty(systemProperty);
+            if (flag != null) {
+                try {
+                    destroyOtherProfilesOnStartup = Boolean.parseBoolean(flag);
+                } catch (Exception e) {
+                    LOG.error("Failed to parse boolean system property " + systemProperty + " with value: " + flag + ". Reason: " + e, e);
+                }
+            }
+            else if (destroyOtherProfilesOnStartup) {
+                LOG.info("About to destroy all previous JUnit profiles on the CloudMix server. " +
+                        "To disable this behaviour set the destroyOtherProfilesOnStartup field to false on your JUnit class or set the '" +
+                        systemProperty + "' system property to 'false''");
+            }
+            if (destroyOtherProfilesOnStartup) {
+                destroyCurrentProfiles();
+            }
             if (profileId == null) {
                 profileId = UUID.randomUUID().toString();
             }
@@ -169,9 +189,36 @@ public abstract class TestController {
         }
     }
 
-    protected List<? extends ProcessClient> getProcessClientsFor(FeatureDetails featureDetails) 
-        throws URISyntaxException {
-        
+    /**
+     * Destroys
+     */
+    protected void destroyCurrentProfiles() {
+        File file = new File(PROFILE_ID_FILENAME);
+        if (file.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                while (true) {
+                    String line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    line = line.trim();
+                    if (line.startsWith("#") || line.length() == 0) {
+                        continue;
+                    }
+                    LOG.info("Destroying old profile: " + line);
+                    gridClient.removeFeature(line);
+                }
+                file.delete();
+            } catch (IOException e) {
+                LOG.error("Failed to read old profiles to file: " + file);
+            }
+        }
+    }
+
+    protected List<? extends ProcessClient> getProcessClientsFor(FeatureDetails featureDetails)
+            throws URISyntaxException {
+
         return getProcessClientsFor(id(featureDetails));
     }
 
@@ -201,8 +248,8 @@ public abstract class TestController {
 
 
     protected String createProfileDescription(ProfileDetails pd) {
-        return "CloudMix test case for class <b>" + getClass().getName() 
-            + "</b> with test method <b>" + getTestName() + "</b>";
+        return "CloudMix test case for class <b>" + getClass().getName()
+                + "</b> with test method <b>" + getTestName() + "</b>";
     }
 
     /**
@@ -296,8 +343,8 @@ public abstract class TestController {
     }
 
 
-    protected void getFeatureLogFromAgent(AgentDetails agent, FeatureDetails feature, 
-            String relativeLogPath, OutputStream os) throws Exception {
+    protected void getFeatureLogFromAgent(AgentDetails agent, FeatureDetails feature,
+                                          String relativeLogPath, OutputStream os) throws Exception {
         if (!isSupportedAgent(agent)) {
             return;
         }
@@ -310,21 +357,21 @@ public abstract class TestController {
         while ((len = logStream.read(buf)) != -1) {
             os.write(buf, 0, len);
         }
-        
+
     }
-    
+
     private boolean isSupportedAgent(AgentDetails agent) {
         if (!"mop".equals(agent.getContainerType().toLowerCase())) {
             LOG.info("Unsupported agent type " + agent.getContainerType());
             return false;
-        } 
+        }
         if (agent.getHref() == null) {
             LOG.info("Agent href is null, no log can be retrieved");
             return false;
         }
         return true;
     }
-    
+
     private URI createRequestURI(AgentDetails agent, FeatureDetails feature, String relativeLogPath) {
         UriBuilder ub = UriBuilder.fromUri(agent.getHref());
         if ("mop".equals(agent.getContainerType().toLowerCase())) {
@@ -335,15 +382,15 @@ public abstract class TestController {
         //}
         return ub.path(feature.getId().replace(':', '_')).path(relativeLogPath).build();
     }
-    
-    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, FeatureDetails feature, 
-            String relativeLogPath, String queryName, String queryValue) throws Exception {
+
+    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, FeatureDetails feature,
+                                                            String relativeLogPath, String queryName, String queryValue) throws Exception {
         return getFeatureLogRecordsFromAgent(agent, feature, relativeLogPath,
                 Collections.singletonMap(queryName, Collections.singletonList(queryValue)));
     }
-    
-    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, FeatureDetails feature, 
-            String relativeLogPath, Map<String, List<String>> queries) throws Exception {
+
+    protected List<LogRecord> getFeatureLogRecordsFromAgent(AgentDetails agent, FeatureDetails feature,
+                                                            String relativeLogPath, Map<String, List<String>> queries) throws Exception {
         if (!isSupportedAgent(agent)) {
             return Collections.emptyList();
         }
@@ -351,7 +398,7 @@ public abstract class TestController {
         RestGridClient client = new RestGridClient(uri);
         return client.getLogRecords(queries);
     }
-    
+
     /**
      * Asserts that all the requested features have been provisioned properly
      */
@@ -388,8 +435,8 @@ public abstract class TestController {
 
             long delta = now - start;
             if (delta > startupTimeout) {
-                Assert.fail("Provision failure. Not enough instances of features: " 
-                            + failedFeatures + " after waiting " + (startupTimeout / 1000) + " seconds");
+                Assert.fail("Provision failure. Not enough instances of features: "
+                        + failedFeatures + " after waiting " + (startupTimeout / 1000) + " seconds");
             } else {
                 try {
                     Thread.sleep(1000);
