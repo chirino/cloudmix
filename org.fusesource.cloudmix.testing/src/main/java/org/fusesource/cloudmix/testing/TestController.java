@@ -59,7 +59,7 @@ public abstract class TestController {
      * The name of the file which all the newly created profile IDs are written on each test run.
      * You can then clean up your test cloud by deleting all of the profiles in this file
      */
-    public static final String PROFILE_ID_FILENAME = ".cloudmix.profiles";
+    public static final String PROFILE_ID_FILENAME = "cloudmix.profiles";
 
     private static final transient Log LOG = LogFactory.getLog(TestController.class);
 
