@@ -123,6 +123,8 @@ public class MopAgent extends InstallerAgent {
             } finally {
                 currentThread.setContextClassLoader(oldClassLoader);
             }
+        } else {
+            System.out.println("Could not install FEATURES, due to invalid syntax: " + resource);
         }
     }
 
