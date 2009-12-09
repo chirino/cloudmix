@@ -129,7 +129,28 @@
            <enabled>true</enabled>
         </releases>
       </repository>
-      
+      <repository>
+        <id>meshkeeper.snapshot.fusesource.org</id>
+        <name>MeshKeeper Snapshot Repo</name>
+        <url>http://meshkeeper.fusesource.org/repo/snapshot/</url>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+      </repository>
+      <repository>
+        <id>meshkeeper.release.fusesource.org</id>
+        <name>MeshKeeper Release Repo</name>
+        <url>http://meshkeeper.fusesource.org/repo/release/</url>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+      </repository>
      <repository>
       <id>scala-tools.org</id>
       <name>Scala Tools Maven2 Repository</name>
