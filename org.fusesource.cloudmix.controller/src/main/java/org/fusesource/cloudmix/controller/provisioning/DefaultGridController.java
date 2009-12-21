@@ -111,10 +111,12 @@ public class DefaultGridController implements GridController, GridClient {
         sb.append('_');
 
         String hostname = details.getHostname();
+        LOG.info("constructing agent.id with hostname: " + hostname);
         int idx = hostname.indexOf('.');
         if (idx > 0) {
             hostname = hostname.substring(0, idx);
         }
+        LOG.info("abbreviated hostname: " + hostname);
         sb.append(hostname);
         sb.append('_');
 
