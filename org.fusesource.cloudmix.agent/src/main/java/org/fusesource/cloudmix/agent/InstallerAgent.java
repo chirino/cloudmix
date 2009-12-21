@@ -363,6 +363,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
         }
 
         String generatedId = getClient().addAgentDetails(details);
+        LOG.info("generated agent.id: " + generatedId);
         agentId = generatedId;
         details.setId(generatedId);
 
@@ -492,6 +493,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
             }
 
             if (agentId != null && agentId.trim().length() > 0) {
+                LOG.info("persisting agent.id: " + agentId);
                 props.setProperty(PERSISTABLE_PROPERTY_AGENT_ID, agentId);
             }
 
@@ -516,6 +518,7 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
 
         synchronized (PROP_ACCESS_LOCK) {
             String prop = props.getProperty(PERSISTABLE_PROPERTY_AGENT_ID);
+            LOG.info("retrievd persistent agent.id: " + agentId);
             agentId = prop != null ? prop : agentId;
             agentDetails.setId(prop != null ? prop : agentDetails.getId());
 
@@ -733,12 +736,14 @@ public class InstallerAgent implements Callable<Object>, InitializingBean {
     }
 
     protected String createHostName() {
+        String hn = "localhost";
         try {
-            return Inet4Address.getLocalHost().getCanonicalHostName();
+            hn = Inet4Address.getLocalHost().getCanonicalHostName();
+            LOG.info("determined hostname: " + hn);
         } catch (UnknownHostException e) {
             LOG.warn("Could not find out the host name: " + e, e);
-            return "localhost";
         }
+        return hn;
     }
 
     /**
