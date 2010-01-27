@@ -197,7 +197,7 @@ public class CloudMixProvisioner implements Provisioner {
         controlFeature.setOwnedByProfileId(controlProfile.getId());
         controlFeature.setOwnsMachine(false);
         controlFeature.validContainerType("mop");
-        controlFeature.addProperty(MESHKEEPER_PROVISIONER_ID_PROPERTY, provisionerId);
+        controlFeature.addProperty(MESHKEEPER_PROVISIONER_ID_PROPERTY, "'" + provisionerId + "'");
         controller.addFeature(controlFeature);
         controlProfile.getFeatures().add(new Dependency(controlFeature.getId()));
         controller.addProfile(controlProfile);
