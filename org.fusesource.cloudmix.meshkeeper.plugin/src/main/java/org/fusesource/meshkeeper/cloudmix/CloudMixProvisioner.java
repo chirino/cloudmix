@@ -191,13 +191,15 @@ public class CloudMixProvisioner implements Provisioner {
         if (preferredControlControlHost != null) {
             controlFeature.preferredMachine(preferredControlControlHost);
         }
-        String provisionerId = UUID.randomUUID().toString();
-        controlFeature.setResource("mop:update includeOptional exec org.fusesource.meshkeeper:meshkeeper-api:" + getMeshKeeperVersion() + " " + org.fusesource.meshkeeper.control.Main.class.getName()
+        // Need to surround provisioner Id in quotes so CloudMix treats
+        // it as a String, not a number.
+        String provisionerId = "'" + UUID.randomUUID().toString() + "'";
+        controlFeature.setResource("mop:update exec org.fusesource.meshkeeper:meshkeeper-api:" + getMeshKeeperVersion() + " " + org.fusesource.meshkeeper.control.Main.class.getName()
                 + " --jms activemq:tcp://0.0.0.0:0" + " --registry zk:tcp://0.0.0.0:" + registryPort + " --provisionerId " + provisionerId);
         controlFeature.setOwnedByProfileId(controlProfile.getId());
         controlFeature.setOwnsMachine(false);
         controlFeature.validContainerType("mop");
-        controlFeature.addProperty(MESHKEEPER_PROVISIONER_ID_PROPERTY, "'" + provisionerId + "'");
+        controlFeature.addProperty(MESHKEEPER_PROVISIONER_ID_PROPERTY, provisionerId);
         controller.addFeature(controlFeature);
         controlProfile.getFeatures().add(new Dependency(controlFeature.getId()));
         controller.addProfile(controlProfile);
@@ -248,7 +250,7 @@ public class CloudMixProvisioner implements Provisioner {
             agentFeature.setId(MESH_KEEPER_AGENT_FEATURE_ID);
             agentFeature.depends(controlFeature);
             agentFeature.setOwnsMachine(machineOwnerShip);
-            agentFeature.setResource("mop:update includeOptional exec org.fusesource.meshkeeper:meshkeeper-api:" + getMeshKeeperVersion() + " "
+            agentFeature.setResource("mop:update exec org.fusesource.meshkeeper:meshkeeper-api:" + getMeshKeeperVersion() + " "
                     + org.fusesource.meshkeeper.launcher.Main.class.getName() + " --registry " + cachedRegistryConnectUri);
 
             int expectedAgentCount = 1;
@@ -344,8 +346,8 @@ public class CloudMixProvisioner implements Provisioner {
 
                     //Make sure the provisionerId matches that of the feature (e.g. we don't want to be looking at a
                     //stale properties file:
-                    if (provisionerId == null || provisionerId.equals(p.getProperty(MESHKEEPER_PROVISIONER_ID_PROPERTY))) {
-                        LOG.debug("Provisioned provisionerId doesn't match");
+                    if (provisionerId != null && provisionerId.equals(p.getProperty(MESHKEEPER_PROVISIONER_ID_PROPERTY))) {
+                        LOG.debug("Provisioned provisionerId match");
 
                         cachedRegistryConnectUri = (String) p.get(MeshKeeperFactory.MESHKEEPER_REGISTRY_PROPERTY);
                         if (cachedRegistryConnectUri == null) {
@@ -353,7 +355,9 @@ public class CloudMixProvisioner implements Provisioner {
                         }
                         return cachedRegistryConnectUri;
                     }
-
+                    else {
+                        LOG.debug("Provisioned provisionerId doesn't match");
+                    }
                 } catch (UniformInterfaceException uie) {
                     //if we get a 404 retry 
                     if (uie.getResponse().getStatus() != 404) {
