@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>bundles</artifactId>
+      <version>1.3-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.fusesource.cloudmix.bundles</groupId>
+    <artifactId>org.fusesource.cloudmix.bundles.jna</artifactId>
+    <version>3.0.5_1-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>CloudMix :: Bundles :: ${pkgArtifactId}-${pkgVersion}</name>
+    <description>
+        This bundle simply wraps ${pkgArtifactId}-${pkgVersion}.jar.
+    </description>
+
+    <properties>
+        <pkgGroupId>com.sun.jna</pkgGroupId>
+        <pkgArtifactId>jna</pkgArtifactId>
+        <pkgVersion>3.0.5</pkgVersion>
+        <cloudmix.osgi.export.pkg>
+            com.sun.jna*
+        </cloudmix.osgi.export.pkg>
+        <cloudmix.osgi.import.pkg>
+            !com.sun.jna*,
+            *
+        </cloudmix.osgi.import.pkg>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>${pkgGroupId}</groupId>
+            <artifactId>${pkgArtifactId}</artifactId>
+            <version>${pkgVersion}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>${pkgGroupId}:${pkgArtifactId}</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>${pkgGroupId}:${pkgArtifactId}</artifact>
+                                    <excludes>
+                                        <exclude>**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

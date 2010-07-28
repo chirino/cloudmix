@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+                      
+  <osgi:reference id="dataProviderRef" interface="org.fusesource.cloudmix.common.ControllerDataProvider"/>
+  <osgi:reference id="authenticatorRef" interface="org.fusesource.cloudmix.common.HttpAuthenticator"/>
+  <osgi:reference id="httpServiceRef" interface="org.osgi.service.http.HttpService"/>
+
+  <bean id="gridController" class="org.fusesource.cloudmix.controller.provisioning.ProvisioningGridController">
+    <property name="agentTimeout" value="1000"/>
+    <property name="dataProvider" ref="dataProviderRef"/>
+    <property name="startupProvisioningDelay" value="1000"/>
+  </bean>
+
+  <bean name="jerseyServletFactory" class="org.fusesource.cloudmix.controller.bundle.JerseyServletFactory" >
+  	<property name="jerseyClassNames">
+  	  <list>
+		<value>org.fusesource.cloudmix.controller.resources.AgentResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.AgentsResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.FeatureResource</value>
+	 	<value>org.fusesource.cloudmix.controller.resources.FeaturesResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.ProfileResource</value>
+	 	<value>org.fusesource.cloudmix.controller.resources.ProfilesResource</value>
+  		<value>org.fusesource.cloudmix.controller.resources.ResourceSupport</value>
+  	  </list>
+  	</property>
+    <property name="rootContext" value="/controller"/>
+  	<property name="httpService" ref="httpServiceRef"/>  	
+    <property name="authenticator" ref="authenticatorRef"/>
+  </bean>
+</beans>

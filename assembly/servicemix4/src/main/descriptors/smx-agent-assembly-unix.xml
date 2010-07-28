@@ -1,0 +1,50 @@
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<assembly>
+    <id>unix-bin</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/unix/apache-servicemix-kernel-${smx4-version}</directory>
+            <outputDirectory>/</outputDirectory>
+            <excludes>
+                <exclude>target/unix/apache-servicemix-kernel-${smx4-version}/bin/*</exclude>
+            </excludes>
+        </fileSet>
+    	<fileSet>
+            <directory>target/unix/apache-servicemix-kernel-${smx4-version}/bin</directory>
+            <outputDirectory>/bin/</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+            <fileMode>755</fileMode>
+            <lineEnding>unix</lineEnding>
+      	</fileSet>     
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>/deploy</outputDirectory>
+            <includes>
+                <include>org.fusesource.cloudmix.agent-bundle-${project.version}.jar</include>
+            </includes>
+            <fileMode>664</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/etc</outputDirectory>
+            <includes>
+                <include>org.fusesource.cloudmix.agent.cfg</include>
+            </includes>
+            <fileMode>664</fileMode>
+        </fileSet>
+    </fileSets>
+</assembly>

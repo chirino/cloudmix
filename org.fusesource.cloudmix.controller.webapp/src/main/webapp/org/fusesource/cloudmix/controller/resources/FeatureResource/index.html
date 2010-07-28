@@ -1,0 +1,29 @@
+<lift:surround with="default" at="content">
+  <lift:features.index>
+    <head>
+      <title>Feature</title>
+    </head>
+
+    <h2>Feature:
+      <feature:name/>
+    </h2>
+
+    <table>
+      <tr>
+        <th>Agents</th>
+      </tr>
+      <feature:agent>
+        <tr>
+          <td>
+            <a class='agent' agent:featureLink="na">
+              <agent:name/>
+            </a>
+          </td>
+        </tr>
+      </feature:agent>
+    </table>
+
+  </lift:features.index>
+</lift:surround>
+
+

@@ -1,0 +1,245 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix</artifactId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.fusesource.cloudmix.controller.webapp</artifactId>
+  <packaging>war</packaging>
+  <name>CloudMix :: Controller - WebApp version</name>
+  <description>The Controller Web Applicatio</description>
+
+  <properties>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.controller</artifactId>
+      <!-- <version>${project.version}</version> -->
+    </dependency>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.scalautil</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-lift</artifactId>
+      <version>${jersey-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.liftweb</groupId>
+      <artifactId>lift-webkit</artifactId>
+      <version>${lift-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-jaxrs</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+    <!-- testing -->
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.agent</artifactId>
+      <!-- lets add an agent into the runtime too! -->
+      <!--<scope>test</scope>-->
+    </dependency>
+
+    <!-- enable commons-logging when inside jetty6:run -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jcl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>specs</artifactId>
+      <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>scalacheck</artifactId>
+      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-tools.testing</groupId>
+      <artifactId>scalatest</artifactId>
+      <version>0.9.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit-version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+
+    <plugins>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <warSourceExcludes>
+            WEB-INF/lib/geronimo*.jar,
+            WEB-INF/lib/xml-apis*.jar,
+            WEB-INF/lib/xerces*.jar
+            WEB-INF/lib/servlet.*.jar
+          </warSourceExcludes>
+        </configuration>
+      </plugin>
+
+      <!--
+      <plugin>
+        <groupId>org.codehaus.enunciate</groupId>
+        <artifactId>maven-enunciate-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+            <configuration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      -->
+
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>${jetty-version}</version>
+        <configuration>
+          <connectors>
+            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+              <port>${jetty.port}</port>
+            </connector>
+          </connectors>
+
+          <webAppConfig>
+            <contextPath>/</contextPath>
+          </webAppConfig>
+
+          <systemProperties>
+            <!-- enable easy connection to JConsole -->
+            <systemProperty>
+              <name>com.sun.management.jmxremote</name>
+              <value/>
+            </systemProperty>
+          </systemProperties>
+          <!--
+          use JavaRebel if you want hot-redeployment via the run script
+
+           install it from here http://www.zeroturnaround.com/download/
+
+           then set your JAVAREBEL_HOME environment variable to point to the install
+          -->
+          <scanIntervalSeconds>0</scanIntervalSeconds>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!--<exclude>**/RuntimeFailingTest.java</exclude>-->
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <configuration>
+            <downloadSources>true</downloadSources>
+            <buildcommands>
+              <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
+              <java.lang.String>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</java.lang.String>
+              <!-- Lets not enable the PMD buidler just yet..
+              <java.lang.String>net.sourceforge.pmd.runtime.pmdBuilder</java.lang.String>
+              -->
+            </buildcommands>
+            <projectnatures>
+              <nature>ch.epfl.lamp.sdt.core.scalanature</nature>
+              <nature>org.eclipse.jdt.core.javanature</nature>
+              <nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
+              <!-- Lets not enable the PMD buidler just yet..
+              <nature>net.sourceforge.pmd.runtime.pmdNature</nature>
+              -->
+            </projectnatures>
+            <sourceIncludes>
+              <sourceInclude>**/*.scala</sourceInclude>
+            </sourceIncludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

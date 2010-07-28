@@ -1,0 +1,109 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix</artifactId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.fusesource.cloudmix.agent</artifactId>
+  <packaging>bundle</packaging>
+  <name>CloudMix :: Agent</name>
+  <description>CloudMix Agent</description>
+
+  <properties>
+    <cloudmix.osgi.import.pkg>
+      !javax.xml.bind.annotation.adapters,
+      javax.ws.rs.*;version=0.0,
+      *
+    </cloudmix.osgi.import.pkg>
+
+  </properties>
+  <repositories>
+      <repository>
+          <!-- for com.sun.jna -->
+         <id>jboss</id>
+         <url>http://repository.jboss.com/maven2/</url>
+       </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.common</artifactId>
+    </dependency>
+
+    <!--
+      <dependency>
+        <groupId>jersey-debug</groupId>
+        <artifactId>jersey</artifactId>
+      </dependency>
+    -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.google-collections</groupId>
+      <artifactId>google-collect</artifactId>
+      <version>${google-collect-version}</version>
+    </dependency> 
+<!--
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.1.0</version>
+      <optional>true</optional>
+    </dependency>
+-->
+
+    <!-- 
+       CM-2
+    <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+    </dependency>
+    -->
+
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>2.2.2.2-fuse</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

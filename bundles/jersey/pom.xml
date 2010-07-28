@@ -1,0 +1,222 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+<!--
+  <parent>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix</artifactId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+-->
+
+<!-- TODO monster HACK!!-->
+<parent>
+  <groupId>org.apache.servicemix.bundles</groupId>
+  <artifactId>bundles-pom</artifactId>
+  <version>3</version>
+</parent>
+    
+  <groupId>org.fusesource.cloudmix</groupId>
+  <version>1.3-SNAPSHOT</version>
+
+  <artifactId>org.fusesource.cloudmix.bundles.jersey-bundle</artifactId>
+  <packaging>bundle</packaging>
+
+  <name>CloudMix Bundles: ${pkgArtifactId}-${artifactVersion}</name>
+  <description>
+    This bundle simply wraps ${pkgArtifactId}-${artifactVersion}.jar.
+  </description>
+
+  <properties>
+    <!-- TODO monster HACK!!-->
+    <jersey-version>1.1.0-ea</jersey-version>
+    
+    
+    <pkgGroupId>com.sun.jersey</pkgGroupId>
+    <pkgArtifactId>jersey-osgi-bundle</pkgArtifactId>
+    <pkgVersion>${jersey-version}</pkgVersion>
+    <artifactVersion>${jersey-version}</artifactVersion>
+    <servicemix.osgi.export.pkg>
+      com.sun.jersey.core.impl.provider.header; version=0.0.0,
+      com.sun.jersey.core.impl.provider.entity; version=0.0.0,
+      com.sun.jersey.server.impl; version=0.0.0,
+      com.sun.jersey.server.impl.template; version=0.0.0,
+      com.sun.jersey.server.impl.container; version=0.0.0,
+      com.sun.jersey.server.impl.model.method.dispatch; version=0.0.0,
+      com.sun.jersey.server.impl.uri; version=0.0.0,
+      com.sun.jersey.server.impl.container.httpserver; version=0.0.0,
+    </servicemix.osgi.export.pkg>
+    <servicemix.osgi.import.pkg>javax.servlet,
+      javax.servlet.http,
+      javax.activation,
+      javax.xml.bind,
+      javax.xml.bind.annotation,
+      javax.xml.bind.annotation.adapters,
+      javax.xml.bind.attachment,
+      javax.xml.bind.helpers,
+      javax.xml.bind.util,
+      javax.mail,
+      javax.mail.event,
+      javax.mail.internet,
+      javax.mail.search,
+      javax.mail.util,
+      javax.xml.stream,
+      javax.xml.stream.events,
+      javax.xml.stream.util,
+      org.objectweb.asm,
+      org.objectweb.asm.attrs,
+      org.objectweb.asm.commons,
+      org.objectweb.asm.signature,
+      org.objectweb.asm.tree,
+      org.objectweb.asm.tree.analysis,
+      org.objectweb.asm.util,
+      org.objectweb.asm.util.attrs,
+      org.objectweb.asm.xml,
+      org.springframework.web.context.support;resolution:=optional,
+      org.springframework.web.context;resolution:=optional,
+      ${org.osgi.framework.system.packages},
+      !*</servicemix.osgi.import.pkg>
+  </properties>
+  <repositories>
+    <repository>
+      <id>java.net.m2</id>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+  </repositories>
+  <!-- OLD
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.container.httpserver,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.uri,
+
+  -->
+  <dependencies>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey-version}</version>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- TODO do we need all of this grizzly?? -->
+       <dependency>
+        <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-framework</artifactId>
+        <version>1.9.8</version>
+        <optional>true</optional>
+    </dependency>
+       <dependency>
+        <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-http</artifactId>
+        <version>1.9.8</version>
+        <optional>true</optional>
+    </dependency>
+       <dependency>
+        <groupId>com.sun.grizzly</groupId>
+        <artifactId>grizzly-utils</artifactId>
+        <version>1.9.8</version>
+        <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>${pkgGroupId}:jersey-server</include>
+                  <include>${pkgGroupId}:jersey-client</include>
+                  <include>${pkgGroupId}:jersey-core</include>
+                  <include>com.sun.jersey.contribs:jersey-spring</include>
+                  <include>com.sun.grizzly:grizzly-http</include>
+                  <include>com.sun.grizzly:grizzly-utils</include>
+                  <include>com.sun.grizzly:grizzly-framework</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>${pkgGroupId}:jersey-core</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>${pkgGroupId}:jersey-client</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.jersey.contribs:jersey-spring</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>${pkgGroupId}:jersey-server</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.grizzly:grizzly-framework</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.grizzly:grizzly-http</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>com.sun.grizzly:grizzly-utils</artifact>
+                  <excludes>
+                    <exclude>**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

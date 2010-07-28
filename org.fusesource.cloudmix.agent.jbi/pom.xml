@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+<!--
+
+  Copyright (C) 2008 Progress Software, Inc. All rights reserved.                    
+  http://fusesource.com                                                              
+
+  The software in this package is published under the terms of the AGPL license       
+  a copy of which has been included with this distribution in the license.txt file.  
+
+-->
+
+  <parent>
+    <artifactId>cloudmix</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.fusesource.cloudmix</groupId>
+  <artifactId>org.fusesource.cloudmix.agent.jbi</artifactId>
+  <packaging>jbi-component</packaging>
+  <name>CloudMix :: Agent - JBI Installer</name>
+  <description>CloudMix Agent JBI Installer using JMX</description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.servicemix.tooling</groupId>
+        <artifactId>jbi-maven-plugin</artifactId>
+        <version>${smx3-version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <description>CloudMix JBI Service Assembly Deployer</description>
+          <type>service-engine</type>
+          <component>org.fusesource.cloudmix.agent.jbi.AgentComponent</component>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.agent</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring-version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix</groupId>
+      <artifactId>servicemix-shared</artifactId>
+      <version>${smx3-version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicemix</groupId>
+      <artifactId>servicemix-core</artifactId>
+      <version>${smx3-version}</version>
+      <scope>provided</scope>
+      <exclusions>
+       <!-- Workaround for bug with geronimo specs - see AMQ-1944 -->
+        <exclusion>
+          <groupId>org.jencks</groupId>
+          <artifactId>jencks</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.easymock</groupId>
+    	<artifactId>easymock</artifactId>
+    	<version>2.3</version>
+    	<scope>test</scope>
+    </dependency>
+   </dependencies>
+</project>

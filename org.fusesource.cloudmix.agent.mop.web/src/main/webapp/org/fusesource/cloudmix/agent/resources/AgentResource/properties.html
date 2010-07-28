@@ -1,0 +1,74 @@
+<lift:surround with="default" at="content">
+  <lift:agents.index>
+    <head>
+      <title>CloudMix Agent System Properties</title>
+    </head>
+
+    <h2>System Properties
+      <agent:name/>
+    </h2>
+
+
+    <table>
+      <tr>
+        <td>ID</td>
+        <td>
+          <agent:id/>
+        </td>
+        <td>PID</td>
+        <td>
+          <agent:pid/>
+        </td>
+      </tr>
+      <tr>
+        <td>Profile</td>
+        <td>
+          <agent:profile/>
+        </td>
+        <td>Host Name</td>
+        <td>
+          <agent:hostname/>
+        </td>
+      </tr>
+      <tr>
+        <td>Operating System</td>
+        <td>
+          <agent:os/>
+        </td>
+        <td>Container</td>
+        <td>
+          <agent:containerType/>
+        </td>
+      </tr>
+      <tr>
+        <td>Maximum Features</td>
+        <td>
+          <agent:maximumFeatures/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <table>
+            <tr>
+              <th>System Property</th>
+              <th>Value</th>
+            </tr>
+
+            <agent:systemProperty>
+              <tr>
+                <td>
+                  <systemProperty:name/>
+                </td>
+                <td>
+                  <systemProperty:value/>
+                </td>
+              </tr>
+            </agent:systemProperty>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </lift:agents.index>
+</lift:surround>
+
+

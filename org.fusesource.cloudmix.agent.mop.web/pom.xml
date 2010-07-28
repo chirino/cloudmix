@@ -1,0 +1,183 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>cloudmix</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.fusesource.cloudmix.agent.mop.web</artifactId>
+  <packaging>war</packaging>
+  <name>CloudMix :: MOP Agent Web Application</name>
+  <description>CloudMix MOP Agent  Web Application</description>
+
+  <properties>
+    <profile>*</profile>
+    <workingDir>cloudmix-data</workingDir>
+    <cloudmixUrl>http://localhost:8181</cloudmixUrl>
+    <jetty.port>0</jetty.port>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.agent.mop</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.scalautil</artifactId>
+       <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalaforge</groupId>
+      <artifactId>scalax</artifactId>
+      <version>0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <version>${jersey-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-lift</artifactId>
+      <version>${jersey-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.liftweb</groupId>
+      <artifactId>lift-webkit</artifactId>
+      <version>${lift-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-jaxrs</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit-version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+
+    <plugins>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>${jetty-version}</version>
+        <configuration>
+          <connectors>
+            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+              <port>${jetty.port}</port>
+            </connector>
+          </connectors>
+
+          <webAppConfig>
+            <contextPath>/</contextPath>
+          </webAppConfig>
+
+          <systemProperties>
+            <!-- enable easy connection to JConsole -->
+            <systemProperty>
+              <name>com.sun.management.jmxremote</name>
+              <value/>
+            </systemProperty>
+            <systemProperty>
+              <name>agent.controller.uri</name>
+              <value>${cloudmixUrl}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>agent.profile</name>
+              <value>${profile}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>agent.workdir</name>
+              <value>${workingDir}</value>
+            </systemProperty>
+          </systemProperties>
+          <!--
+          use JavaRebel if you want hot-redeployment via the run script
+
+           install it from here http://www.zeroturnaround.com/download/
+
+           then set your JAVAREBEL_HOME environment variable to point to the install
+          -->
+          <scanIntervalSeconds>0</scanIntervalSeconds>
+        </configuration>
+      </plugin>
+
+
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>cloudmix-data</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-eclipse-plugin</artifactId>
+              <configuration>
+                <downloadSources>true</downloadSources>
+                <buildcommands>
+                  <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
+                  <java.lang.String>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</java.lang.String>
+                  <!-- Lets not enable the PMD buidler just yet..
+                  <java.lang.String>net.sourceforge.pmd.runtime.pmdBuilder</java.lang.String>
+                  -->
+                </buildcommands>
+                <projectnatures>
+                  <nature>ch.epfl.lamp.sdt.core.scalanature</nature>
+                  <nature>org.eclipse.jdt.core.javanature</nature>
+                  <nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
+                  <!-- Lets not enable the PMD buidler just yet..
+                  <nature>net.sourceforge.pmd.runtime.pmdNature</nature>
+                  -->
+                </projectnatures>
+                <sourceIncludes>
+                    <sourceInclude>**/*.scala</sourceInclude>
+                </sourceIncludes>
+              </configuration>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

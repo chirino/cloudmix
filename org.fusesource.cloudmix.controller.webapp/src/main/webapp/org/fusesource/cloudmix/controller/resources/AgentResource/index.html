@@ -1,0 +1,88 @@
+<lift:surround with="default" at="content">
+  <lift:agents.index>
+    <head>
+      <title>Agent</title>
+    </head>
+
+    <h2>Agent:
+      <agent:name/>
+    </h2>
+
+
+    <table>
+      <tr>
+        <td>Website</td>
+        <td>
+          <a class='agentSite' agent:siteLink="na">
+           <agent:site/>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>Host Name</td>
+        <td>
+          <agent:hostname/>
+        </td>
+      </tr>
+      <tr>
+        <td>PID</td>
+        <td>
+          <agent:pid/>
+        </td>
+      </tr>
+      <tr>
+        <td>Profile</td>
+        <td>
+          <agent:profile/>
+        </td>
+      </tr>
+      <tr>
+        <td>Operating System</td>
+        <td>
+          <agent:os/>
+        </td>
+      </tr>
+      <tr>
+        <td>Container</td>
+        <td>
+          <agent:containerType/>
+        </td>
+      </tr>
+      <tr>
+        <td>ID</td>
+        <td>
+          <agent:id/>
+        </td>
+      </tr>
+      <tr>
+        <td>Maximum Features</td>
+        <td>
+          <agent:maximumFeatures/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <table>
+            <tr>
+              <th>System Property</th>
+              <th>Value</th>
+            </tr>
+
+            <agent:systemProperty>
+              <tr>
+                <td>
+                  <systemProperty:name/>
+                </td>
+                <td>
+                  <systemProperty:value/>
+                </td>
+              </tr>
+            </agent:systemProperty>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </lift:agents.index>
+</lift:surround>
+
+

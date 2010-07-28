@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://activemq.apache.org/camel/schema/spring http://activemq.apache.org/camel/schema/spring/camel-spring.xsd">
+
+  <bean id="gridController" class="org.fusesource.cloudmix.controller.provisioning.ProvisioningGridController">
+    <property name="agentTimeout" value="2000"/>
+  </bean>
+
+  <bean id="expressionFactory" class="org.fusesource.cloudmix.controller.properties.mvel.MvelExpressionFactory"/>
+
+  <bean id="propertyEvaluator" class="org.fusesource.cloudmix.controller.properties.PropertiesEvaluator">
+    <constructor-arg index="0" ref="gridController"/>
+    <constructor-arg index="1" ref="expressionFactory"/>
+  </bean>
+
+</beans>

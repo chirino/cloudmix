@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+  xmlns:ctx="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                      http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd" >
+
+  <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller">
+    <property name="agent" ref="smxAgent" />
+    <property name="initialPollingDelay" value="${initialPollingDelay}" />
+    <property name="pollingPeriod" value="${pollingPeriod}" />
+  </bean>
+
+  <!-- use the following password provider for a pop-up dialog -->
+  <!--
+  <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.DialogPasswordProvider">
+    <property name="username" value="Agent"/>
+  </bean>
+  -->
+  
+  <!-- use the following password provider for file based password-->
+  <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.FilePasswordProvider">
+    <property name="passwordFile" value="${karaf.home}/etc/agent.password"/>
+  </bean>
+  
+  <bean id="smxAgent" class="org.fusesource.cloudmix.agent.smx4.ServiceMixAgent">
+    <property name="client" ref="restGridClient"/>
+    <property name="featuresService" ref="featuresService" />
+    <property name="maxFeatures" value="${maxFeatures}"/>
+    <property name="profile" value="${profile}"/>
+    <property name="detailsPropertyFilePath" value="${karaf.home}/data/grid/agent.properties"/>
+    <property name="workDirectory" value="${karaf.home}/data/cloudmix"/>
+  </bean>
+  
+
+  <bean id="restGridClient" class="org.fusesource.cloudmix.agent.RestGridClient">
+    <property name="rootUri" value="${controllerRootUri}"/>
+    <property name="username" value="Agent"/>
+    <property name="passwordProvider" ref="passwordProvider"/>
+  </bean>
+
+  <bean id="endpointRegistry" class="org.fusesource.cloudmix.agent.EndpointRegistry">
+    <property name="client" ref="restGridClient"/>
+    <property name="agent" ref="smxAgent" />
+  </bean>
+
+  <osgi:service ref="endpointRegistry" id="endpointRegistryOSGiService" interface="org.fusesource.cloudmix.agent.EndpointRegistry"/>
+
+  <osgi:reference id="featuresService" interface="org.apache.felix.karaf.gshell.features.FeaturesService" />
+
+  <osgix:cm-properties id="agentProps" persistent-id="org.fusesource.cloudmix.agent.smx4">
+    <prop key="initialPollingDelay">1000</prop>
+    <prop key="maxFeatures">25</prop>
+    <prop key="pollingPeriod">500</prop>
+    <prop key="profile">default</prop>
+    <prop key="controllerRootUri">http://localhost:9091/controller</prop>
+  </osgix:cm-properties>
+
+  <ctx:property-placeholder properties-ref="agentProps"/>
+  
+</beans>

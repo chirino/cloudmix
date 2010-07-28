@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:cm="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
+
+  
+  <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
+  
+  <cm:property-placeholder persistent-id="org.fusesource.cloudmix.agent.karaf">
+    <cm:default-properties>
+      <cm:property name="initialPollingDelay" value="1000"/>
+      <cm:property name="maxFeatures" value="25"/>
+      <cm:property name="pollingPeriod" value="500"/>
+      <cm:property name="profile" value="*"/>
+      <cm:property name="controllerRootUri" value="http://localhost:8181/"/>
+      <cm:property name="homeDir" value="$[karaf.home]"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="agentPoller" class="org.fusesource.cloudmix.agent.AgentPoller" init-method="start">
+    <property name="installerAgent" ref="karafAgent"/>
+    <property name="initialPollingDelay" value="${initialPollingDelay}"/>
+    <property name="pollingPeriod" value="${pollingPeriod}"/>
+  </bean>
+
+  <!-- use the following password provider for a pop-up dialog -->
+  <!--
+  <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.DialogPasswordProvider">
+    <property name="username" value="Agent"/>
+  </bean>
+  -->
+
+  <!-- use the following password provider for file based password-->
+  <bean id="passwordProvider" class="org.fusesource.cloudmix.agent.security.FilePasswordProvider">
+    <property name="passwordFile" value="${homeDir}/etc/agent.password"/>
+  </bean>
+
+  <bean id="karafAgent" class="org.fusesource.cloudmix.agent.karaf.KarafAgent" init-method="init">
+    <property name="client" ref="restGridClient"/>
+    <property name="featuresService" ref="featuresService"/>
+    <property name="adminService" ref="adminService"/>
+    <property name="maxFeatures" value="${maxFeatures}"/>
+    <property name="profile" value="${profile}"/>
+    <property name="detailsPropertyFilePath" value="${homeDir}/data/grid/agent.properties"/>
+    <property name="workDirectory" value="${homeDir}/data/cloudmix"/>
+  </bean>
+
+
+  <bean id="restGridClient" class="org.fusesource.cloudmix.agent.RestGridClient">
+    <property name="rootUri" value="${controllerRootUri}"/>
+    <property name="username" value="Agent"/>
+    <property name="passwordProvider" ref="passwordProvider"/>
+  </bean>
+
+  <bean id="endpointRegistry" class="org.fusesource.cloudmix.agent.EndpointRegistry">
+    <property name="client" ref="restGridClient"/>
+    <property name="agent" ref="karafAgent"/>
+  </bean>
+
+
+  <service ref="karafAgent" id="cloudmixAgent"
+           interface="org.fusesource.cloudmix.agent.karaf.KarafAgent"/>
+
+  <service ref="endpointRegistry" id="endpointRegistryOSGiService"
+           interface="org.fusesource.cloudmix.agent.EndpointRegistry"/>
+
+  <reference id="featuresService" interface="org.apache.felix.karaf.features.FeaturesService"/>
+  
+  <reference id="adminService" interface="org.apache.felix.karaf.admin.AdminService"/>
+
+</blueprint>

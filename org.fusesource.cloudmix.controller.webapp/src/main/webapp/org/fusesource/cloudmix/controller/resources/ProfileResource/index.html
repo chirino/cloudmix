@@ -1,0 +1,56 @@
+<lift:surround with="default" at="content">
+  <lift:profiles.index>
+    <head>
+      <title>Profile</title>
+
+      <script type="text/javascript">
+        function confirmDelete() {
+          return confirm('Are you sure you want to kill this profile?');
+        }
+      </script>
+    </head>
+
+    <h2>Profile:
+      <profile:name/>
+    </h2>
+
+    <p>
+      <profile:description/>
+    </p>
+
+    <table width="100%">
+      <tr>
+        <td>
+          <a profile:propertiesLink="na" title="Property values for this feature">Configuration Properties</a>
+        </td>
+        <td align="right">
+          <form profile:action="na" method="post">
+            <input type="submit" name="kill" value="Kill this profile" onclick="return confirmDelete()"/>
+          </form>
+        </td>
+      </tr>
+    </table>
+
+    <table width="100%">
+      <tr>
+        <th>Feature</th>
+        <th>Provisioned?</th>
+      </tr>
+
+      <profile:feature>
+        <tr>
+          <td>
+            <a class='feature' feature:link="na">
+              <feature:name/>
+            </a>
+          </td>
+          <td>
+            <feature:provisioned/>
+          </td>
+        </tr>
+      </profile:feature>
+    </table>
+  </lift:profiles.index>
+</lift:surround>
+
+

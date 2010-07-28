@@ -1,0 +1,42 @@
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:amq="http://activemq.apache.org/schema/core"
+        xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd   
+                            http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+  
+  <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="${activemq.base}/data">
+
+    <!-- The transport connectors ActiveMQ will listen to -->
+    <transportConnectors>
+      <transportConnector name="openwire" uri="tcp://localhost:61616"/>
+      <transportConnector name="stomp" uri="stomp://localhost:61618"/>
+    </transportConnectors>
+
+  </broker>
+
+<!--
+  TODO how to do this now???
+  
+  <osgix:property-placeholder persistent-id="org.apache.activemq.broker.multicast">
+    <osgix:default-properties>
+      <prop key="openwirePort">61616</prop>
+      <prop key="stompPort">61613</prop>
+    </osgix:default-properties>
+  </osgix:property-placeholder>
+-->
+
+</beans>

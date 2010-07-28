@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <artifactId>cloudmix</artifactId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>pax-run</artifactId>
+  <packaging>pom</packaging>
+  <name>Cloudmix :: Pax :: Run</name>
+
+
+  <dependencies>
+<!--
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>features</artifactId>
+      <version>${project.version}</version>
+      <classifier>pom</classifier>
+    </dependency>
+-->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--
+        lets the feature to be booted up using
+        mvn pax:run
+      -->
+      <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>1.4</version>
+        <configuration>
+          <framework>felix</framework>
+          <profiles>log/1.3.0,karaf.gogo/1.2.0</profiles>
+          <deployURLs>scan-features:mvn:org.fusesource.cloudmix/features/${project.version}/xml/features!/cloudmix.agent</deployURLs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>cloudmix</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.fusesource.cloudmix.scalautil</artifactId>
+  <name>CloudMix :: Scala Util</name>
+  <description>CloudMix Scala Utilities</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+    </dependency>
+
+<!--
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+      <scope>provided</scope>
+    </dependency>
+-->
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit-version}</version>
+      <scope>test</scope>
+    </dependency>
+
+
+  </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+
+    <plugins>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-eclipse-plugin</artifactId>
+              <configuration>
+                <downloadSources>true</downloadSources>
+                <buildcommands>
+                  <java.lang.String>ch.epfl.lamp.sdt.core.scalabuilder</java.lang.String>
+                  <java.lang.String>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</java.lang.String>
+                  <!-- Lets not enable the PMD buidler just yet..
+                  <java.lang.String>net.sourceforge.pmd.runtime.pmdBuilder</java.lang.String>
+                  -->
+                </buildcommands>
+                <projectnatures>
+                  <nature>ch.epfl.lamp.sdt.core.scalanature</nature>
+                  <nature>org.eclipse.jdt.core.javanature</nature>
+                  <nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
+                  <!-- Lets not enable the PMD buidler just yet..
+                  <nature>net.sourceforge.pmd.runtime.pmdNature</nature>
+                  -->
+                </projectnatures>
+                <sourceIncludes>
+                    <sourceInclude>**/*.scala</sourceInclude>
+                </sourceIncludes>
+              </configuration>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

@@ -1,0 +1,17 @@
+<!--
+
+     Copyright (C) 2008 Progress Software, Inc. All rights reserved.
+     http://fusesource.com
+
+     The software in this package is published under the terms of the AGPL license
+     a copy of which has been included with this distribution in the license.txt file.
+
+-->
+<features>
+    <feature name="f4">
+        <bundle uri="http://example.com/r1.txt"/>
+        <bundle uri="https://example.com/r2.txt"/>
+        <bundle uri="http://example.com/r3.txt"/>
+        <bundle uri="https://example.com/r4.txt"/>
+    </feature>
+</features>

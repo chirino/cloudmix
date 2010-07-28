@@ -1,0 +1,253 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>cloudmix</artifactId>
+    <groupId>org.fusesource.cloudmix</groupId>
+    <version>1.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.fusesource.cloudmix.agent.karaf</artifactId>
+  <packaging>bundle</packaging>
+  <name>CloudMix :: Karaf Agent Bundle</name>
+  <description>CloudMix Agent Bundle</description>
+
+  <properties>
+    <cloudmix.osgi.import.pkg>
+      org.apache.commons.logging,
+      org.apache.felix.karaf.admin,
+      org.apache.felix.karaf.features,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.uri,
+      com.sun.jersey.server.impl.container.httpserver,
+      org.fusesource.cloudmix.agent.security,
+      org.fusesource.cloudmix.agent,
+      org.fusesource.cloudmix.common.dto,
+      org.fusesource.cloudmix.common.util,
+      org.fusesource.cloudmix.common,
+      javax.ws.rs;version="[1.1,1.2)",
+      *
+    </cloudmix.osgi.import.pkg>
+  </properties>
+
+ <repositories>
+     <repository>
+      <id>apache.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://repository.apache.org/content/groups/snapshots-group/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <!--
+      com.sun.ws.rs.ex; version=0.0.0,
+
+
+  disabled stuff
+      com.sun.jersey.core.impl.provider.entity,
+      com.sun.jersey.core.impl.provider.header,
+      com.sun.jersey.server.impl,
+      com.sun.jersey.server.impl.container,
+      com.sun.jersey.server.impl.container.httpserver,
+      com.sun.jersey.server.impl.model.method.dispatch,
+      com.sun.jersey.server.impl.template,
+      com.sun.jersey.server.impl.uri,
+      com.sun.ws.rs.ext,
+      com.sun.grizzly.tcp,
+      org.fusesource.cloudmix.agent.security,
+
+
+  old stuff
+
+      com.sun.grizzly.tcp,
+      com.sun.jersey.impl.provider.entity,
+      com.sun.jersey.server.impl.provider,
+  
+  -->
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.felix.karaf.features</groupId>
+      <artifactId>org.apache.felix.karaf.features.core</artifactId>
+      <version>${karaf-version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.osgi.foundation</artifactId>
+        </exclusion>
+      </exclusions>      
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix.karaf.admin</groupId>
+      <artifactId>org.apache.felix.karaf.admin.core</artifactId>
+      <version>${karaf-version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.common</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.fusesource.cloudmix</groupId>
+      <artifactId>org.fusesource.cloudmix.agent</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+    </dependency>
+    <!--
+        <dependency>
+          <groupId>jersey-debug</groupId>
+          <artifactId>jersey</artifactId>
+          <version>${jersey-version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>asm</groupId>
+              <artifactId>asm</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+    -->
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-core</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.osgi.foundation</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>javax.servlet</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna-version}</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${pom.basedir}/src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${pom.basedir}/src/main/filtered-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>filter</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>target/classes/features.xml</file>
+                  <type>xml</type>
+                  <classifier>features</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--
+        lets the feature to be booted up using
+        mvn pax:run
+      -->
+      <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>1.4</version>
+        <configuration>
+          <framework>felix</framework>
+          <profiles>karaf.gogo/1.2.0</profiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

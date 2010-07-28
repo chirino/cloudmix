@@ -1,0 +1,46 @@
+<lift:surround with="default" at="content">
+  <lift:agents.index>
+    <head>
+      <title>CloudMix Agent Processes</title>
+    </head>
+
+    <script language="JavaScript">
+      function confirmDelete() {
+        return confirm('Are you sure you want to kill this process?');
+      }
+    </script>
+
+    <h2>Processes:
+      <agent:name/>
+    </h2>
+
+
+    <table>
+      <tr>
+        <th colspan="3">Processes</th>
+      </tr>
+
+      <agent:process>
+        <tr>
+          <td>
+            <a class='process' process:link="na">
+              <process:id/>
+            </a>
+          </td>
+          <td>
+            <a class='process' process:dirLink="na" process:directoryTitle="na">
+              working directory
+            </a>
+          </td>
+          <td>
+            <form process:action="na" method="post">
+              <input type="submit" name="kill" value="Kill this process" onclick="return confirmDelete()"/>
+            </form>
+          </td>
+        </tr>
+      </agent:process>
+    </table>
+  </lift:agents.index>
+</lift:surround>
+
+

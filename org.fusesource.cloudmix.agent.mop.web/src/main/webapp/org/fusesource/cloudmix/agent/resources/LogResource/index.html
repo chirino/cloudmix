@@ -1,0 +1,58 @@
+<lift:surround with="default" at="content">
+  <lift:logs.index>
+    <head>
+      <title>Log
+        <log:fullname/>
+      </title>
+    </head>
+
+
+    <h2>Log:
+      <log:fullname/>
+    </h2>
+
+    <p>
+      <a class="file" log:parentLink="na">
+        Back
+      </a>
+    </p>
+
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Level</th>
+        <th>Class</th>
+        <th>Thread</th>
+        <th>Message</th>
+      </tr>
+
+      <log:record>
+        <tr>
+          <td>
+            <record:date/>
+          </td>
+          <td>
+            <record:category/>
+          </td>
+          <td>
+            <record:level/>
+          </td>
+          <td>
+            <record:classname/>
+            :
+            <record:classLineNumber/>
+          </td>
+          <td>
+            <record:thread/>
+          </td>
+          <td>
+            <record:message/>
+          </td>
+        </tr>
+      </log:record>
+    </table>
+  </lift:logs.index>
+</lift:surround>
+
+
