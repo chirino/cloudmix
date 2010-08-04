@@ -68,6 +68,19 @@
       <artifactId>commons-logging-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+      <optional>true</optional>
+    </dependency>    
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

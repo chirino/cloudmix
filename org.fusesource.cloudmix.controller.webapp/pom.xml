@@ -11,7 +11,7 @@
   <artifactId>org.fusesource.cloudmix.controller.webapp</artifactId>
   <packaging>war</packaging>
   <name>CloudMix :: Controller - WebApp version</name>
-  <description>The Controller Web Applicatio</description>
+  <description>The Controller Web Application</description>
 
   <properties>
   </properties>
