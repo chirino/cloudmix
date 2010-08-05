@@ -1,0 +1,31 @@
+-@ import val it: ProfileResource
+-@ import val helper: ProfileHelper = new ProfileHelper
+- attributes("title") = "Profile"
+
+:javascript
+  function confirmDelete() {
+    return confirm('Are you sure you want to kill this profile?');
+  }
+%h2
+  Profile: #{getProfileDetails.getProfileId}
+
+%p
+  = getProfileDetails.getDescription
+%table{:width => "100%"}
+  %tr
+    %td
+      %a{:href => {propertiesLink(it)}, :title => "Property values for this feature"} Configuration Properties
+    %td{:align => "right"}
+      %form{:method => "post", :action => {profileLink(it)}
+        %input{:name => "kill", :onclick => "return confirmDelete()", :type => "submit", :value => "Kill this profile"}/
+%table{:width => "100%"}
+  %tr
+    %th Feature
+    %th Provisioned?
+  - for (feature <- getStatus.getStatus.getFeatures)
+    %tr
+      %td
+        %a.feature{:href => {featureLink(feature}}
+          = feature.getFeatureId
+      %td
+        = feature.isProvisioned
