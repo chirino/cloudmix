@@ -45,6 +45,13 @@
       <param-value>true</param-value>
     </init-param>
 
+    <!-- TODO should be able to trash this ASASP -->
+    <init-param>
+      <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+      <param-value>/(|index.*|(images|css|js|classpath|styles)/.*)</param-value>
+    </init-param>
+
+
     <init-param>
       <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
       <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
