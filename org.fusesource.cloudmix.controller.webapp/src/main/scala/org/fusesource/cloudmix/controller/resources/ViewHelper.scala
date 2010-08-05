@@ -4,7 +4,7 @@ import org.fusesource.scalate.servlet.ServletRenderContext
 import org.fusesource.cloudmix.common.dto.{AgentDetails, DependencyStatus, FeatureDetails, ProfileDetails}
 import org.fusesource.cloudmix.common.URIs
 
-class ProfileHelper(implicit context: ServletRenderContext) {
+class ViewHelper(implicit context: ServletRenderContext) {
   // Profiles
 
   def profileLink(resource: ProfileResource): String = {

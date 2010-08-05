@@ -1,0 +1,10 @@
+-@ import val it: FeaturesResource
+-@ import val helper: ViewHelper = new ViewHelper
+- attributes("title") = "Features"
+
+%h2 Features
+%ul
+  - for (feature <- getFeatures)
+    %li
+      %a.feature{:href => {featureLink(feature)}}
+        = feature.getId
