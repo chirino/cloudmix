@@ -8,16 +8,16 @@
   %tr
     %td Website
     %td
-      %a.agentSite{"agent:siteLink" => "na"}
-        %agent:site/
+      %a.agentSite{:href => {details.getHref}}
+        = details.getHref
   %tr
     %td Host Name
     %td
-      %agent:hostname/
+      = details.getHostname
   %tr
     %td PID
     %td
-      %agent:pid/
+      = details.getPid
   %tr
     %td Profile
     %td
