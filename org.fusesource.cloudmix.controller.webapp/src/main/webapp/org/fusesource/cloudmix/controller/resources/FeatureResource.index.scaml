@@ -1,0 +1,15 @@
+-@ import val it: FeatureResource
+-@ import val helper: ViewHelper = new ViewHelper
+- attributes("title") = "Feature"
+
+%h2
+  Feature: #{getFeatureDetails.getId}
+
+%table
+  %tr
+    %th Agents
+  - for (agent <- getAgents)
+    %tr
+      %td
+        %a.agent{:href => {agentFeatureLink(agent, getFeatureDetails.getId)}}
+          = agent.getId ?: "agent"
