@@ -25,10 +25,26 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-
   <filter>
     <filter-name>Jersey Filter</filter-name>
     <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.FilterForwardOn404</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.ImplicitViewables</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.Trace</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.Redirect</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
     <init-param>
       <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
       <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
@@ -37,18 +53,6 @@
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>org.fusesource.cloudmix.controller.resources;org.fusesource.cloudmix.common.jaxrs</param-value>
     </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.config.feature.Redirect</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.config.feature.ImplicitViewables</param-name>
-      <param-value>true</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-      <param-value>/(|index.*|(images|css|js|classpath|styles)/.*)</param-value>
-    </init-param>
   </filter>
 
   <filter-mapping>
@@ -56,19 +60,6 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-
-  <filter>
-    <filter-name>LiftFilter</filter-name>
-    <!--
-        <display-name>Lift Filter</display-name>
-        <description>The Filter that intercepts lift calls</description>
-    -->
-    <filter-class>net.liftweb.http.LiftFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>LiftFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
   <servlet>
     <servlet-name>TemplateEngineServlet</servlet-name>
     <servlet-class>org.fusesource.scalate.servlet.TemplateEngineServlet</servlet-class>
@@ -79,8 +70,26 @@
     <servlet-name>TemplateEngineServlet</servlet-name>
     <url-pattern>*.jade</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TemplateEngineServlet</servlet-name>
+    <url-pattern>*.mustache</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TemplateEngineServlet</servlet-name>
+    <url-pattern>*.scaml</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TemplateEngineServlet</servlet-name>
+    <url-pattern>*.ssp</url-pattern>
+  </servlet-mapping>
 
   <welcome-file-list>
     <welcome-file>index.jade</welcome-file>
   </welcome-file-list>
+
+
+  <error-page>
+    <error-code>500</error-code>
+    <location>/WEB-INF/scalate/errors/500.scaml</location>
+  </error-page>
 </web-app>

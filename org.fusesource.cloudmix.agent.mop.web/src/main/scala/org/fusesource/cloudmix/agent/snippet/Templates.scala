@@ -4,7 +4,7 @@ import org.fusesource.cloudmix.scalautil.TextFormatting._
 
 import net.liftweb.util.Helpers._
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 import org.fusesource.cloudmix.agent.logging.LogRecord
 import org.springframework.web.context.support.WebApplicationContextUtils
 import net.liftweb.http.S

@@ -4,15 +4,14 @@ import org.fusesource.cloudmix.common.dto.{AgentDetails}
 import org.fusesource.cloudmix.controller.resources._
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import net.liftweb.util.Helpers._
-import com.sun.jersey.lift.ResourceBean
-import com.sun.jersey.lift.Requests.uri
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 import java.util.ArrayList
 import java.util.Map.Entry
 import java.util.TreeMap
 import java.util.TreeSet
+
+//import net.liftweb.util.Helpers._
 
 /**
  * Snippets for viewing agents
@@ -27,7 +26,9 @@ object Agents {
   }
 
   def agentLink(agentId: String): String = {
-    uri("/agents/" + agentId)
+    // TODO
+    //uri("/agents/" + agentId)
+    "/agents/" + agentId
   }
 
   def siteLink(agent: AgentDetails): NodeSeq = {
@@ -45,6 +46,7 @@ object Agents {
 import Agents._
 
 class Agents {
+  /*
   def list(xhtml: Group): NodeSeq = {
 
     ResourceBean.get match {
@@ -101,5 +103,6 @@ class Agents {
           No Agent resources found!</p>
     }
   }
-
+ */
+  
 }

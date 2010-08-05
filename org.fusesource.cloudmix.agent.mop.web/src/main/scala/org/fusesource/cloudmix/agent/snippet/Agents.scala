@@ -11,7 +11,7 @@ import java.util.TreeMap
 import java.util.Map.Entry
 import net.liftweb.util.Helpers._
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 
 /**
  * Snippets for viewing agents

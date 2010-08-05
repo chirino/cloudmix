@@ -5,7 +5,7 @@ import org.fusesource.cloudmix.scalautil.TextFormatting._
 import com.sun.jersey.lift.ResourceBean
 import net.liftweb.util.Helpers._
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 import java.io.File
 import org.fusesource.cloudmix.agent.resources.{LogResource, FileSystemResource, DirectoryResource}
 import org.fusesource.cloudmix.agent.logging.LogRecord

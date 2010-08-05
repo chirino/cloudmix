@@ -56,6 +56,13 @@
       <artifactId>spring</artifactId>
     </dependency>
 
+		<dependency>
+			<groupId>org.fusesource.scalate</groupId>
+			<artifactId>scalate-core</artifactId>
+			<version>${scalate-version}</version>
+		</dependency>
+		
+<!--
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-lift</artifactId>
@@ -66,6 +73,7 @@
       <artifactId>lift-webkit</artifactId>
       <version>${lift-version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-jaxrs</artifactId>

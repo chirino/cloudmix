@@ -4,11 +4,8 @@ import org.fusesource.cloudmix.common.dto.{DependencyStatus, ProfileDetails}
 import org.fusesource.cloudmix.controller.resources._
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import net.liftweb.util.Helpers._
-import com.sun.jersey.lift.ResourceBean
-import com.sun.jersey.lift.Requests.uri
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 
 /**
  * Snippets for viewing profiles
@@ -21,7 +18,9 @@ object Profiles {
   }
 
   def profileLink(profile: ProfileDetails): String = {
-    uri("/profiles/" + profile.getId)
+    // TODO
+    //uri("/profiles/" + profile.getId)
+    "/profiles/" + profile.getId
   }
 
   def propertiesLink(profile: ProfileDetails): String = {
@@ -37,6 +36,7 @@ import Features._
 import Profiles._
 
 class Profiles {
+  /*
   def list(xhtml: Group): NodeSeq = {
 
     ResourceBean.get match {
@@ -113,5 +113,6 @@ class Profiles {
   def subscribeLink(profile: ProfileResource): String = {
     uri(profile.getLink) + "/subscribe"
   }
+  */
   */
 }

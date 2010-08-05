@@ -1,6 +1,5 @@
 package org.fusesource.cloudmix.controller.properties.scala
 
-
 import java.io.PrintWriter
 import java.util.Map
 import _root_.scala.tools.nsc.Interpreter
@@ -9,7 +8,7 @@ import _root_.scala.tools.nsc.Settings
 import org.fusesource.cloudmix.controller.properties.Expression
 import org.fusesource.cloudmix.scalautil.Collections._
 
-import net.liftweb.util._
+//import net.liftweb.util._
 //import net.liftweb.common._
 //import net.liftweb.actor._
 

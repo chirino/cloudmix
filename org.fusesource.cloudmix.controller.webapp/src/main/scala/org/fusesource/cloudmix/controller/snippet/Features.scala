@@ -4,12 +4,11 @@ import org.fusesource.cloudmix.common.dto.{AgentDetails, FeatureDetails, Depende
 import org.fusesource.cloudmix.controller.resources._
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import net.liftweb.util.Helpers._
-import com.sun.jersey.lift.ResourceBean
-import com.sun.jersey.lift.Requests.uri
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 import org.fusesource.cloudmix.common.URIs
+
+//import net.liftweb.util.Helpers._
 
 /**
  * Snippets for viewing features
@@ -26,7 +25,9 @@ object Features {
   }
 
   def featureLink(featureId: String): String = {
-    uri("/features/" + featureId)
+    // TODO
+    //uri("/features/" + featureId)
+    "/features/" + featureId
   }
 
   def agentFeatureLink(agent: AgentDetails, featureId: String): String = {
@@ -37,6 +38,7 @@ object Features {
 import Features._
 
 class Features {
+  /*
   def list(xhtml: Group): NodeSeq = {
 
     ResourceBean.get match {
@@ -123,5 +125,6 @@ class Features {
   def subscribeLink(feature: FeatureResource): String = {
     uri(feature.getLink) + "/subscribe"
   }
+  */
   */
 }

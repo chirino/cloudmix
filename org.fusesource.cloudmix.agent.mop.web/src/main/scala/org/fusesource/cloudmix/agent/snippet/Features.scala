@@ -7,7 +7,7 @@ import org.fusesource.cloudmix.scalautil.Collections._
 import com.sun.jersey.lift.ResourceBean
 import net.liftweb.util.Helpers._
 import scala.xml._
-import scala.collection.jcl.Conversions._
+import scala.collection.JavaConversions._
 import org.fusesource.cloudmix.common.dto.{ResourceList, Resource}
 
 /**
