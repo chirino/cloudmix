@@ -1,0 +1,17 @@
+-@ import val it: AgentsResource
+-@ import val helper: ViewHelper = new ViewHelper
+- attributes("title") = "Agents"
+
+%h2 Agents
+%table
+  %tr
+    %th Agent Name
+    %th Website
+  - for (agent <- getAgents)
+    %tr
+      %td
+        %a.agent{:href => {agentLink(agent)}}
+          = agent.getId
+      %td
+        %a.agentSite{:href => {agent.getHref}}
+          = agent.getHref
