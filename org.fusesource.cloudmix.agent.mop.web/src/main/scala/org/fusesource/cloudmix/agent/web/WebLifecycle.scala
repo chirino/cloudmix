@@ -47,7 +47,7 @@ class WebLifecycle extends Logging {
 
     type HasHostAndPort = {
       def getName(): String
-      def isRunning(): boolean
+      def isRunning(): Boolean
       def open(): Unit
     }
 

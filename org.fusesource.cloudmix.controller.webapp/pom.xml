@@ -34,12 +34,12 @@
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-compiler</artifactId>
-      <version>${scala.version}</version>
+      <version>${scala-version}</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
+      <version>${scala-version}</version>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>
@@ -104,20 +104,20 @@
 
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
-      <artifactId>specs</artifactId>
-      <version>1.5.0</version>
+      <artifactId>specs_2.8.0</artifactId>
+      <version>1.6.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
-      <artifactId>scalacheck</artifactId>
-      <version>1.5</version>
+      <artifactId>scalacheck_2.8.0 </artifactId>
+      <version>1.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.scala-tools.testing</groupId>
+      <groupId>org.scalatest</groupId>
       <artifactId>scalatest</artifactId>
-      <version>0.9.5</version>
+      <version>${scalatest-version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -175,11 +175,11 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <version>${jetty-version}</version>
         <configuration>
-          <connectors>
-            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>${jetty.port}</port>
-            </connector>
-          </connectors>
+          <!--<connectors>-->
+            <!--<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">-->
+              <!--<port>${jetty.port}</port>-->
+            <!--</connector>-->
+          <!--</connectors>-->
 
           <webAppConfig>
             <contextPath>/</contextPath>

@@ -1,6 +1,5 @@
 package org.fusesource.cloudmix.agent.resources
 
-import scala.collection.jcl.Conversions._
 import javax.ws.rs.{Produces, GET}
 import org.fusesource.cloudmix.common.dto.{ResourceList}
 import org.fusesource.cloudmix.agent.mop.{MopAgent}

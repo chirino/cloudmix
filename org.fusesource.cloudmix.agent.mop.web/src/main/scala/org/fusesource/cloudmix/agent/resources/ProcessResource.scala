@@ -6,9 +6,9 @@ import com.sun.jersey.api.representation.Form
 import java.net.URI
 import javax.ws.rs.core.MediaType._
 import javax.ws.rs.core.{Response, HttpHeaders, UriInfo, UriBuilder, Context}
-import scala.collection.jcl.Conversions._
 import javax.ws.rs.{Path, Consumes, POST, DELETE}
 import org.fusesource.cloudmix.agent.snippet.Agents
+import collection.JavaConversions
 
 /**
  * Represents the MOP Agent's resource
@@ -40,6 +40,7 @@ class ProcessResource(val agent: MopAgent, val id: String, val process: MopProce
   @Consumes(Array("application/x-www-form-urlencoded"))
   def postMessageForm(@Context uriInfo: UriInfo, @Context headers: HttpHeaders, formData: Form) : Response = {
     log.info("<<<<<< received form: " + formData)
+    import JavaConversions._
     for (key <- formData.keySet) {
       post(uriInfo, headers, key)
     }
