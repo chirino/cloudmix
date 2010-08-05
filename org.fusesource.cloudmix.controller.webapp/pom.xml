@@ -56,13 +56,18 @@
       <artifactId>spring</artifactId>
     </dependency>
 
-		<dependency>
-			<groupId>org.fusesource.scalate</groupId>
-			<artifactId>scalate-core</artifactId>
-			<version>${scalate-version}</version>
-		</dependency>
-		
-<!--
+    <dependency>
+      <groupId>org.fusesource.scalate</groupId>
+      <artifactId>scalate-core</artifactId>
+      <version>${scalate-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.markdownj</groupId>
+      <artifactId>markdownj</artifactId>
+      <version>${markdownj-version}</version>
+    </dependency>
+    
+    <!--
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-lift</artifactId>
