@@ -5,11 +5,8 @@ import org.fusesource.cloudmix.agent.mop.MopProcess
 import org.fusesource.cloudmix.agent.resources.{ProcessResource, ResourceSupport}
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import com.sun.jersey.lift.Requests.uri
-import com.sun.jersey.lift.ResourceBean
 import java.util.TreeMap
 import java.util.Map.Entry
-import net.liftweb.util.Helpers._
 import scala.xml._
 import scala.collection.JavaConversions._
 
@@ -18,6 +15,7 @@ import scala.collection.JavaConversions._
  *
  * @version $Revision : 1.1 $
  */
+/*
 
 object Agents {
   def agentLink(agent: AgentDetails): String = {
@@ -139,4 +137,4 @@ class Agents {
     }
   }
 
-}
+}*/

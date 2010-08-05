@@ -2,8 +2,6 @@ package org.fusesource.cloudmix.agent.snippet
 
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 
-import com.sun.jersey.lift.ResourceBean
-import net.liftweb.util.Helpers._
 import scala.xml._
 import scala.collection.JavaConversions._
 import java.io.File
@@ -13,6 +11,7 @@ import org.fusesource.cloudmix.agent.resources.{FileSystemResource, DirectoryRes
  * @version $Revision : 1.1 $
  */
 
+/*
 object Directories {
   def action(file: FileSystemResource) = {
     if (file.name.endsWith(".log"))
@@ -52,4 +51,4 @@ class Directories {
           No Directory resources found!</p>
     }
   }
-}
+}*/

@@ -7,7 +7,6 @@ import java.net.URI
 import javax.ws.rs.core.MediaType._
 import javax.ws.rs.core.{Response, HttpHeaders, UriInfo, UriBuilder, Context}
 import javax.ws.rs.{Path, Consumes, POST, DELETE}
-import org.fusesource.cloudmix.agent.snippet.Agents
 import collection.JavaConversions
 
 /**
@@ -47,8 +46,11 @@ class ProcessResource(val agent: MopAgent, val id: String, val process: MopProce
     Response.seeOther(new URI("/processes")).build
   }
 
+  // TODO fix me!!!!
+/*
   @Path("directory")
   def directory() = {
     new RootDirectoryResource(process.getWorkDirectory, Agents.directoryLink(process))
   }
+*/
 }

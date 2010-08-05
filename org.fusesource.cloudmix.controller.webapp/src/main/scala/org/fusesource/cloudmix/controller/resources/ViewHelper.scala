@@ -5,6 +5,8 @@ import org.fusesource.cloudmix.common.dto.{AgentDetails, DependencyStatus, Featu
 import org.fusesource.cloudmix.common.URIs
 
 class ViewHelper(implicit context: ServletRenderContext) {
+  def uri(text: String) = context.uri(text)
+
   // Profiles
 
   def profileLink(resource: ProfileResource): String = {
@@ -12,7 +14,7 @@ class ViewHelper(implicit context: ServletRenderContext) {
   }
 
   def profileLink(profile: ProfileDetails): String = {
-    context.uri("/profiles/" + profile.getId)
+    uri("/profiles/" + profile.getId)
   }
 
   def propertiesLink(profile: ProfileDetails): String = {
@@ -35,7 +37,7 @@ class ViewHelper(implicit context: ServletRenderContext) {
   }
 
   def featureLink(featureId: String): String = {
-    context.uri("/features/" + featureId)
+    uri("/features/" + featureId)
   }
 
   def agentFeatureLink(agent: AgentDetails, featureId: String): String = {
@@ -48,7 +50,7 @@ class ViewHelper(implicit context: ServletRenderContext) {
   }
 
   def agentLink(agentId: String): String = {
-    context.uri("/agents/" + agentId)
+    uri("/agents/" + agentId)
   }
 
 /*

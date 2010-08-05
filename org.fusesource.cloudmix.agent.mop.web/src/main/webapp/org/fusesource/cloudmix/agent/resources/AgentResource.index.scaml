@@ -1,53 +1,52 @@
 -@ import val it: AgentResource
 -@ import val helper: ViewHelper = new ViewHelper
-- val agent = it.get
 - attributes("title") = "Agent"
 
 %h2
-  Agent: #{agent.getId}
+  Agent: #{agent.getAgentId}
 %table
   %tr
     %td Website
     %td
-      %a.agentSite{:href => {agentLink(agent)}}
-        = agentLink(agent)
+      %a.agentSite{"agent:siteLink" => "na"}
+        %agent:site/
   %tr
     %td Host Name
     %td
-      = agent.getHostname
+      %agent:hostname/
   %tr
     %td PID
     %td
-      = agent.getPid
+      %agent:pid/
   %tr
     %td Profile
     %td
-      = agent.getProfile
+      %agent:profile/
   %tr
     %td Operating System
     %td
-      = agent.getOs
+      %agent:os/
   %tr
     %td Container
     %td
-      = agent.getContainerType
+      %agent:containerType/
   %tr
     %td ID
     %td
-      = agent.getId
+      %agent:id/
   %tr
     %td Maximum Features
     %td
-      = agent.getMaximumFeatures
+      %agent:maximumFeatures/
   %tr
     %td{:colspan => "2"}
       %table
         %tr
           %th System Property
           %th Value
-        - for ((sysKey, sysValue) <- agent.getSystemProperties)
+        %agent:systemProperty
           %tr
             %td
-              = sysKey
+              %systemProperty:name/
             %td
-              = sysValue
+              %systemProperty:value/

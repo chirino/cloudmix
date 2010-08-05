@@ -7,7 +7,7 @@ import javax.ws.rs.core.{MultivaluedMap, MediaType}
 import javax.ws.rs.ext.{MessageBodyWriter, Provider}
 import java.lang.reflect.Type
 import java.io.{BufferedInputStream, FileInputStream, File, OutputStream}
-import scalax.io.StreamHelp
+import org.fusesource.scalate.util.IOUtil
 
 /**
  * Outputs a File object over JAXRS
@@ -25,7 +25,9 @@ class FileWriter extends MessageBodyWriter[File] {
   def writeTo(file: File, aClass: Class[_], aType: Type, annotations: Array[Annotation], mediaType: MediaType, stringObjectMultivaluedMap: MultivaluedMap[String, Object], outputStream: OutputStream): Unit = {
     // TODO should we output the MIME type by guessing the file name?
 
-    StreamHelp.pump(new BufferedInputStream(new FileInputStream(file)), outputStream)
+    IOUtil.copy(new BufferedInputStream(new FileInputStream(file)), outputStream)
+
+    //StreamHelp.pump(, outputStream)
     /*
         val in =
         var valid = true

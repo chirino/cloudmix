@@ -32,11 +32,13 @@
       <artifactId>org.fusesource.cloudmix.scalautil</artifactId>
        <version>${pom.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.scalaforge</groupId>
       <artifactId>scalax</artifactId>
       <version>0.1</version>
     </dependency>
+-->
 
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
@@ -44,15 +46,11 @@
       <version>${jersey-version}</version>
     </dependency>
     <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-lift</artifactId>
-      <version>${jersey-version}</version>
+      <groupId>org.fusesource.scalate</groupId>
+      <artifactId>scalate-core</artifactId>
+      <version>${scalate-version}</version>
     </dependency>
-    <dependency>
-      <groupId>net.liftweb</groupId>
-      <artifactId>lift-webkit</artifactId>
-      <version>${lift-version}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-jaxrs</artifactId>

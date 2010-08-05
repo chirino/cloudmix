@@ -4,8 +4,6 @@ import org.fusesource.cloudmix.agent.resources.{FeatureResource, FeaturesResourc
 import org.fusesource.cloudmix.scalautil.TextFormatting._
 import org.fusesource.cloudmix.scalautil.Collections._
 
-import com.sun.jersey.lift.ResourceBean
-import net.liftweb.util.Helpers._
 import scala.xml._
 import scala.collection.JavaConversions._
 import org.fusesource.cloudmix.common.dto.{ResourceList, Resource}
@@ -14,7 +12,7 @@ import org.fusesource.cloudmix.common.dto.{ResourceList, Resource}
  * @version $Revision : 1.1 $
  */
 class Features {
-  def list(xhtml: Group): NodeSeq = {
+/*  def list(xhtml: Group): NodeSeq = {
     ResourceBean.get match {
       case resource: FeaturesResource =>
         val list = resource.resources
@@ -52,5 +50,5 @@ class Features {
           "name" -> asText(child.getName),
           AttrBindParam("link", Text(child.getHref), "href"))
     }.toSeq
-  }
+  }*/
 }

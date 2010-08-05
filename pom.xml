@@ -233,6 +233,7 @@
     <module>org.fusesource.cloudmix.common</module>
     <module>org.fusesource.cloudmix.agent</module>
     <module>org.fusesource.cloudmix.agent.mop</module>
+    <module>org.fusesource.cloudmix.agent.mop.web</module>
     <module>org.fusesource.cloudmix.agent.start</module>
     <module>org.fusesource.cloudmix.controller</module>
     <module>org.fusesource.cloudmix.controller.webapp</module>
@@ -242,9 +243,6 @@
     <module>cloudtests</module>
 
     <!-- lower priority stuff next... -->
-<!--
-    <module>org.fusesource.cloudmix.agent.mop.web</module>
--->
     <module>org.fusesource.cloudmix.meshkeeper.plugin</module>
     <module>org.fusesource.cloudmix.agent.dir.webapp</module>
     <module>org.fusesource.cloudmix.agent.karaf</module>

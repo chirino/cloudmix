@@ -1,0 +1,58 @@
+-#
+-# Copyright (C) 2009-2010 the original author or authors.
+-# See the notice.md file distributed with this work for additional
+-# information regarding copyright ownership.
+-#
+-# Licensed under the Apache License, Version 2.0 (the "License");
+-# you may not use this file except in compliance with the License.
+-# You may obtain a copy of the License at
+-#
+-#     http://www.apache.org/licenses/LICENSE-2.0
+-#
+-# Unless required by applicable law or agreed to in writing, software
+-# distributed under the License is distributed on an "AS IS" BASIS,
+-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-# See the License for the specific language governing permissions and
+-# limitations under the License.
+-#
+-@ var body: String
+-@ var title : String = "CloudMix Controller"
+- response.setContentType("text/html")
+!!! Baisc
+html
+  head
+    meta(content="text/html; charset=utf-8" http-equiv="Content-Type" )
+    meta(name="description" content="CloudMix a framework for deploying, provisioning and testing Java code in a cloud" )
+    meta(name="keywords" content="cloudmix,rest,cloud,grid" )
+    meta(name="author" content="FuseSource" )
+    link(href="/css/site.css" rel="stylesheet" type="text/css" )
+    link(href="/css/tables.css" rel="stylesheet" type="text/css" )
+    title #{title}
+  body
+    #navigation
+      .wrapper
+        ul
+          li.webgen-menu-level1
+            a( href="/" ) Home
+          li.webgen-menu-level1
+            a( href="/profiles" title="A profile is like an environment such as development or production" ) Profiles
+          li.webgen-menu-level1
+            a( href="/features" ) Features
+          li.webgen-menu-level1
+            a( href="/agents" ) Agents
+          li.webgen-menu-level1
+            a( href="/api" ) API
+          li.webgen-menu-level1.webgen-menu-submenu
+            a( href="http://cloudmix.fusesource.org/" ) Documentation
+          li.webgen-menu-level1
+            a( href="http://cloudmix.fusesource.org/support.html" ) Support
+    #overview
+      .wrapper
+        .logo
+        .message
+          a( href="/" )
+            h1 CloudMix Controller
+          | controls one or more clouds of software
+    #content
+      .wrapper
+        !~~ body
