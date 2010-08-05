@@ -16,7 +16,7 @@
   - for (profile <- getProfiles)
     %tr
       %td
-        %a.profile{"profile:link" => "na"}
+        %a.profile{:href => {profileLink(profile)}}
           = profile.getId
       %td
         = profile.getDescription
