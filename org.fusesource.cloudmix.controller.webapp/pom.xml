@@ -188,11 +188,11 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <version>${jetty-version}</version>
         <configuration>
-          <!--<connectors>-->
-            <!--<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">-->
-              <!--<port>${jetty.port}</port>-->
-            <!--</connector>-->
-          <!--</connectors>-->
+          <connectors>
+            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+              <port>${jetty.port}</port>
+            </connector>
+          </connectors>
 
           <webAppConfig>
             <contextPath>/</contextPath>
