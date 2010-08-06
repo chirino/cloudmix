@@ -14,7 +14,7 @@ import org.fusesource.cloudmix.agent.mop.{MopAgent}
 class ProcessesResource(val agent: MopAgent) extends ResourceSupport {
   @GET
   @Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
-  def resources: ResourceList = {
+  def resourceList: ResourceList = {
 /*
     val resources = processes.values.map((p) => new Resource(p.getId, p.getId))
     ResourceList.newInstance(iterabletoCollection(resources))
@@ -26,6 +26,8 @@ class ProcessesResource(val agent: MopAgent) extends ResourceSupport {
     }
     answer
   }
+  
+  def resources = resourceList.getResources
 
   @Path("{id}")
   def processResource(@PathParam("id") id: String) = {

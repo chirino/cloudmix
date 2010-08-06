@@ -14,7 +14,7 @@ import org.fusesource.cloudmix.scalautil.Collections._
 class FeatureResource(val agent: MopAgent, val id: String) extends ResourceSupport {
 
   @GET
-  def resources: ResourceList = {
+  def resourceList: ResourceList = {
     val answer = new ResourceList
     for (p <- processes.values) {
       val featureId = p.getFeatureId
@@ -26,4 +26,5 @@ class FeatureResource(val agent: MopAgent, val id: String) extends ResourceSuppo
     answer
   }
 
+  def resources = resourceList.getResources
 }

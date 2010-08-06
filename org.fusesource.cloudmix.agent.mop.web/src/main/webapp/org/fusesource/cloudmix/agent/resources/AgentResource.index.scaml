@@ -1,5 +1,4 @@
 -@ import val it: AgentResource
--@ import val helper: ViewHelper = new ViewHelper
 - attributes("title") = "Agent"
 
 %h2
@@ -21,32 +20,20 @@
   %tr
     %td Profile
     %td
-      %agent:profile/
+      = details.getProfile
   %tr
     %td Operating System
     %td
-      %agent:os/
+      = details.getOs
   %tr
     %td Container
     %td
-      %agent:containerType/
+      = details.getContainerType
   %tr
     %td ID
     %td
-      %agent:id/
+      = details.getId
   %tr
     %td Maximum Features
     %td
-      %agent:maximumFeatures/
-  %tr
-    %td{:colspan => "2"}
-      %table
-        %tr
-          %th System Property
-          %th Value
-        %agent:systemProperty
-          %tr
-            %td
-              %systemProperty:name/
-            %td
-              %systemProperty:value/
+      = details.getMaximumFeatures

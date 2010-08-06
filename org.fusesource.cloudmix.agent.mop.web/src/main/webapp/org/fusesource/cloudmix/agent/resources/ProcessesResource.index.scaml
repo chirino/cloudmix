@@ -1,0 +1,23 @@
+-@ import val it: ProcessesResource
+- attributes("title") = "CloudMix Agent Processes"
+
+%script{:language => "JavaScript"}
+  function confirmDelete() {
+  return confirm('Are you sure you want to kill this process?');
+  }
+%h2
+  Processes
+%table
+  %tr
+    %th{:colspan => "3"} Processes
+  - for ((id, process) <- processes)
+    %tr
+      %td
+        %a.process{:href => {processLink(process)}}
+          = id
+      %td
+        %a.process{:href => {directoryLink(process)}, :title => {process.getWorkDirectory}}
+          working directory
+      %td
+        %form{:method => "post", :action => {processLink(process)}}
+          %input{:name => "kill", :onclick => "return confirmDelete()", :type => "submit", :value => "Kill this process"}/

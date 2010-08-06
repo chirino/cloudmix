@@ -1,0 +1,12 @@
+-@ import val it: FeaturesResource
+- attributes("title") = "CloudMix Agent Features"
+
+%h2 Features
+%table
+  %tr
+    %th{:colspan => "3"} Features
+    - for (feature <- resources)
+      %tr
+        %td
+          %a.feature{:href => {feature.getHref}}
+            = feature.getName

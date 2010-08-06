@@ -1,0 +1,17 @@
+-@ import val it: AgentResource
+- attributes("title") = "CloudMix Agent System Properties"
+
+%h2
+  Agent: #{agent.getAgentId}
+
+
+%table
+  %tr
+    %th System Property
+    %th Value
+  - for ((key, value) <- details.getSystemProperties)
+    %tr
+      %td
+        = key
+      %td
+        = value

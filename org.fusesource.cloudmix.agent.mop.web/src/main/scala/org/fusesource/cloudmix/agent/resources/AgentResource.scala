@@ -5,7 +5,7 @@ import javax.ws.rs.core.{UriInfo, Context}
 import org.fusesource.cloudmix.agent.mop.MopAgent
 
 import com.sun.jersey.spi.inject.Inject
-import javax.ws.rs.{Path}
+import javax.ws.rs.Path
 
 /**
  * Represents the MOP Agent's resource
@@ -15,10 +15,8 @@ import javax.ws.rs.{Path}
 @Path("/")
 //@Singleton
 class AgentResource extends ResourceSupport {
-  @Inject
-  var agent: MopAgent = null
-  @Context
-  var uriInfo: UriInfo = null;
+  @Inject var agent: MopAgent = _
+  @Context var uriInfo: UriInfo = _
 
   @Path("features")
   def featuresResources = new FeaturesResource(agent)

@@ -9,8 +9,8 @@
   %tr
     %td Website
     %td
-      %a.agentSite{:href => {agentLink(agent)}}
-        = agentLink(agent)
+      %a.agentSite{:href => {agent.getHref}}
+        = agent.getHref
   %tr
     %td Host Name
     %td
@@ -39,15 +39,14 @@
     %td Maximum Features
     %td
       = agent.getMaximumFeatures
+
+%table
   %tr
-    %td{:colspan => "2"}
-      %table
-        %tr
-          %th System Property
-          %th Value
-        - for ((sysKey, sysValue) <- agent.getSystemProperties)
-          %tr
-            %td
-              = sysKey
-            %td
-              = sysValue
+    %th System Property
+    %th Value
+  - for ((sysKey, sysValue) <- agent.getSystemProperties)
+    %tr
+      %td
+        = sysKey
+      %td
+        = sysValue

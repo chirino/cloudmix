@@ -33,15 +33,17 @@ html
       .wrapper
         ul
           li.webgen-menu-level1
-            a( href="/" ) Home
+            a( href={uri("/")} ) Home
           li.webgen-menu-level1
-            a( href="/profiles" title="A profile is like an environment such as development or production" ) Profiles
+            a( href={uri("/processes")} title="The processes that this agent is running" ) Processes
           li.webgen-menu-level1
-            a( href="/features" ) Features
+            a( href={uri("/features")} ) Features
           li.webgen-menu-level1
-            a( href="/agents" ) Agents
+            a( href={uri("/properties")} ) Properties
           li.webgen-menu-level1
-            a( href="/api" ) API
+            a( href={uri("/directory")} ) Directory
+          li.webgen-menu-level1
+            a( href={uri("/api")} ) API
           li.webgen-menu-level1.webgen-menu-submenu
             a( href="http://cloudmix.fusesource.org/" ) Documentation
           li.webgen-menu-level1

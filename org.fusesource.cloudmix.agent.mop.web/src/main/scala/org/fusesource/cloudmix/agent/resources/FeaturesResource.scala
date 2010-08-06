@@ -13,7 +13,7 @@ import org.fusesource.cloudmix.scalautil.Collections._
 @Produces(Array("application/xml", "application/json", "text/xml", "text/json"))
 class FeaturesResource(val agent: MopAgent) extends ResourceSupport {
   @GET
-  def resources: ResourceList = {
+  def resourceList: ResourceList = {
     val answer = new ResourceList
     for (p <- processes.values) {
       val id = p.getFeatureId
@@ -23,6 +23,8 @@ class FeaturesResource(val agent: MopAgent) extends ResourceSupport {
     }
     answer
   }
+
+  def resources = resourceList.getResources
 
   @Path("{id}")
   def featureResource(@PathParam("id") id: String) = new FeatureResource(agent, id)

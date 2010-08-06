@@ -46,11 +46,8 @@ class ProcessResource(val agent: MopAgent, val id: String, val process: MopProce
     Response.seeOther(new URI("/processes")).build
   }
 
-  // TODO fix me!!!!
-/*
   @Path("directory")
   def directory() = {
-    new RootDirectoryResource(process.getWorkDirectory, Agents.directoryLink(process))
+    new RootDirectoryResource(process.getWorkDirectory, directoryLink(process))
   }
-*/
 }

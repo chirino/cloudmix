@@ -8,7 +8,6 @@ import com.sun.jersey.api.view.ImplicitProduces
 import javax.ws.rs.Produces
 import org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
 import java.util.Map
-
 /**
  * Base class for resources
  *
@@ -23,6 +22,49 @@ abstract class ResourceSupport extends Logging {
     agent.getAgentDetails
   }
 
-  def processes : Map[String,MopProcess] = agent.getProcesses()
+  def name = details.getName
 
+  def processes: Map[String, MopProcess] = agent.getProcesses()
+
+
+  def agentLink(agent: AgentDetails): String = {
+    agentLink(agent.getId)
+  }
+
+  def agentLink(agentId: String): String = {
+    uri("/agents/" + agentId)
+  }
+
+  def featureLink(featureId: String): String = {
+    uri("/features/" + featureId)
+  }
+
+  def processLink(process: MopProcess): String = {
+    processLink(process.getId)
+  }
+
+  def processLink(processId: String): String = {
+    uri("/processes/" + processId)
+  }
+
+  def directoryLink(process: MopProcess): String = {
+    processLink(process) + "/directory"
+  }
+
+
+  def uri(text: String): String = {
+    // TODO dirty hack as we can't rely on all sub resources being IoC injected right now via Jersey
+    // as we manually create sub resources
+
+    // plus can't rely on render context as we invoke this before rendering
+    //ServletRenderContext.renderContext.uri(text)
+
+    val base = agent.getBaseHref
+    if (base.endsWith("/") && text.startsWith("/")) {
+      base + text.stripPrefix("/")
+    }
+    else {
+      base + text
+    }
+  }
 }

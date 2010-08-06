@@ -1,0 +1,22 @@
+-@ import val it: DirectoryResource
+- attributes("title") = "Directory: " + name
+
+%h2
+  Directory: #{fullname}
+%table
+  %tr
+    %th Name
+  %tr
+    %td
+      %img{:src => "/images/files/back.gif"}/
+      %a.file{:href => {parentLink}}
+        Parent Directory
+  - for (child <- getChildResources)
+    %tr
+      %td
+        %img{:src => {child.icon}}/
+        %a.file{:href => {child.path}}
+          = child.name
+        - if (child.isLog)
+          %a{:href => {child.path + "/log"}, :title => "View and search the log contents Log"} View Log
+          

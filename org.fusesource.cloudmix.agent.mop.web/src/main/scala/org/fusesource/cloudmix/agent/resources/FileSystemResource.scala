@@ -18,9 +18,11 @@ abstract class FileSystemResource(val file: File, val parentPath: String) extend
 
   def parentLink = parentPath
 
-  def isDirectory
+  def isDirectory: Boolean
 
   def icon: String
+
+  def isLog = !isDirectory && name.endsWith(".log")
 
   def path: String = {
     if (uriInfo != null) {
