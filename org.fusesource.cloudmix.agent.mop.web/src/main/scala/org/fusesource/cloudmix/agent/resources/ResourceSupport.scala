@@ -8,6 +8,8 @@ import com.sun.jersey.api.view.ImplicitProduces
 import javax.ws.rs.Produces
 import org.fusesource.cloudmix.agent.mop.{MopProcess, MopAgent}
 import java.util.Map
+import java.net.URI
+
 /**
  * Base class for resources
  *
@@ -59,7 +61,10 @@ abstract class ResourceSupport extends Logging {
     // plus can't rely on render context as we invoke this before rendering
     //ServletRenderContext.renderContext.uri(text)
 
-    val base = agent.getBaseHref
+    val base = new URI(agent.getBaseHref).getPath
+
+    println("######## using base ref: " + base)
+    
     if (base.endsWith("/") && text.startsWith("/")) {
       base + text.stripPrefix("/")
     }

@@ -42,5 +42,4 @@ class AgentResource extends ResourceSupport {
       agent.setBaseHref(uriInfo.getBaseUri().toString);
     }
   }
-
 }

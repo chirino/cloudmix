@@ -25,7 +25,17 @@ class FileWriter extends MessageBodyWriter[File] {
   def writeTo(file: File, aClass: Class[_], aType: Type, annotations: Array[Annotation], mediaType: MediaType, stringObjectMultivaluedMap: MultivaluedMap[String, Object], outputStream: OutputStream): Unit = {
     // TODO should we output the MIME type by guessing the file name?
 
-    IOUtil.copy(new BufferedInputStream(new FileInputStream(file)), outputStream)
+    println("writing file: " + file + " to output")
+
+    // TODO hacky as we read it all in RAM!
+
+
+    val bytes = IOUtil.loadBinaryFile(file)
+    outputStream.write(bytes)
+    //outputStream.flush
+
+    // TODO we don't want to close the stream!
+    //IOUtil.copy(new BufferedInputStream(new FileInputStream(file)), outputStream)
 
     //StreamHelp.pump(, outputStream)
     /*
