@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.server.impl.container.config.AnnotatedClassScanner;
+//import com.sun.jersey.server.impl.container.config.AnnotatedClassScanner;
 
 public class OSGiResourceConfig extends DefaultResourceConfig {
     public static final String CLASS_NAMES = "jersey_osgi.classnames";
@@ -38,14 +38,14 @@ public class OSGiResourceConfig extends DefaultResourceConfig {
     private void init(String[] classNames) {
         List<Class<?>> classes = loadClasses(classNames);
         
-        AnnotatedClassScanner scanner = new AnnotatedClassScanner(Path.class, Provider.class);
-        // prime the scanner manually, we can't use it searching 
-        // functionality as it isn't compatible with the OSGi 
-        // classloader.
-        Set<Class<?>> matchingClasses = scanner.getMatchingClasses();
-        matchingClasses.addAll(classes);
-
-        getClasses().addAll(scanner.getMatchingClasses());
+//        AnnotatedClassScanner scanner = new AnnotatedClassScanner(Path.class, Provider.class);
+//        // prime the scanner manually, we can't use it searching
+//        // functionality as it isn't compatible with the OSGi
+//        // classloader.
+//        Set<Class<?>> matchingClasses = scanner.getMatchingClasses();
+//        matchingClasses.addAll(classes);
+//
+//        getClasses().addAll(scanner.getMatchingClasses());
     }
 
     private List<Class<?>> loadClasses(String[] classNames) {
