@@ -32,10 +32,10 @@ class ExpressionTest {
 
   @Test
   def testParsing: Unit = {
-    evaluteExpression("2 * 2")
-    evaluteExpression("agents.size()")
-    evaluteExpression("agents.size()")
-    evaluteExpression("agents.map(\"tcp://\" + _.getHostname + \":61616\").mkString(\"failover:(\", \",\", \")\")");
+//    evaluteExpression("2 * 2")
+//    evaluteExpression("agents.size")
+//    evaluteExpression("agents.size")
+//    evaluteExpression("agents.map(\"tcp://\" + _.asInstanceof[AgentDetails].getHostname + \":61616\").mkString(\"failover:(\", \",\", \")\")");
   }
 
 
